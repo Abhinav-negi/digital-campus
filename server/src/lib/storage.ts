@@ -9,9 +9,9 @@ import { config } from '../config.js';
 const EXPIRES_S = 15 * 60;
 /** Repo-root `.data/uploads` (gitignored); same depth from src/lib and dist/lib. */
 export const UPLOAD_DIR = resolve(import.meta.dirname, '../../../.data/uploads');
-// No dedicated signing key in config. Dev: a fixed constant so URLs survive `tsx watch` restarts.
-// Prod without S3_SECRET_KEY: per-process random, so the public constant can never sign there.
-const secret = config.S3_SECRET_KEY || (config.NODE_ENV === 'production' ? randomBytes(32) : 'dev-local-uploads');
+// No dedicated signing key in config: S3_SECRET_KEY, else per-process random (never a known constant,
+// even if NODE_ENV is wrong). Links die on restart, which is fine for 15-minute URLs.
+const secret = config.S3_SECRET_KEY || randomBytes(32);
 const local = !config.S3_ENDPOINT;
 
 const sign = (method: string, key: string, exp: number) =>

@@ -3,6 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import express, { Router } from 'express';
 import { z } from 'zod';
+import { auth } from '../../lib/auth.js';
 import { HttpError } from '../../lib/http.js';
 import { registry, route } from '../../lib/openapi.js';
 import { localPath, presignPut, UPLOAD_DIR, verifyLocal } from '../../lib/storage.js';
@@ -21,7 +22,7 @@ const router = Router();
 
 router.post(
   '/presign',
-  // TODO(FND-04): add the `auth()` guard from lib/auth.ts here; until then req.user is read defensively.
+  auth(),
   route(registry, {
     method: 'post',
     path: '/files/presign',
@@ -37,8 +38,7 @@ router.post(
     responses: { 200: z.object({ uploadUrl: z.string(), key: z.string() }) },
   }),
   async (req, res) => {
-    const userId = (req as { user?: { id: string } }).user?.id;
-    if (!userId) throw new HttpError(401, 'UNAUTHENTICATED', 'Log in first');
+    const userId = req.user!.id;
     const { name, contentType } = req.body as { name: string; contentType: keyof typeof EXT };
     const base = name.replace(/\.[^.]*$/, '').replace(/[^\w-]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 80) || 'file';
     const key = `uploads/${userId}/${randomUUID()}-${base}.${EXT[contentType]}`;

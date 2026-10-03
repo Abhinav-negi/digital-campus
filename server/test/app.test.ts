@@ -48,8 +48,7 @@ test('validate: zod failure → 422 VALIDATION, success → parsed values', asyn
 
 test('every ARCH §8 module path is mounted (501)', async () => {
   const paths = [
-    '/auth/me',
-    '/files/presign',
+    '/auth/invite/x',
     '/staff',
     '/classes',
     '/classes/c1/members',
@@ -59,7 +58,6 @@ test('every ARCH §8 module path is mounted (501)', async () => {
     '/checkin',
     '/me/attendance',
     '/me/today',
-    '/commons/people',
     '/tickets',
     '/admin/overview',
   ];
@@ -67,6 +65,13 @@ test('every ARCH §8 module path is mounted (501)', async () => {
     const res = await request(app).get(`/api/v1${path}`);
     assert.equal(res.status, 501, path);
     assert.equal(res.body.error.code, 'NOT_IMPLEMENTED', path);
+  }
+});
+
+test('guarded paths without a session → 401', async () => {
+  for (const [method, path] of [['get', '/auth/me'], ['post', '/files/presign'], ['get', '/commons/people']] as const) {
+    const res = await request(app)[method](`/api/v1${path}`);
+    assert.equal(res.status, 401, path);
   }
 });
 

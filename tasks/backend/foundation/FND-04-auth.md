@@ -20,3 +20,7 @@ One middleware that understands cookies (web) and Bearer tokens (Flutter), plus 
 - [ ] Auth routes are declared with `route(registry, …)` (lib/openapi.ts); `npm run gen:api` → `web/src/api/schema.d.ts` contains them (carried over from FND-07).
 
 ## Notes
+- Done S05. `chief()` is strict (admin alone isn't enough); every other guard passes admins. `classAccess`: read = member/class teacher/active-term subject teacher · board = CR/class teacher · teach = class teacher/subject teacher (never CR) · own = class teacher; unknown class → 404.
+- Rate limit is a tiny in-memory per-IP limiter in lib/auth.ts (not `express-rate-limit`); 10/min/process for login and forgot. FND-08's harness logs in often: reuse sessions or bypass under `NODE_ENV=test`.
+- Login lowercases emails: seed and invites must store lowercase. Forgot prints the reset link only when `SMTP_HOST` is empty and not prod; FND-05 swaps it for `sendMail()`.
+- Orchestrator wired `router.use(commons())` in commons/routes.ts and `auth()` on `POST /files/presign`. 401/410/429 bodies aren't in OpenAPI yet (openapi.ts doesn't export an error schema).
