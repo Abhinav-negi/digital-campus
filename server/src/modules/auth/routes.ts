@@ -15,6 +15,7 @@ import {
 } from '../../lib/auth.js';
 import { db } from '../../lib/db.js';
 import { HttpError, notImplemented } from '../../lib/http.js';
+import { sendMail } from '../../lib/mail.js';
 import { registry, route } from '../../lib/openapi.js';
 
 const RESET_MS = 60 * 60 * 1000;
@@ -132,9 +133,12 @@ router.post(
     if (found?.status === 'active') {
       const { token, tokenHash } = newToken();
       await db.passwordReset.create({ data: { userId: found.id, tokenHash, expiresAt: new Date(Date.now() + RESET_MS) } });
-      // FND-05: replace with sendMail(). Until then the link is printed only in the D14 dev fallback, never in prod.
-      if (!config.SMTP_HOST && config.NODE_ENV !== 'production')
-        console.log(`[mail] to=${found.email} subject="Reset your password" link=${config.APP_URL}/reset/${token}`);
+      // Not awaited: same response time and status whether or not the email exists.
+      sendMail(
+        found.email,
+        'Reset your password',
+        `Hi ${found.name},\n\nSomeone asked to reset your Digital Campus password. If it was you, set a new one here:\n\n${config.APP_URL}/reset/${token}\n\nThe link expires in an hour. If it was not you, ignore this email.\n`,
+      ).catch((err: Error) => console.error(`[mail] reset email failed: ${err.message}`));
     }
     res.json({ ok: true });
   },
@@ -156,15 +160,90 @@ router.post(
     if (!reset || reset.usedAt || reset.expiresAt.getTime() <= Date.now())
       throw new HttpError(410, 'RESET_EXPIRED', 'This reset link has expired, ask for a new one');
     const passwordHash = await hashPassword(body.password);
-    await db.$transaction([
-      db.passwordReset.update({ where: { id: reset.id }, data: { usedAt: new Date() } }),
-      db.user.update({ where: { id: reset.userId }, data: { passwordHash } }),
-      db.loginSession.deleteMany({ where: { userId: reset.userId } }),
-    ]);
+    await db.$transaction(async (tx) => {
+      // Conditional update = single use: a concurrent second reset matches 0 rows.
+      const used = await tx.passwordReset.updateMany({ where: { id: reset.id, usedAt: null }, data: { usedAt: new Date() } });
+      if (used.count !== 1) throw new HttpError(410, 'RESET_EXPIRED', 'This reset link has expired, ask for a new one');
+      await tx.user.update({ where: { id: reset.userId }, data: { passwordHash } });
+      await tx.loginSession.deleteMany({ where: { userId: reset.userId } });
+    });
     res.status(204).end();
   },
 );
 
-// Invite accept etc. (FND-05) are still stubs.
+// --- invites (FND-05): created internally by CS-02 / AD-01 via createInvite ---
+const inviteGone = () => new HttpError(410, 'INVITE_EXPIRED', 'This invite link has expired or was already used, ask for a new one');
+const tokenParams = z.object({ token: z.string().min(1) });
+const goneBody = z.object({ error: z.object({ code: z.literal('INVITE_EXPIRED'), message: z.string() }) });
+
+/** A pending, unexpired invite whose user is still `invited`, or 410. */
+const pendingInvite = async (token: string) => {
+  const invite = await db.invite.findUnique({
+    where: { tokenHash: hashToken(token) },
+    include: { invitedBy: { select: { name: true } }, class: { select: { name: true } } },
+  });
+  if (!invite || invite.acceptedAt || invite.expiresAt.getTime() <= Date.now()) throw inviteGone();
+  const invitee = await db.user.findUnique({ where: { email: invite.email } });
+  if (invitee?.status !== 'invited') throw inviteGone();
+  return { invite, invitee };
+};
+
+router.get(
+  '/invite/:token',
+  route(registry, {
+    method: 'get',
+    path: '/auth/invite/:token',
+    summary: 'The read-only fields for the invite page; used or expired → 410',
+    guard: 'public',
+    request: { params: tokenParams },
+    responses: {
+      200: z.object({ email: z.string(), studentIdNo: z.string().optional(), className: z.string().optional(), invitedBy: z.string() }),
+      410: goneBody,
+    },
+  }),
+  async (req, res) => {
+    const { invite, invitee } = await pendingInvite((req.params as { token: string }).token);
+    res.json({
+      email: invite.email,
+      ...(invitee.studentIdNo && { studentIdNo: invitee.studentIdNo }),
+      ...(invite.class && { className: invite.class.name }),
+      invitedBy: invite.invitedBy.name,
+    });
+  },
+);
+
+router.post(
+  '/invite/:token/accept',
+  route(registry, {
+    method: 'post',
+    path: '/auth/invite/:token/accept',
+    summary: 'Set a password, activate the account and log in (single use); used or expired → 410',
+    guard: 'public',
+    request: {
+      params: tokenParams,
+      body: z.object({ password, name: z.string().trim().min(1).max(100).optional(), client: z.enum(['web', 'app']).default('web') }),
+    },
+    responses: { 200: z.object({ user, token: z.string().optional() }), 410: goneBody },
+  }),
+  async (req, res) => {
+    const { invite, invitee } = await pendingInvite((req.params as { token: string }).token);
+    const body = req.body as { password: string; name?: string; client: 'web' | 'app' };
+    const passwordHash = await hashPassword(body.password);
+    const activated = await db.$transaction(async (tx) => {
+      // The conditional update is the single-use lock: a concurrent second accept matches 0 rows.
+      const used = await tx.invite.updateMany({ where: { id: invite.id, acceptedAt: null }, data: { acceptedAt: new Date() } });
+      if (used.count !== 1) throw inviteGone();
+      const done = await tx.user.updateMany({
+        where: { id: invitee.id, status: 'invited' },
+        data: { status: 'active', passwordHash, ...(body.name && { name: body.name }) },
+      });
+      if (done.count !== 1) throw inviteGone();
+      return tx.user.findUniqueOrThrow({ where: { id: invitee.id } });
+    });
+    const token = await startSession(req, res, activated.id, body.client);
+    res.json({ user: publicUser(activated), ...(token && { token }) });
+  },
+);
+
 router.use(notImplemented);
 export default router;

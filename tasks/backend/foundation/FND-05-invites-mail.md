@@ -17,3 +17,7 @@ The single-use invite token flow that both teacher (from the admin) and student 
 - [ ] Reusing or using an expired token → 410.
 
 ## Notes
+- Done S05. `createInvite({email, role, classId?, invitedById})` in `modules/invites/service.ts` needs the `invited` User to exist first (CS-02 / AD-01 create it with name, homeClassId, studentIdNo); active/disabled email → 409 `ACCOUNT_EXISTS`. Call it **after** the transaction commits (it sends mail).
+- Re-invite deletes the pending invite and issues a new token (resend). Unknown token → 410 too (no existence probe). Accept is single-use via a conditional `updateMany` inside a transaction (3 concurrent accepts → one 200).
+- `sendMail` logs the body only when `SMTP_HOST` is empty and not prod; empty in prod → throws without the body. Forgot now sends via `sendMail`, un-awaited (same timing whether the email exists).
+- Orchestrator also made `/auth/reset` single-use the same way (race found by this lane).

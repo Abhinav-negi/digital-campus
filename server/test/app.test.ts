@@ -48,7 +48,6 @@ test('validate: zod failure → 422 VALIDATION, success → parsed values', asyn
 
 test('every ARCH §8 module path is mounted (501)', async () => {
   const paths = [
-    '/auth/invite/x',
     '/staff',
     '/classes',
     '/classes/c1/members',
