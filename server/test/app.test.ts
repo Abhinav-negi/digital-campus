@@ -56,9 +56,7 @@ test('every ARCH §8 module path is mounted (501)', async () => {
     '/attendance-sessions',
     '/checkin',
     '/me/attendance',
-    '/me/today',
     '/tickets',
-    '/admin/overview',
   ];
   for (const path of paths) {
     const res = await request(app).get(`/api/v1${path}`);
@@ -68,7 +66,7 @@ test('every ARCH §8 module path is mounted (501)', async () => {
 });
 
 test('guarded paths without a session → 401', async () => {
-  for (const [method, path] of [['get', '/auth/me'], ['post', '/files/presign'], ['get', '/commons/people']] as const) {
+  for (const [method, path] of [['get', '/auth/me'], ['post', '/files/presign'], ['get', '/commons/people'], ['get', '/me/today'], ['get', '/admin/overview']] as const) {
     const res = await request(app)[method](`/api/v1${path}`);
     assert.equal(res.status, 401, path);
   }
