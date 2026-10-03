@@ -13,3 +13,4 @@
 - [ ] A seed invited student completes it and lands on Today, with the profile saved.
 
 ## Notes
+- S05: depends on CM-01 too (`PATCH /me/profile` saves the 3 answers). Also: bounce logged-in users off /login, and make shell logout invalidate `['me']` (FS-06 Notes).
