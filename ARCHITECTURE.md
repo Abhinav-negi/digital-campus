@@ -238,7 +238,7 @@ Exact endpoints live in each task file, and the generated OpenAPI is the final c
 cp .env.example .env
 npm install
 npm run db:start              # postgres:5432 in the foreground; keep this terminal open
-npm run db:reset              # prisma migrate reset + seed (PROTO data.js cast)
+npm run db:reset              # truncate + seed (PROTO data.js cast); fresh DB: run migrate deploy first
 npm run dev                   # server :3000 (tsx watch) + web :5173 (proxy /api → :3000)
 npm test
 ```

@@ -16,5 +16,5 @@ One command starts every backing service locally, with the same env names prod w
 ## Notes
 - S04: replaced Docker Compose (the user wasn't in the `docker` group, and MinIO's community builds are no longer maintained). Verified: `migrate deploy` applied to `campus` and `campus_test`, 41 tables, PostgreSQL 17.10.
 - npm 11 blocks install scripts: root `package.json` `allowScripts` approves `@embedded-postgres/linux-x64`. On another OS/arch, run `npm install-scripts approve @embedded-postgres/<platform>` once.
-- Prisma refuses `migrate reset` from an AI agent without the user's typed consent. Agents use `npm run prisma -- migrate deploy` on a fresh db; humans run `npm run db:reset` as before.
+- Prisma refuses `migrate reset` from an AI agent without the user's typed consent. Agents use `npm run prisma -- migrate deploy` on a fresh db; `npm run db:reset` is now truncate + seed (FND-03), safe for agents too.
 - Wipe local data: stop it, then `rm -rf .data/pg`.

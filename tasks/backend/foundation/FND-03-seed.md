@@ -18,3 +18,8 @@
 - [ ] Spot-check: Riya's DS attendance text matches the prototype for the same day.
 
 ## Notes
+- Done S05. `npm run db:reset` = `db:seed` = TRUNCATE all models + createMany in one transaction (~0.6s, idempotent); never `migrate reset`. Fresh DB: `migrate deploy` first. Verified on `campus_test` twice.
+- IDs are the PROTO ids (`c1`, `s1`, `t1`, `a1`, `pr0`…), so routes validate ids with `z.string().min(1)`, never `z.cuid()`.
+- 21 classes (the PROTO loop really yields 18 thin + 3). Thin classes' class teacher = disabled placeholder `t0` "Class office" (schema requires one; the chief must keep 0 classes so it lands on `/a`).
+- Class day = today on weekdays, else next Monday: cancellation `sc1`, clash `sc2` (extra 09:30–10:30 over `tt0`), ticket `tk1`. Riya's DS text = "Safe by 4 classes" (matches PROTO via vm run of data.js).
+- Notification types (`class-change`, `message-request`, `board-answer`, `post`) and audit action names are seed picks; CS-12 / AD-08 adopt or rename. `SEED_MODE=prod`: chief has no password, sets one via /auth/forgot. Prod may want `SEED_CHIEF_EMAIL`.

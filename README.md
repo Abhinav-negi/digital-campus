@@ -7,7 +7,7 @@ A class space + student commons for one institution: an Express 5 API (`server/`
 cp .env.example .env
 npm install
 npm run db:start              # postgres:5432, no Docker; keep this terminal open
-npm run db:reset              # prisma migrate reset + seed (demo cast)
+npm run db:reset              # truncate + seed (demo cast); fresh DB: run migrate deploy first
 npm run dev                   # server :3000 + web :5173 (proxy /api → :3000); emails print in its log
 npm test
 ```
