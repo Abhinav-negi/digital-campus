@@ -1,7 +1,8 @@
 // FND-03: the prototype's demo world (PROTO data.js:33-265 `build()`, ported 1:1, same PRNG seed=11).
 // Idempotent: truncates every app table, then bulk-inserts in one transaction.
 // Prototype ids (c1, s1, t1, sub1, pr0, bp1 …) are kept as row ids so cross-references read the same.
-// SEED_MODE=prod → institution, branches and the chief only (chief has no password: set it via "forgot password").
+// SEED_MODE=prod → institution, branches and the chief only, once, on an empty DB. The chief's address comes from
+// SEED_CHIEF_EMAIL (a real inbox you control) and has no password: set it via "forgot password".
 // Run: node --env-file=../.env.example --env-file-if-exists=../.env --import tsx prisma/seed.ts
 import { Prisma } from '@prisma/client';
 import { db } from '../src/lib/db.js';
@@ -36,6 +37,8 @@ const branches = [
   { id: 'ie', code: 'IE', name: 'Instrumentation Engineering' },
 ];
 const chief = { id: 'a1', role: 'staff' as const, isAdmin: true, isChief: true, name: 'Office of Academics', email: 'academics@demo.edu', status: 'active' as const };
+// The demo cast has a public password and the prod seed truncates, so both are guarded.
+if (!prod && config.NODE_ENV === 'production') throw new Error('Refusing the demo seed (password campus123) in production; use SEED_MODE=prod');
 
 async function truncateAll(tx: Prisma.TransactionClient) {
   const tables = Object.values(Prisma.ModelName).map((m) => `"${m}"`).join(', ');
@@ -43,13 +46,16 @@ async function truncateAll(tx: Prisma.TransactionClient) {
 }
 
 async function seedProd() {
+  // A known/demo domain here would let whoever reads that inbox reset the chief's password.
+  const email = process.env.SEED_CHIEF_EMAIL?.trim().toLowerCase();
+  if (!email) throw new Error('SEED_MODE=prod needs SEED_CHIEF_EMAIL (an inbox you control)');
+  if ((await db.user.count()) > 0) throw new Error('SEED_MODE=prod only runs on an empty database');
   await db.$transaction(async (tx) => {
-    await truncateAll(tx);
     await tx.institution.create({ data: institution });
     await tx.branch.createMany({ data: branches.map((b) => ({ ...b, institutionId: 'i1' })) });
-    await tx.user.create({ data: { ...chief, institutionId: 'i1' } });
+    await tx.user.create({ data: { ...chief, email, institutionId: 'i1' } });
   });
-  console.log(`Seeded (prod): institution, ${branches.length} branches, chief ${chief.email} in ${Date.now() - started}ms`);
+  console.log(`Seeded (prod): institution, ${branches.length} branches, chief ${email} in ${Date.now() - started}ms`);
 }
 
 async function seedDemo() {

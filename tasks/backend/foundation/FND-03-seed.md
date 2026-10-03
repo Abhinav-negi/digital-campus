@@ -23,3 +23,4 @@
 - 21 classes (the PROTO loop really yields 18 thin + 3). Thin classes' class teacher = disabled placeholder `t0` "Class office" (schema requires one; the chief must keep 0 classes so it lands on `/a`).
 - Class day = today on weekdays, else next Monday: cancellation `sc1`, clash `sc2` (extra 09:30–10:30 over `tt0`), ticket `tk1`. Riya's DS text = "Safe by 4 classes" (matches PROTO via vm run of data.js).
 - Notification types (`class-change`, `message-request`, `board-answer`, `post`) and audit action names are seed picks; CS-12 / AD-08 adopt or rename. `SEED_MODE=prod`: chief has no password, sets one via /auth/forgot. Prod may want `SEED_CHIEF_EMAIL`.
+- Security (S05): demo seed refuses `NODE_ENV=production` (public password); `SEED_MODE=prod` needs `SEED_CHIEF_EMAIL` (a demo-domain chief could be taken over via reset mail) and only runs on an empty DB (no truncate).
