@@ -57,6 +57,10 @@ const routes: RouteObject[] = [
   { path: '*', loader: () => redirect('/') },
 ];
 // Component test page (FS-02/FS-03), dev only.
-if (import.meta.env.DEV) routes.unshift({ path: '/ui', lazy: () => import('./ui/Kitchen') });
+if (import.meta.env.DEV)
+  routes.unshift(
+    { path: '/ui', lazy: () => import('./ui/Kitchen') },
+    { path: '/ui/shell/:p/*', lazy: () => import('./ui/ShellDemo') },
+  );
 
 export const router = createBrowserRouter(routes);

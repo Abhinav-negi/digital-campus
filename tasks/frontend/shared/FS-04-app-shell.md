@@ -14,3 +14,7 @@
 - [ ] Both breakpoints match the prototype; the active nav state follows the route.
 
 ## Notes
+- ✅ S03: headless-Chrome screenshots of `/ui/shell/{student,teacher,admin}` (dev demo, `ui/ShellDemo.tsx`) match `{student,teacher,admin}.html` at 1280/390. Demo-only footer links are dropped.
+- Deviations: `personality` also takes `'admin'` (body `teacher admin`); `isAdmin?` and `onBell?` props were added. The bell shows for every personality, so `.topbar/.bell` moved from student.css to style.css.
+- Nav: `nav[0]` matches its exact path only; the other items stay active on sub-routes. `unreadQuery` (plain fetch, 30s poll) is for FS-05 to swap out.
+- Tests: `node:test` + jsdom (devDep). Follow-ups: ST-10 wires `onBell` and adds a mobile logout for students (the prototype has none); hide "Teacher app" for a chief admin with no classes.

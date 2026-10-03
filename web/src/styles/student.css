@@ -1,8 +1,5 @@
 /* Verbatim port of PROTO student.html <style> (lines 9-64), scoped with zero-specificity :where() so the cascade vs style.css is unchanged. */
 :where(body.student) {
-  .topbar { display: flex; justify-content: flex-end; margin-bottom: var(--s2); }
-  .bell { position: relative; }
-  .bell b { position: absolute; top: calc(-1 * var(--s0)); right: calc(-1 * var(--s0)); min-width: var(--s2); height: var(--s2); padding: 0 var(--s0); border-radius: var(--pill); background: var(--accent); color: #fff; font-size: 11px; line-height: var(--s2); text-align: center; }
   .ico { width: var(--s5); height: var(--s5); border-radius: 50%; background: var(--tint); color: var(--primary); display: grid; place-items: center; flex: none; }
   .chip.due { background: color-mix(in srgb, var(--accent) 16%, transparent); color: #C2410C; }
   .chip.vio { background: color-mix(in srgb, var(--secondary) 12%, transparent); color: var(--secondary); }
