@@ -1,0 +1,970 @@
+// Translation of ARCHITECTURE.md §7. Frozen after FND-02: request changes from the orchestrator.
+// Conventions: cuid ids, createdAt/updatedAt everywhere, calendar dates as @db.Date, times as "HH:MM" strings.
+// Users are disabled, never deleted: history (authors, attendance, audit) uses Restrict so a stray delete fails loudly.
+// Not modelled here (raw SQL in the init migration): partial unique index "Term_one_active_per_class".
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────
+
+enum Role {
+  student
+  staff
+}
+
+enum UserStatus {
+  invited
+  active
+  disabled
+}
+
+enum ClassRole {
+  student
+  cr
+  teacher
+}
+
+enum ScheduleChangeKind {
+  cancelled
+  moved
+  extra
+  event
+}
+
+enum BoardItemKind {
+  notice
+  syllabus
+  exam
+  deadline
+  file
+}
+
+enum ImportKind {
+  timetable
+  syllabus
+  datesheet
+}
+
+enum ImportStatus {
+  processing
+  ready
+  failed
+  applied
+}
+
+enum PostKind {
+  announcement
+  assignment
+}
+
+enum AttendanceMethod {
+  roll
+  code
+}
+
+enum AttendanceSource {
+  teacher
+  code
+}
+
+enum Availability {
+  open
+  questions
+  focus
+}
+
+enum BoardPostKind {
+  ask
+  gig
+  market
+  lost
+  found
+}
+
+enum PriceType {
+  fixed
+  negotiable
+}
+
+enum MarketType {
+  sell
+  buy
+  give
+  lend
+}
+
+enum BoardPostStatus {
+  open
+  assigned
+  solved
+  done
+  sold
+  given
+  returned
+  expired
+}
+
+enum ClaimState {
+  pending
+  confirmed
+  declined
+}
+
+enum ProjectStatus {
+  looking
+  building
+  shipped
+}
+
+enum JoinRequestState {
+  pending
+  accepted
+  declined
+}
+
+enum UpdateSource {
+  manual
+  github
+}
+
+enum Judging {
+  owner
+  likes
+}
+
+enum ConversationState {
+  requested
+  accepted
+  ignored
+}
+
+enum ReportTargetType {
+  board
+  project
+  challenge
+  message
+  profile
+}
+
+enum ReportState {
+  open
+  hidden
+  warned
+  dismissed
+}
+
+enum TicketCategory {
+  account
+  class
+  attendance
+  commons
+  bug
+  other
+}
+
+enum TicketState {
+  open
+  answered
+  closed
+}
+
+// ─── Institution, users, auth ────────────────────────────
+
+model Institution {
+  id        String   @id @default(cuid())
+  name      String
+  timezone  String   @default("Asia/Kolkata")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branches Branch[]
+  users    User[]
+  classes  Class[]
+}
+
+model Branch {
+  id            String   @id @default(cuid())
+  institutionId String
+  code          String
+  name          String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  classes     Class[]
+
+  @@unique([institutionId, code])
+}
+
+model User {
+  id            String     @id @default(cuid())
+  institutionId String
+  role          Role
+  isAdmin       Boolean    @default(false)
+  isChief       Boolean    @default(false)
+  name          String
+  email         String     @unique
+  passwordHash  String?
+  status        UserStatus @default(invited)
+  bannedAt      DateTime?
+  homeClassId   String?
+  studentIdNo   String?
+  dept          String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  /// Institutions are not deleted while they have users.
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Restrict)
+  homeClass   Class?      @relation("HomeClass", fields: [homeClassId], references: [id], onDelete: SetNull)
+
+  sessions         LoginSession[]
+  invitesSent      Invite[]
+  passwordResets   PasswordReset[]
+  classesTaught    Class[]             @relation("ClassTeacher")
+  memberships      ClassMember[]
+  subjectsTaught   Subject[]           @relation("SubjectTeacher")
+  subjectsAssigned Subject[]           @relation("SubjectAssignedBy")
+  scheduleChanges  ScheduleChange[]
+  boardItems       BoardItem[]
+  imports          DocumentImport[]
+  posts            Post[]
+  postsSeen        PostSeen[]
+  reminders        Reminder[]
+  sessionsSaved    AttendanceSession[]
+  attendance       Attendance[]
+  profile          Profile?
+  boardPosts       BoardPost[]         @relation("BoardPostAuthor")
+  boardAssigned    BoardPost[]         @relation("BoardPostAssignee")
+  answers          Answer[]
+  interests        Interest[]
+  claims           Claim[]
+  thanksGiven      Thanks[]            @relation("ThanksFrom")
+  thanksReceived   Thanks[]            @relation("ThanksTo")
+  projectsOwned    Project[]
+  projectMembers   ProjectMember[]
+  joinRequests     JoinRequest[]
+  projectUpdates   ProjectUpdate[]
+  challenges       Challenge[]
+  submissions      Submission[]
+  submissionLikes  SubmissionLike[]
+  convosStarted    Conversation[]      @relation("ConversationFrom")
+  convosReceived   Conversation[]      @relation("ConversationTo")
+  messages         Message[]
+  blocks           Block[]             @relation("Blocker")
+  blockedBy        Block[]             @relation("Blocked")
+  reports          Report[]
+  tickets          Ticket[]
+  ticketReplies    TicketReply[]
+  notifications    Notification[]
+  auditLogs        AuditLog[]
+}
+
+model LoginSession {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  userAgent String
+  deviceId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// 14-day expiry is set by the inviter (ARCH §7).
+model Invite {
+  id          String    @id @default(cuid())
+  email       String
+  role        Role
+  classId     String?
+  invitedById String
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  class     Class? @relation(fields: [classId], references: [id], onDelete: Cascade)
+  invitedBy User   @relation(fields: [invitedById], references: [id], onDelete: Restrict)
+
+  @@index([email])
+}
+
+model PasswordReset {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Class space ─────────────────────────────────────────
+
+model Class {
+  id               String    @id @default(cuid())
+  institutionId    String
+  branchId         String
+  admissionYear    Int
+  section          String
+  name             String
+  classTeacherId   String
+  minAttendancePct Int       @default(75)
+  archivedAt       DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  institution  Institution @relation(fields: [institutionId], references: [id], onDelete: Restrict)
+  branch       Branch      @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  classTeacher User        @relation("ClassTeacher", fields: [classTeacherId], references: [id], onDelete: Restrict)
+
+  homeOf          User[]           @relation("HomeClass")
+  invites         Invite[]
+  terms           Term[]
+  members         ClassMember[]
+  subjects        Subject[]
+  slots           TimetableSlot[]
+  scheduleChanges ScheduleChange[]
+  boardItems      BoardItem[]
+  imports         DocumentImport[]
+  postTargets     PostTarget[]
+  auditLogs       AuditLog[]
+}
+
+/// At most one active term (endedAt IS NULL) per class: partial unique index in the init migration.
+model Term {
+  id          String    @id @default(cuid())
+  classId     String
+  semester    Int
+  yearOfStudy Int
+  startedAt   DateTime  @default(now())
+  endedAt     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  subjects           Subject[]
+  slots              TimetableSlot[]
+  scheduleChanges    ScheduleChange[]
+  boardItems         BoardItem[]
+  imports            DocumentImport[]
+  attendanceSessions AttendanceSession[]
+
+  @@index([classId])
+}
+
+/// Teachers join via subject allotment.
+model ClassMember {
+  id        String    @id @default(cuid())
+  classId   String
+  userId    String
+  role      ClassRole
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, userId])
+  @@index([userId])
+}
+
+model Subject {
+  id           String   @id @default(cuid())
+  termId       String
+  classId      String
+  name         String
+  code         String?
+  teacherId    String?
+  assignedById String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  term       Term  @relation(fields: [termId], references: [id], onDelete: Cascade)
+  class      Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  teacher    User? @relation("SubjectTeacher", fields: [teacherId], references: [id], onDelete: SetNull)
+  assignedBy User  @relation("SubjectAssignedBy", fields: [assignedById], references: [id], onDelete: Restrict)
+
+  slots              TimetableSlot[]
+  scheduleChanges    ScheduleChange[]
+  boardItems         BoardItem[]
+  attendanceSessions AttendanceSession[]
+
+  @@index([termId])
+  @@index([teacherId])
+}
+
+/// weekday 1..6 (Mon..Sat); start/end are "HH:MM" in the institution tz.
+model TimetableSlot {
+  id        String   @id @default(cuid())
+  termId    String
+  classId   String
+  subjectId String
+  weekday   Int
+  start     String
+  end       String
+  room      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  term    Term    @relation(fields: [termId], references: [id], onDelete: Cascade)
+  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  scheduleChanges    ScheduleChange[]
+  attendanceSessions AttendanceSession[]
+
+  @@index([termId, weekday])
+}
+
+model ScheduleChange {
+  id          String             @id @default(cuid())
+  classId     String
+  termId      String
+  date        DateTime           @db.Date
+  slotId      String?
+  kind        ScheduleChangeKind
+  subjectId   String?
+  title       String?
+  start       String?
+  end         String?
+  room        String?
+  movedToDate DateTime?          @db.Date
+  note        String?
+  authorId    String
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  class   Class          @relation(fields: [classId], references: [id], onDelete: Cascade)
+  term    Term           @relation(fields: [termId], references: [id], onDelete: Cascade)
+  /// A change to a slot or subject that no longer exists means nothing, so it goes with it.
+  slot    TimetableSlot? @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  subject Subject?       @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  author  User           @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([classId, date])
+}
+
+/// termId null = notice/file persists across terms.
+model BoardItem {
+  id        String        @id @default(cuid())
+  termId    String?
+  classId   String
+  kind      BoardItemKind
+  subjectId String?
+  title     String
+  body      String?
+  units     String[]
+  fileKey   String?
+  fileName  String?
+  date      DateTime?     @db.Date
+  pinned    Boolean       @default(false)
+  authorId  String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  term    Term?    @relation(fields: [termId], references: [id], onDelete: Cascade)
+  class   Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  subject Subject? @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  author  User     @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([classId, kind])
+}
+
+model DocumentImport {
+  id        String       @id @default(cuid())
+  classId   String
+  termId    String
+  kind      ImportKind
+  fileKey   String
+  status    ImportStatus @default(processing)
+  draft     Json?
+  error     String?
+  authorId  String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  class  Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  term   Term  @relation(fields: [termId], references: [id], onDelete: Cascade)
+  author User  @relation(fields: [authorId], references: [id], onDelete: Restrict)
+}
+
+model Post {
+  id        String    @id @default(cuid())
+  authorId  String
+  kind      PostKind
+  title     String
+  body      String
+  fileKey   String?
+  fileName  String?
+  dueAt     DateTime?
+  repliesOn Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  author  User         @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  targets PostTarget[]
+  seen    PostSeen[]
+
+  @@index([authorId])
+}
+
+model PostTarget {
+  id        String   @id @default(cuid())
+  postId    String
+  classId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post  Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, classId])
+  @@index([classId])
+}
+
+model PostSeen {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  seenAt    DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+}
+
+model Reminder {
+  id        String   @id @default(cuid())
+  teacherId String
+  title     String
+  date      DateTime @db.Date
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teacher User @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@index([teacherId, date])
+}
+
+// ─── Attendance ──────────────────────────────────────────
+
+model AttendanceSession {
+  id           String           @id @default(cuid())
+  termId       String
+  subjectId    String
+  slotId       String?
+  date         DateTime         @db.Date
+  method       AttendanceMethod @default(roll)
+  codeSecret   String?
+  codeOpenedAt DateTime?
+  savedById    String?
+  savedAt      DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  /// Attendance is history: deleting a term/subject that has sessions must fail, not erase it.
+  term    Term           @relation(fields: [termId], references: [id], onDelete: Restrict)
+  subject Subject        @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  /// Slot edits must not erase taken attendance.
+  slot    TimetableSlot? @relation(fields: [slotId], references: [id], onDelete: SetNull)
+  savedBy User?          @relation(fields: [savedById], references: [id], onDelete: SetNull)
+
+  records Attendance[]
+
+  @@index([subjectId, date])
+}
+
+model Attendance {
+  id        String           @id @default(cuid())
+  sessionId String
+  studentId String
+  present   Boolean
+  source    AttendanceSource
+  flagged   Boolean          @default(false)
+  deviceId  String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  session AttendanceSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student User              @relation(fields: [studentId], references: [id], onDelete: Restrict)
+
+  @@unique([sessionId, studentId])
+  @@index([studentId])
+}
+
+// ─── Commons ─────────────────────────────────────────────
+
+/// links = { github, leetcode, linkedin, other[] }
+model Profile {
+  userId       String       @id
+  headline     String       @default("")
+  availability Availability @default(open)
+  focusUntil   DateTime?
+  helpsJuniors Boolean      @default(false)
+  skills       String[]
+  links        Json         @default("{}")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model BoardPost {
+  id           String          @id @default(cuid())
+  authorId     String
+  kind         BoardPostKind
+  title        String
+  body         String?
+  photos       String[]
+  tags         String[]
+  price        Int?
+  priceType    PriceType?
+  marketType   MarketType?
+  condition    String?
+  place        String?
+  happenedOn   DateTime?       @db.Date
+  holder       String?
+  hiddenDetail String?
+  deadline     DateTime?
+  status       BoardPostStatus @default(open)
+  assigneeId   String?
+  expiresAt    DateTime
+  hiddenAt     DateTime?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  author   User  @relation("BoardPostAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  assignee User? @relation("BoardPostAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  answers       Answer[]
+  interests     Interest[]
+  claims        Claim[]
+  thanks        Thanks[]
+  conversations Conversation[]
+
+  @@index([kind, createdAt])
+  @@index([authorId])
+}
+
+model Answer {
+  id        String   @id @default(cuid())
+  postId    String
+  authorId  String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post   BoardPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User      @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([postId])
+}
+
+model Interest {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  note      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post BoardPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+}
+
+model Claim {
+  id        String     @id @default(cuid())
+  postId    String
+  userId    String
+  answer    String
+  state     ClaimState @default(pending)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  post BoardPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+}
+
+model Thanks {
+  id        String   @id @default(cuid())
+  fromId    String
+  toId      String
+  postId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  from User       @relation("ThanksFrom", fields: [fromId], references: [id], onDelete: Restrict)
+  to   User       @relation("ThanksTo", fields: [toId], references: [id], onDelete: Restrict)
+  /// A thank-you outlives the post it was for.
+  post BoardPost? @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  @@index([toId])
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  ownerId     String
+  title       String
+  description String
+  roles       String[]
+  repoUrl     String?
+  status      ProjectStatus @default(looking)
+  community   Boolean       @default(false)
+  featured    Boolean       @default(false)
+  flagship    Boolean       @default(false)
+  hiddenAt    DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+
+  members      ProjectMember[]
+  joinRequests JoinRequest[]
+  updates      ProjectUpdate[]
+}
+
+model ProjectMember {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  role      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+}
+
+model JoinRequest {
+  id        String           @id @default(cuid())
+  projectId String
+  userId    String
+  note      String?
+  state     JoinRequestState @default(pending)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ProjectUpdate {
+  id        String       @id @default(cuid())
+  projectId String
+  authorId  String
+  body      String
+  source    UpdateSource @default(manual)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author  User    @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([projectId, createdAt])
+}
+
+/// winnerIds holds User ids (no FK: Postgres arrays can't carry one).
+model Challenge {
+  id          String    @id @default(cuid())
+  ownerId     String
+  title       String
+  description String
+  endsAt      DateTime
+  judging     Judging
+  winnerIds   String[]
+  featured    Boolean   @default(false)
+  hiddenAt    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+
+  submissions Submission[]
+}
+
+model Submission {
+  id          String   @id @default(cuid())
+  challengeId String
+  userId      String
+  url         String
+  note        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  likes SubmissionLike[]
+
+  @@index([challengeId])
+}
+
+model SubmissionLike {
+  id           String   @id @default(cuid())
+  submissionId String
+  userId       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, userId])
+}
+
+model Conversation {
+  id        String            @id @default(cuid())
+  fromId    String
+  toId      String
+  note      String
+  postId    String?
+  state     ConversationState @default(requested)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  from User       @relation("ConversationFrom", fields: [fromId], references: [id], onDelete: Restrict)
+  to   User       @relation("ConversationTo", fields: [toId], references: [id], onDelete: Restrict)
+  /// The conversation outlives the board post that started it.
+  post BoardPost? @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  messages Message[]
+
+  @@index([fromId])
+  @@index([toId])
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  senderId       String
+  body           String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id], onDelete: Restrict)
+
+  @@index([conversationId, createdAt])
+}
+
+model Block {
+  id        String   @id @default(cuid())
+  userId    String
+  blockedId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User @relation("Blocker", fields: [userId], references: [id], onDelete: Cascade)
+  blocked User @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, blockedId])
+  @@index([blockedId])
+}
+
+/// targetId is polymorphic (by targetType), so no FK.
+model Report {
+  id         String           @id @default(cuid())
+  reporterId String
+  targetType ReportTargetType
+  targetId   String
+  reason     String
+  state      ReportState      @default(open)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  reporter User @relation(fields: [reporterId], references: [id], onDelete: Restrict)
+
+  @@index([state, createdAt])
+}
+
+// ─── Support, notifications, audit ───────────────────────
+
+model Ticket {
+  id        String         @id @default(cuid())
+  fromId    String
+  category  TicketCategory
+  subject   String
+  body      String
+  state     TicketState    @default(open)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  from User @relation(fields: [fromId], references: [id], onDelete: Restrict)
+
+  replies TicketReply[]
+
+  @@index([fromId])
+}
+
+model TicketReply {
+  id        String   @id @default(cuid())
+  ticketId  String
+  authorId  String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  author User   @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([ticketId])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  type      String
+  payload   Json
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String
+  classId    String?
+  action     String
+  targetType String
+  targetId   String
+  before     Json?
+  after      Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  actor User   @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  /// The log outlives the class (classes are archived, not deleted, so this is a safety net).
+  class Class? @relation(fields: [classId], references: [id], onDelete: SetNull)
+
+  @@index([classId, createdAt])
+}

@@ -40,7 +40,7 @@
 | ID | Task | Deps | Status |
 |---|---|---|---|
 | [FND-01](tasks/backend/foundation/FND-01-server-skeleton.md) | Server skeleton + router registry (stubs) | OPS-01 | ✅ |
-| [FND-02](tasks/backend/foundation/FND-02-prisma-schema.md) | Full Prisma schema + migration (then frozen) | FND-01, OPS-02 | ⬜ |
+| [FND-02](tasks/backend/foundation/FND-02-prisma-schema.md) | Full Prisma schema + migration (then frozen) | FND-01, OPS-02 | 🟨 |
 | [FND-03](tasks/backend/foundation/FND-03-seed.md) | Seed: the prototype's demo world | FND-02, FND-04 | ⬜ |
 | [FND-04](tasks/backend/foundation/FND-04-auth.md) | Auth: sessions, passwords, guards (the wall) | FND-02 | ⬜ |
 | [FND-05](tasks/backend/foundation/FND-05-invites-mail.md) | Invites + email | FND-04 | ⬜ |
