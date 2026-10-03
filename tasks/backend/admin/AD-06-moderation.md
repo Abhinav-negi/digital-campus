@@ -1,0 +1,14 @@
+# AD-06 · Commons moderation + conversation access
+**Reads:** ARCH §2 D2 · SPEC §12 · PROTO `admin.html:86-99`, `:122-128`
+**Owns:** `server/src/modules/admin/moderation.ts`, `server/test/moderation.test.ts`
+
+## Endpoints
+- `POST /admin/reports/:id {action: hide|warn|dismiss|delete}`: hide sets the target's `hiddenAt`; warn notifies the author; delete removes the target; all audited.
+- `PATCH /admin/commons/:type/:id` (board-post | project | challenge | profile): edit any field; `POST …/unhide`; `DELETE …`. Audited with before/after.
+- `POST /admin/users/:id/ban {reason, until?}` / `DELETE …/ban`: a banned student gets 403 `BANNED` on the Commons but keeps the Class space.
+- `GET /admin/conversations?userId=&q=` and `GET /admin/conversations/:id/messages`: **full read access (D2); every open writes an audit row** ("Read conversation X").
+
+## Done when
+- [ ] Tests: hide removes it from the feed; a ban blocks the Commons but not the class; reading a conversation creates an audit row; a non-admin → 403.
+
+## Notes
