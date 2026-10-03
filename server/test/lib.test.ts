@@ -63,3 +63,10 @@ test('notify bulk-inserts one row per distinct user', async () => {
   assert.equal(rows.length, 2);
   assert.deepEqual(rows[0]?.payload, { x: 1 });
 });
+
+test('notify skips users who muted the type, but never class-change', async () => {
+  const [a, b] = users as [string, string];
+  await db.user.update({ where: { id: a }, data: { mutedTypes: ['post', 'class-change'] } });
+  assert.deepEqual(await notify([a, b], 'post', {}), { count: 1 });
+  assert.deepEqual(await notify([a, b], 'class-change', {}), { count: 2 });
+});

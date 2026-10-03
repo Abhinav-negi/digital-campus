@@ -217,6 +217,7 @@ model User {
   homeClassId   String?
   studentIdNo   String?
   dept          String?
+  mutedTypes    String[]   @default([]) // notification types the user muted; never class-change (CS-12)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 

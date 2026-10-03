@@ -8,8 +8,13 @@ export const notify = async (
   payload: Prisma.InputJsonValue,
   tx: Prisma.TransactionClient = db,
 ) => {
-  // TODO(CS-12): drop users who muted `type` (never for 'class-change') once User has a mute column.
-  const ids = [...new Set(userIds)];
+  let ids = [...new Set(userIds)];
+  if (type !== 'class-change' && ids.length) {
+    // Muted types are skipped; class changes always get through (ARCH §11).
+    const muted = await tx.user.findMany({ where: { id: { in: ids }, mutedTypes: { has: type } }, select: { id: true } });
+    const skip = new Set(muted.map((u) => u.id));
+    ids = ids.filter((id) => !skip.has(id));
+  }
   if (ids.length === 0) return { count: 0 };
   return tx.notification.createMany({ data: ids.map((userId) => ({ userId, type, payload })) });
 };
