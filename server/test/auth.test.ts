@@ -65,13 +65,12 @@ test('wrong password and unknown email → the same 401; disabled user → 401 a
   await request(app).get('/api/v1/auth/me').auth('garbage', { type: 'bearer' }).expect(401);
 });
 
-test('the wall: teacher on /commons/* → 403; student and admin reach the stub (501); banned → 403 BANNED', async () => {
+test('the wall: teacher on /commons/* → 403; student and admin get past it; banned → 403 BANNED', async () => {
   const [teacher, subjectTeacher, student, admin] = await Promise.all(['teacher', 'subjectTeacher', 'student', 'admin'].map((r) => agent(r)));
   for (const path of ['/api/v1/commons/people', '/api/v1/commons/board-posts/x', '/api/v1/commons/conversations']) {
     assert.equal((await teacher!.get(path).expect(403)).body.error.code, 'FORBIDDEN');
     await subjectTeacher!.get(path).expect(403);
-    await admin!.get(path).expect(501);
-    await student!.get(path).expect(501);
+    for (const who of [admin!, student!]) assert.ok(![401, 403].includes((await who.get(path)).status), path); // past the wall
   }
   await request(app).get('/api/v1/commons/people').expect(401);
   await db.user.update({ where: { id: 's1' }, data: { bannedAt: new Date() } });
