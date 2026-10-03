@@ -10,3 +10,4 @@
 - [ ] Every confirmed finding is fixed or tracked.
 
 ## Notes
+- D15: while there's one institution per deployment, unscoped admin lookups are fine. If multi-institution is enabled, every `/admin` and staff lookup must filter by the actor's `institutionId` (flagged by the security review on AD-01, S05).

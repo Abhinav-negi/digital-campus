@@ -33,6 +33,7 @@ Architecture in one line: **one TypeScript monorepo → one container (REST API 
 | D12 | Scope v1 = **full prototype parity**. Deferred: GitHub commit sync, the LeetCode summary, web push, offline attendance sync (see §15). |
 | D13 | Later: **branch-scoped admins** (HOD per branch). |
 | D14 | **No Docker anywhere** (S04). Dev Postgres 17 = `npm run db:start` (`embedded-postgres`, no sudo). `SMTP_HOST` empty → emails are printed to the server log. `S3_ENDPOINT` empty → files live on local disk (`.data/uploads`) behind the same presign API. Prod is a plain Node process (`npm run build && npm start`); every host above runs Node natively. Prod still switches by env vars only. |
+| D15 | **One institution per deployment in v1.** `institutionId` stays on top-level rows (ARCH §7), but admin queries are not scoped by it. Turning on multi-institution means scoping every admin and staff lookup by `institutionId` first (QA-04 checks this). |
 
 ---
 
