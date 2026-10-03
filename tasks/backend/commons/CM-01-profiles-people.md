@@ -18,3 +18,4 @@
 - Profiles 404 for staff, invited, disabled and banned users. An ignored request reads as `requested` to the sender (SPEC §9.7). Hidden projects are excluded from lists and counts.
 - Follow-ups: CM-07 adds block filtering to People and profiles. Its own year-label fn duplicates `className` (CS-01 wasn't committed yet), so swap it in when touching the file.
 - Orchestrator: the wall test now checks "past the wall" (not 401/403) instead of 501.
+- Security (S05): `links.github/leetcode/linkedin` are handles (`^[\w.-]*$`); `links.other` must be http(s) URLs. CM-04 must apply the same rule to `Project.repoUrl`, and web must never render a stored URL as href without it.

@@ -13,11 +13,13 @@ const availability = z.enum(['open', 'questions', 'focus']);
 const ORD = ['', '1st', '2nd', '3rd', '4th'];
 const ORDER: Record<Avail, number> = { open: 0, questions: 1, focus: 2 };
 
+// Handles only (the client prefixes github.com/ etc.); `other` must be http(s), never javascript: or data: (stored XSS).
+const handle = z.string().trim().max(100).regex(/^[\w.-]*$/, 'Use the username only, e.g. riya-patel').default('');
 const links = z.object({
-  github: z.string().trim().max(100).default(''),
-  leetcode: z.string().trim().max(100).default(''),
-  linkedin: z.string().trim().max(100).default(''),
-  other: z.array(z.string().trim().min(1).max(200)).max(5).default([]),
+  github: handle,
+  leetcode: handle,
+  linkedin: handle,
+  other: z.array(z.url({ protocol: /^https?$/ }).trim().max(200)).max(5).default([]),
 });
 const emptyLinks = { github: '', leetcode: '', linkedin: '', other: [] };
 

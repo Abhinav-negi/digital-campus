@@ -137,3 +137,11 @@ test('GET /me/export: a JSON download of my data, never other users\' emails; wo
   assert.match(t.headers['content-disposition'] ?? '', /attachment/);
   assert.deepEqual([...new Set(JSON.stringify(t.body).match(EMAIL))], [meera.user.email]);
 });
+
+test('profile links: handles only, and other links must be http(s) (no javascript: / data:)', async () => {
+  const s = await agent('student');
+  for (const links of [{ other: ['javascript:alert(1)'] }, { other: ['data:text/html,x'] }, { github: 'evil.com/x?y' }, { linkedin: 'a b' }])
+    await s.patch('/api/v1/me/profile').send({ links }).expect(422);
+  const ok = await s.patch('/api/v1/me/profile').send({ links: { github: 'riya.p-1', other: ['https://riya.dev'] } }).expect(200);
+  assert.deepEqual(ok.body.links.other, ['https://riya.dev']);
+});

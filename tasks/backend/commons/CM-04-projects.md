@@ -17,3 +17,4 @@
 - [ ] Tests: cross-branch computed; a non-owner can't accept; a duplicate pending request → 409.
 
 ## Notes
+- From CM-01 (S05): validate `repoUrl` as an http(s) URL (`z.url({ protocol: /^https?$/ })`), never a bare string; it's rendered as a link.
