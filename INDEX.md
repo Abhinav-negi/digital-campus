@@ -9,8 +9,8 @@
 |---|---|
 | **Latest handoff** | [handoff/S04-2026-10-03.md](handoff/S04-2026-10-03.md) |
 | **Progress** | 17 / 78 done |
-| **Ready to start** | FND-03 · FND-05 · FS-05 (in progress, S05). Then FND-08 → FS-06 → FS-07. Start Postgres first: `npm run db:start` (D14) |
-| **Current wave** | Wave 1: Foundation |
+| **Ready to start** | Wave 2 open (all FND ✅). In progress: CS-01 · AD-01/02/04 · FS-06. Next: CM-01, AD-05, CS-02/03/07/08/12, OPS-03, OPS-05 |
+| **Current wave** | Wave 2: Backend (FS-06/07 finishing Wave 1) |
 
 ## Waves (dispatch plan)
 | Wave | Goal | Parallel lanes (one subagent each) |
@@ -51,7 +51,7 @@
 ## Backend: Class space
 | ID | Task | Deps | Status |
 |---|---|---|---|
-| [CS-01](tasks/backend/class-space/CS-01-classes-terms.md) | Classes, terms, promotion, graduate, handover | FND | ⬜ |
+| [CS-01](tasks/backend/class-space/CS-01-classes-terms.md) | Classes, terms, promotion, graduate, handover | FND | 🟨 |
 | [CS-02](tasks/backend/class-space/CS-02-members-cr.md) | Roster, student invites (dry-run), CR | CS-01 | ⬜ |
 | [CS-03](tasks/backend/class-space/CS-03-subjects-allotment.md) | Staff directory + subjects + allotment + "Not me" | CS-01 | ⬜ |
 | [CS-04](tasks/backend/class-space/CS-04-timetable.md) | Weekly timetable | CS-03 | ⬜ |
@@ -79,10 +79,10 @@
 ## Backend: Admin
 | ID | Task | Deps | Status |
 |---|---|---|---|
-| [AD-01](tasks/backend/admin/AD-01-users-staff.md) | Users, staff invites, disable, reset, delete | FND | ⬜ |
-| [AD-02](tasks/backend/admin/AD-02-admin-badge.md) | Admin badge grant/revoke | AD-01 | ⬜ |
+| [AD-01](tasks/backend/admin/AD-01-users-staff.md) | Users, staff invites, disable, reset, delete | FND | 🟨 |
+| [AD-02](tasks/backend/admin/AD-02-admin-badge.md) | Admin badge grant/revoke | AD-01 | 🟨 |
 | [AD-03](tasks/backend/admin/AD-03-student-details.md) | Edit student details, move batch | AD-01, CS-02 | ⬜ |
-| [AD-04](tasks/backend/admin/AD-04-school.md) | Institution + branches | FND | ⬜ |
+| [AD-04](tasks/backend/admin/AD-04-school.md) | Institution + branches | FND | 🟨 |
 | [AD-05](tasks/backend/admin/AD-05-tickets-inbox.md) | Tickets + admin inbox | FND | ⬜ |
 | [AD-06](tasks/backend/admin/AD-06-moderation.md) | Moderation, bans, conversation access | CM-06, CM-07 | ⬜ |
 | [AD-07](tasks/backend/admin/AD-07-featured-flagship.md) | Featured + flagship | CM-04, CM-05 | ⬜ |
