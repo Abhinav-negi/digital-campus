@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S05-2026-10-03.md](handoff/S05-2026-10-03.md) |
-| **Progress** | 18 / 78 done |
+| **Progress** | 19 / 78 done |
 | **Ready to start** | Wave 2 open (all FND ✅). In progress: CS-01 · AD-01/02/04 · CM-01. FS-07 after CM-01 (needs PATCH /me/profile). Next: CM-01, AD-05, CS-02/03/07/08/12, OPS-03, OPS-05 |
 | **Current wave** | Wave 2: Backend (FS-06/07 finishing Wave 1) |
 
@@ -51,7 +51,7 @@
 ## Backend: Class space
 | ID | Task | Deps | Status |
 |---|---|---|---|
-| [CS-01](tasks/backend/class-space/CS-01-classes-terms.md) | Classes, terms, promotion, graduate, handover | FND | 🟨 |
+| [CS-01](tasks/backend/class-space/CS-01-classes-terms.md) | Classes, terms, promotion, graduate, handover | FND | ✅ |
 | [CS-02](tasks/backend/class-space/CS-02-members-cr.md) | Roster, student invites (dry-run), CR | CS-01 | ⬜ |
 | [CS-03](tasks/backend/class-space/CS-03-subjects-allotment.md) | Staff directory + subjects + allotment + "Not me" | CS-01 | ⬜ |
 | [CS-04](tasks/backend/class-space/CS-04-timetable.md) | Weekly timetable | CS-03 | ⬜ |

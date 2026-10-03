@@ -19,3 +19,8 @@
 - [ ] Tests: promotion carries members, closes the old term, increments the year label; past-term subjects aren't returned by active-term queries; graduate archives; a subject teacher → 403 on next/graduate/handover; admin → 200 + audit.
 
 ## Notes
+- Done S05. Reuse from `classes/service.ts`: `writable` (after `classAccess` on every class write → 409 ARCHIVED for non-admins), `activeTerm(classId, tx?)` (or 409 NO_ACTIVE_TERM), `classAudience(classId, tx?)`, `className` / `yearOf` / `semesterFor` (academic year starts in July, `ponytail:`).
+- Sub-routers: `Router({ mergeParams: true })`, then `router.use('/:id', sub)` above the trailing stub in classes/routes.ts.
+- `GET /classes` → `{items, nextCursor}` of ClassCard (myRole, termLabel, counts, crs). `POST /classes` takes an optional `semester` (the "editable" part).
+- Promotion deletes `ClassMember(role teacher)` rows (they came with old-term subjects; the CR re-allots in CS-03). From semester 8 → 409 GRADUATE_INSTEAD. Graduate closes the active term too; before semester 8 only the admin may graduate.
+- Notification types `class-term`, `class-handover` (CS-12 may rename). Audit actions `class.create|update|term.next|graduate|handover`.
