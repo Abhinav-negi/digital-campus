@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S04-2026-10-03.md](handoff/S04-2026-10-03.md) |
-| **Progress** | 13 / 78 done |
+| **Progress** | 15 / 78 done |
 | **Ready to start** | FND-03 · FND-05 · FS-05 (in progress, S05). Then FND-08 → FS-06 → FS-07. Start Postgres first: `npm run db:start` (D14) |
 | **Current wave** | Wave 1: Foundation |
 
@@ -43,7 +43,7 @@
 | [FND-02](tasks/backend/foundation/FND-02-prisma-schema.md) | Full Prisma schema + migration (then frozen) | FND-01, OPS-02 | ✅ |
 | [FND-03](tasks/backend/foundation/FND-03-seed.md) | Seed: the prototype's demo world | FND-02, FND-04 | 🟨 |
 | [FND-04](tasks/backend/foundation/FND-04-auth.md) | Auth: sessions, passwords, guards (the wall) | FND-02 | ✅ |
-| [FND-05](tasks/backend/foundation/FND-05-invites-mail.md) | Invites + email | FND-04 | 🟨 |
+| [FND-05](tasks/backend/foundation/FND-05-invites-mail.md) | Invites + email | FND-04 | ✅ |
 | [FND-06](tasks/backend/foundation/FND-06-shared-libs.md) | audit · notify · storage · dates · presign | FND-02 | ✅ |
 | [FND-07](tasks/backend/foundation/FND-07-openapi.md) | OpenAPI contract + type gen | FND-01 | ✅ |
 | [FND-08](tasks/backend/foundation/FND-08-test-harness.md) | Test harness | FND-03, FND-04 | ⬜ |
@@ -95,8 +95,8 @@
 | [FS-02](tasks/frontend/shared/FS-02-css-port.md) | Port the design-system CSS verbatim | FS-01 | ✅ |
 | [FS-03](tasks/frontend/shared/FS-03-ui-kit.md) | UI kit components | FS-02 | ✅ |
 | [FS-04](tasks/frontend/shared/FS-04-app-shell.md) | App shell (rail + bottom nav) | FS-03 | ✅ |
-| [FS-05](tasks/frontend/shared/FS-05-api-client.md) | API client + query hooks | FS-01, FND-07 | 🟨 |
-| [FS-06](tasks/frontend/shared/FS-06-auth-pages.md) | Login, forgot/reset | FS-04, FS-05, FND-04 | ⬜ |
+| [FS-05](tasks/frontend/shared/FS-05-api-client.md) | API client + query hooks | FS-01, FND-07 | ✅ |
+| [FS-06](tasks/frontend/shared/FS-06-auth-pages.md) | Login, forgot/reset | FS-04, FS-05, FND-04 | 🟨 |
 | [FS-07](tasks/frontend/shared/FS-07-invite-onboarding.md) | Invite → password → 3 questions | FS-06, FND-05 | ⬜ |
 | [FS-08](tasks/frontend/shared/FS-08-landing.md) | Landing page | FS-02 | ✅ |
 
