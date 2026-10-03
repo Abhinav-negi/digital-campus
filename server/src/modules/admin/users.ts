@@ -29,6 +29,9 @@ const adminUser = z
 
 const idParams = z.object({ id: z.string().min(1) });
 const notFound = () => new HttpError(404, 'NOT_FOUND', 'User not found');
+const DELETED_DOMAIN = '@deleted.invalid';
+/** A SPEC §12-deleted (anonymised) account: admin actions treat it as gone, so it can never be re-enabled. */
+export const isDeleted = (u: { email: string }) => u.email.endsWith(DELETED_DOMAIN);
 
 const userInclude = {
   homeClass: { select: { id: true, name: true } },
@@ -138,7 +141,7 @@ router.patch(
   async (req, res) => {
     const { status } = req.body as z.infer<typeof statusBody>;
     const target = await db.user.findUnique({ where: { id: req.params.id as string } });
-    if (!target) throw notFound();
+    if (!target || isDeleted(target)) throw notFound();
     if (target.isChief && status === 'disabled') throw new HttpError(409, 'CHIEF', 'The chief admin cannot be disabled');
     if (target.status === 'invited') throw new HttpError(409, 'INVITE_PENDING', 'This person has not accepted their invite yet');
     await db.$transaction(async (tx) => {
@@ -162,7 +165,7 @@ router.post(
   }),
   async (req, res) => {
     const target = await db.user.findUnique({ where: { id: req.params.id as string } });
-    if (!target) throw notFound();
+    if (!target || isDeleted(target)) throw notFound();
     if (target.status !== 'active') throw new HttpError(409, 'NOT_ACTIVE', 'Only active accounts can reset their password');
     await audit(req.user!, { action: 'user.password.reset', targetType: 'User', targetId: target.id });
     await sendResetLink(target, 'An admin sent you a link to reset your Digital Campus password:');
@@ -177,7 +180,7 @@ router.post(
  */
 export const deleteUser = async (id: string, actor: { id: string }) => {
   const target = await db.user.findUnique({ where: { id } });
-  if (!target) throw notFound();
+  if (!target || isDeleted(target)) throw notFound();
   if (target.isChief) throw new HttpError(409, 'CHIEF', 'The chief admin account cannot be deleted');
   if (await db.class.count({ where: { classTeacherId: id, archivedAt: null } }))
     throw new HttpError(409, 'CLASS_TEACHER', 'Hand over their classes to another class teacher first');
@@ -216,7 +219,7 @@ export const deleteUser = async (id: string, actor: { id: string }) => {
       where: { id },
       data: {
         name: target.role === 'student' ? 'Deleted student' : 'Deleted teacher',
-        email: `deleted-${id}@deleted.invalid`,
+        email: `deleted-${id}${DELETED_DOMAIN}`,
         passwordHash: null,
         status: 'disabled',
         isAdmin: false,

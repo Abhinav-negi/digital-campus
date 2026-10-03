@@ -120,3 +120,12 @@ test('DELETE /me needs the password; the chief cannot self-delete', async () => 
   assert.equal((await db.user.findUniqueOrThrow({ where: { id: 's1' } })).name, 'Deleted student');
   await (await agent('admin')).delete('/api/v1/me').send({ password: PASSWORD }).expect(409);
 });
+
+test('a deleted account stays gone: no re-enable, reset or badge (404)', async () => {
+  const a = await agent('admin');
+  await a.delete('/api/v1/admin/users/s10').expect(204);
+  await a.patch('/api/v1/admin/users/s10/status').send({ status: 'active' }).expect(404);
+  await a.post('/api/v1/admin/users/s10/reset-password').expect(404);
+  await a.put('/api/v1/admin/users/s10/admin').send({ isAdmin: true }).expect(404);
+  await a.delete('/api/v1/admin/users/s10').expect(404);
+});

@@ -5,6 +5,7 @@ import { db } from '../../lib/db.js';
 import { HttpError } from '../../lib/http.js';
 import { notify } from '../../lib/notify.js';
 import { registry, route } from '../../lib/openapi.js';
+import { isDeleted } from './users.js';
 
 // AD-02: the admin badge (D1). Mounted under /admin, behind admin(), so any admin may grant or revoke.
 
@@ -25,7 +26,7 @@ router.put(
   async (req, res) => {
     const { isAdmin } = req.body as z.infer<typeof body>;
     const target = await db.user.findUnique({ where: { id: req.params.id as string } });
-    if (!target) throw new HttpError(404, 'NOT_FOUND', 'User not found');
+    if (!target || isDeleted(target)) throw new HttpError(404, 'NOT_FOUND', 'User not found');
     if (target.role !== 'staff') throw new HttpError(422, 'NOT_STAFF', 'Only staff can be admins');
     // The chief is always an admin, so "revoke your own badge only if another admin exists" always holds once this passes.
     if (target.isChief && !isAdmin) throw new HttpError(409, 'CHIEF', "The chief admin's badge cannot be removed");
