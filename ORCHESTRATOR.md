@@ -85,6 +85,8 @@ npm run build
 ## 6. Ownership rules
 - **Only you** edit: `server/prisma/schema.prisma` (frozen after FND-02; change it only for an agent's reported need, as a new migration), `server/src/app.ts` (router registry), root `package.json`, `INDEX.md`, `handoff/*`, `ARCHITECTURE.md` (append decisions as D14…), `ORCHESTRATOR.md`.
 - Every other file is owned by exactly one task ("Owns"). A later task may extend a file owned by an earlier, done task if its own Owns line says so.
+- **Module routers (S02):** `server/src/modules/<m>/routes.ts` is a thin aggregator. A task whose Owns lists a sub-file in `<m>` (e.g. `admin/users.ts`) may add **one import + one `router.use(sub)` line** there, above the trailing `router.use(notImplemented)`. Sub-routers under `/classes/:id` use `Router({ mergeParams: true })`.
+- **Commit by path, never `git add -A`, while lanes run** in the same tree: it sweeps their half-done files into your commit.
 - The API contract = `openapi.json`. Frontend agents use the generated types and never guess endpoints.
 
 ## 7. Questions and decisions

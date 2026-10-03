@@ -14,3 +14,5 @@ One command starts every backing service locally, with the same env names prod w
 - [ ] `psql $DATABASE_URL -c 'select 1'` works (or Prisma connects).
 
 ## Notes
+- ⛔ S02: files written; `docker compose config` OK. **Not verified**: this session's user can't reach `/var/run/docker.sock` (not in the `docker` group). Run `docker compose up -d && docker compose ps` and `psql`, then mark ✅.
+- MinIO has no per-bucket CORS, so it's set server-wide with `MINIO_API_CORS_ALLOW_ORIGIN`. The `campus_test` DB is created by an inline compose `configs` init script, which runs only on a fresh `pgdata` volume.

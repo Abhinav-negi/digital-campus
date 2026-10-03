@@ -18,3 +18,7 @@ A running Express 5 server with the conventions every module uses, and **every m
 - [ ] Every module path in ARCH §8 responds 501 (proving it's mounted).
 
 ## Notes
+- S02, verified by the orchestrator: `npm test -w server` 6/6 pass, typecheck clean. Dev curl: health → `{ok:true}`, unknown → 404 JSON, module paths → 501.
+- Tests use the glob `'test/**/*.test.ts'` (node refuses a dir) and load `../.env.example`, then `../.env` if present. `dev`/`start` read `../.env`.
+- Multi-base modules mount with arrays (`posts`: `/posts` + `/classes/:id/posts`; `attendance`: `/attendance-sessions`, `/checkin`, `/me/attendance`), ordered before `/classes` and `/me`. The routes.ts aggregator rule is in ORCHESTRATOR §6.
+- `src/jobs.ts` is an empty `start()` stub; CS-12 replaces it. `tsconfig` covers `src` only, so tests run under tsx without type-checking.

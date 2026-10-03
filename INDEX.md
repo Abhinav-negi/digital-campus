@@ -8,8 +8,8 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S01-2026-10-03.md](handoff/S01-2026-10-03.md) |
-| **Progress** | 2 / 78 done |
-| **Ready to start** | (lanes A, B running) |
+| **Progress** | 3 / 78 done |
+| **Ready to start** | FND-07 · (lane B running) · OPS-02 needs Docker access to verify |
 | **Current wave** | Wave 1: Foundation |
 
 ## Waves (dispatch plan)
@@ -31,7 +31,7 @@
 | ID | Task | Deps | Status |
 |---|---|---|---|
 | [OPS-01](tasks/devops/OPS-01-monorepo.md) | Monorepo + workspaces + scripts | — | ✅ |
-| [OPS-02](tasks/devops/OPS-02-docker-compose.md) | Docker Compose (Postgres, Mailpit, MinIO) + .env | OPS-01 | 🟨 |
+| [OPS-02](tasks/devops/OPS-02-docker-compose.md) | Docker Compose (Postgres, Mailpit, MinIO) + .env | OPS-01 | ⛔ |
 | [OPS-03](tasks/devops/OPS-03-dockerfile.md) | Production image (API + PWA) | FND-01, FS-01 | ⬜ |
 | [OPS-04](tasks/devops/OPS-04-deploy-guide.md) | Deploy guide | OPS-03 | ⬜ |
 | [OPS-05](tasks/devops/OPS-05-ci.md) | CI pipeline | FND-08 | ⬜ |
@@ -39,7 +39,7 @@
 ## Backend: Foundation
 | ID | Task | Deps | Status |
 |---|---|---|---|
-| [FND-01](tasks/backend/foundation/FND-01-server-skeleton.md) | Server skeleton + router registry (stubs) | OPS-01 | 🟨 |
+| [FND-01](tasks/backend/foundation/FND-01-server-skeleton.md) | Server skeleton + router registry (stubs) | OPS-01 | ✅ |
 | [FND-02](tasks/backend/foundation/FND-02-prisma-schema.md) | Full Prisma schema + migration (then frozen) | FND-01, OPS-02 | ⬜ |
 | [FND-03](tasks/backend/foundation/FND-03-seed.md) | Seed: the prototype's demo world | FND-02, FND-04 | ⬜ |
 | [FND-04](tasks/backend/foundation/FND-04-auth.md) | Auth: sessions, passwords, guards (the wall) | FND-02 | ⬜ |
