@@ -7,7 +7,7 @@
 ## Now
 | | |
 |---|---|
-| **Latest handoff** | [handoff/S04-2026-10-03.md](handoff/S04-2026-10-03.md) |
+| **Latest handoff** | [handoff/S05-2026-10-03.md](handoff/S05-2026-10-03.md) |
 | **Progress** | 18 / 78 done |
 | **Ready to start** | Wave 2 open (all FND ✅). In progress: CS-01 · AD-01/02/04 · CM-01. FS-07 after CM-01 (needs PATCH /me/profile). Next: CM-01, AD-05, CS-02/03/07/08/12, OPS-03, OPS-05 |
 | **Current wave** | Wave 2: Backend (FS-06/07 finishing Wave 1) |
