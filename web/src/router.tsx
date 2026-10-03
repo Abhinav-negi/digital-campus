@@ -32,7 +32,9 @@ const page = (title: string) => async () => ({
 
 const routes: RouteObject[] = [
   { path: '/', lazy: () => import('./routes/landing') },
-  { path: '/login', lazy: page('Log in') },
+  { path: '/login', lazy: () => import('./routes/auth/login') },
+  { path: '/forgot', lazy: () => import('./routes/auth/forgot') },
+  { path: '/reset/:token', lazy: () => import('./routes/auth/reset') },
   { path: '/invite/:token', lazy: page('Invite') },
   { path: '/s/*', loader: guard('s'), lazy: page('Student') },
   { path: '/t/*', loader: guard('t'), lazy: page('Teacher') },
@@ -40,7 +42,7 @@ const routes: RouteObject[] = [
   { path: '*', loader: () => redirect('/') },
 ];
 // Component test page (FS-02/FS-03), dev only.
-if (import.meta.env.DEV)
+if (import.meta.env?.DEV)
   routes.unshift(
     { path: '/ui', lazy: () => import('./ui/Kitchen') },
     { path: '/ui/shell/:p/*', lazy: () => import('./ui/ShellDemo') },

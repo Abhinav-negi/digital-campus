@@ -13,3 +13,7 @@
 - [ ] Logging in as each seed role lands on the right area; reset works through the emailed link (server log).
 
 ## Notes
+- Done S05. E2E in headless Chrome: Riya → /s, Meera → /t, chief (0 classes after the FND-03 fix) → /a; wrong password → inline `.err`; reset via the logged link works, reuse → 410 copy with /forgot link. Parity at 1280/390 vs PROTO index.html invite card (neutral palette: near-black button, brand mark above the card).
+- **Deviation:** reset doesn't log in (`/auth/reset` is 204 and ends all sessions), so it clears `['me']`, toasts, and goes to /login.
+- Reuse in FS-07: `AuthCard` (routes/auth/card.tsx), `checkPassword` (reset.tsx), the 410 pattern, `fetchQuery({...meQuery, staleTime: 0})` before `navigate(homeOf(me))`.
+- Orchestrator: `import.meta.env?.DEV` in router.tsx so node tests can import it. **Open:** /login doesn't bounce logged-in users; shell logout must invalidate `['me']` (FS-07 picks both up).

@@ -8,8 +8,8 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S04-2026-10-03.md](handoff/S04-2026-10-03.md) |
-| **Progress** | 17 / 78 done |
-| **Ready to start** | Wave 2 open (all FND ✅). In progress: CS-01 · AD-01/02/04 · FS-06. Next: CM-01, AD-05, CS-02/03/07/08/12, OPS-03, OPS-05 |
+| **Progress** | 18 / 78 done |
+| **Ready to start** | Wave 2 open (all FND ✅). In progress: CS-01 · AD-01/02/04 · FS-07. Next: CM-01, AD-05, CS-02/03/07/08/12, OPS-03, OPS-05 |
 | **Current wave** | Wave 2: Backend (FS-06/07 finishing Wave 1) |
 
 ## Waves (dispatch plan)
@@ -96,8 +96,8 @@
 | [FS-03](tasks/frontend/shared/FS-03-ui-kit.md) | UI kit components | FS-02 | ✅ |
 | [FS-04](tasks/frontend/shared/FS-04-app-shell.md) | App shell (rail + bottom nav) | FS-03 | ✅ |
 | [FS-05](tasks/frontend/shared/FS-05-api-client.md) | API client + query hooks | FS-01, FND-07 | ✅ |
-| [FS-06](tasks/frontend/shared/FS-06-auth-pages.md) | Login, forgot/reset | FS-04, FS-05, FND-04 | 🟨 |
-| [FS-07](tasks/frontend/shared/FS-07-invite-onboarding.md) | Invite → password → 3 questions | FS-06, FND-05 | ⬜ |
+| [FS-06](tasks/frontend/shared/FS-06-auth-pages.md) | Login, forgot/reset | FS-04, FS-05, FND-04 | ✅ |
+| [FS-07](tasks/frontend/shared/FS-07-invite-onboarding.md) | Invite → password → 3 questions | FS-06, FND-05 | 🟨 |
 | [FS-08](tasks/frontend/shared/FS-08-landing.md) | Landing page | FS-02 | ✅ |
 
 ## Frontend: Student
