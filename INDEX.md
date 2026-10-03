@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S04-2026-10-03.md](handoff/S04-2026-10-03.md) |
-| **Progress** | 16 / 78 done |
+| **Progress** | 17 / 78 done |
 | **Ready to start** | FND-03 · FND-05 · FS-05 (in progress, S05). Then FND-08 → FS-06 → FS-07. Start Postgres first: `npm run db:start` (D14) |
 | **Current wave** | Wave 1: Foundation |
 
@@ -46,7 +46,7 @@
 | [FND-05](tasks/backend/foundation/FND-05-invites-mail.md) | Invites + email | FND-04 | ✅ |
 | [FND-06](tasks/backend/foundation/FND-06-shared-libs.md) | audit · notify · storage · dates · presign | FND-02 | ✅ |
 | [FND-07](tasks/backend/foundation/FND-07-openapi.md) | OpenAPI contract + type gen | FND-01 | ✅ |
-| [FND-08](tasks/backend/foundation/FND-08-test-harness.md) | Test harness | FND-03, FND-04 | 🟨 |
+| [FND-08](tasks/backend/foundation/FND-08-test-harness.md) | Test harness | FND-03, FND-04 | ✅ |
 
 ## Backend: Class space
 | ID | Task | Deps | Status |

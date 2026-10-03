@@ -7,7 +7,7 @@
     "dev": "tsx watch --env-file-if-exists=../.env src/index.ts",
     "build": "tsc",
     "start": "node --env-file-if-exists=../.env dist/index.js",
-    "test": "node --env-file=../.env.example --env-file-if-exists=../.env --test --import tsx 'test/**/*.test.ts'",
+    "test": "node --env-file=../.env.example --env-file-if-exists=../.env --import ./test/setup.ts --import tsx --test --test-concurrency=1 'test/**/*.test.ts'",
     "typecheck": "tsc --noEmit",
     "gen:api": "node --env-file=../.env.example --import tsx --input-type=module -e \"const { openApiDocument } = await import('./src/lib/openapi.ts'); await import('./src/app.ts'); console.log(JSON.stringify(openApiDocument()))\" | openapi-typescript -o ../web/src/api/schema.d.ts",
     "db:migrate": "npm run prisma -- migrate dev",

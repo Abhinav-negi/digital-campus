@@ -1,143 +1,121 @@
 import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
-import cookieParser from 'cookie-parser';
 import express from 'express';
 import request from 'supertest';
 import { app } from '../src/app.js';
-import { classAccess, commons, hashPassword, hashToken, newToken, rateLimit } from '../src/lib/auth.js';
+import { classAccess, hashToken, newToken, rateLimit } from '../src/lib/auth.js';
 import { db } from '../src/lib/db.js';
 import { errorHandler, notImplemented } from '../src/lib/http.js';
-import commonsRouter from '../src/modules/commons/routes.js';
+import { agent, ORIGIN, PASSWORD, resetDb } from './helpers.js';
 
-// No seed yet (FND-03): these tests make their own users and delete them after.
-// ponytail: login is rate limited to 10/min/IP per process, so this file stays at ≤10 logins.
-const tag = `t${Date.now().toString(36)}`;
-const PW = 'correct horse battery';
-const ORIGIN = 'http://localhost:5173'; // APP_URL in .env.example
-const ids: Record<string, string> = {};
-const tokens: Record<string, string> = {};
-const cookies: Record<string, string> = {};
-let classId = '';
+// ponytail: login is rate limited to 10/min/IP per process; this file does 6 real logins (agent() skips login).
+before(resetDb);
+after(() => db.$disconnect());
 
-const email = (name: string) => `${name}.${tag}@test.local`;
+const emailOf = async (id: string) => (await db.user.findUniqueOrThrow({ where: { id } })).email;
+/** Real login by seeded user id; resolves to the response. */
+const login = async (id: string, status: number, extra: object = {}) =>
+  request(app).post('/api/v1/auth/login').send({ email: await emailOf(id), password: PASSWORD, ...extra }).expect(status);
+let riyaCookie = '';
 
-before(async () => {
-  const inst = await db.institution.create({ data: { name: `Test ${tag}` } });
-  ids.inst = inst.id;
-  const passwordHash = await hashPassword(PW);
-  const mk = async (name: string, data: { role: 'student' | 'staff'; isAdmin?: boolean; status?: 'active' | 'disabled' }) =>
-    (ids[name] = (
-      await db.user.create({ data: { institutionId: inst.id, name, email: email(name), passwordHash, status: 'active', ...data } })
-    ).id);
-  await mk('student', { role: 'student' });
-  await mk('teacher', { role: 'staff' });
-  await mk('admin', { role: 'staff', isAdmin: true });
-  await mk('disabled', { role: 'student', status: 'disabled' });
-  await mk('resetter', { role: 'student' });
-  const branch = await db.branch.create({ data: { institutionId: inst.id, code: tag, name: 'Test branch' } });
-  ids.branch = branch.id;
-  const cls = await db.class.create({
-    data: { institutionId: inst.id, branchId: branch.id, admissionYear: 2025, section: 'A', name: `Test ${tag}`, classTeacherId: ids.teacher! },
-  });
-  classId = cls.id;
-  await db.classMember.create({ data: { classId, userId: ids.student!, role: 'student' } });
+test('login: web gets an HttpOnly cookie, app gets a Bearer token; /auth/me works with both', async () => {
+  const web = await login('s1', 200);
+  assert.equal(web.body.token, undefined);
+  const setCookie = ([] as string[]).concat(web.headers['set-cookie'] ?? []).find((c) => c.startsWith('dc_session='));
+  assert.ok(setCookie);
+  assert.match(setCookie, /HttpOnly/);
+  assert.match(setCookie, /SameSite=Lax/);
+  riyaCookie = setCookie.split(';')[0]!;
+
+  const appRes = await login('s1', 200, { client: 'app' });
+  assert.equal(typeof appRes.body.token, 'string');
+  assert.equal(appRes.headers['set-cookie'], undefined);
+
+  const viaCookie = await request(app).get('/api/v1/auth/me').set('cookie', riyaCookie).expect(200);
+  const viaBearer = await request(app).get('/api/v1/auth/me').auth(appRes.body.token, { type: 'bearer' }).expect(200);
+  assert.deepEqual(viaBearer.body, viaCookie.body);
+  assert.equal(viaCookie.body.user.name, 'Riya Patel');
+  assert.equal(viaCookie.body.user.passwordHash, undefined);
+  assert.deepEqual(viaCookie.body.classes, [{ id: 'c1', name: 'CSE · 2nd year · A', role: 'cr', isClassTeacher: false }]);
+  assert.deepEqual(viaCookie.body.flags, { commons: true, banned: false });
+
+  const meera = (await (await agent('teacher')).get('/api/v1/auth/me').expect(200)).body;
+  assert.deepEqual(meera.classes, [
+    { id: 'c1', name: 'CSE · 2nd year · A', role: 'teacher', isClassTeacher: true },
+    { id: 'c2', name: 'CSE · 2nd year · B', role: 'teacher', isClassTeacher: false },
+  ]);
+  assert.deepEqual(meera.flags, { commons: false, banned: false });
+  const chief = (await (await agent('academics@demo.edu')).get('/api/v1/auth/me').expect(200)).body;
+  assert.deepEqual([chief.user.isAdmin, chief.user.isChief, chief.classes], [true, true, []]);
 });
 
-after(async () => {
-  await db.class.deleteMany({ where: { id: classId } });
-  await db.user.deleteMany({ where: { institutionId: ids.inst } });
-  await db.institution.deleteMany({ where: { id: ids.inst } }); // cascades the branch
-  await db.$disconnect();
-});
-
-const login = (name: string, client?: 'app') =>
-  request(app)
-    .post('/api/v1/auth/login')
-    .send({ email: email(name), password: PW, ...(client && { client }) });
-
-test('login as student, teacher, admin via cookie and Bearer; /auth/me works with both', async () => {
-  for (const [name, role] of [
-    ['student', 'student'],
-    ['teacher', 'staff'],
-    ['admin', 'staff'],
-  ] as const) {
-    const web = await login(name).expect(200);
-    assert.equal(web.body.token, undefined);
-    const setCookie = ([] as string[]).concat(web.headers['set-cookie'] ?? []).find((c) => c.startsWith('dc_session='));
-    assert.ok(setCookie, name);
-    assert.match(setCookie, /HttpOnly/);
-    assert.match(setCookie, /SameSite=Lax/);
-    cookies[name] = setCookie.split(';')[0]!;
-
-    const appRes = await login(name, 'app').expect(200);
-    assert.equal(typeof appRes.body.token, 'string');
-    assert.equal(appRes.headers['set-cookie'], undefined);
-    tokens[name] = appRes.body.token;
-
-    const viaCookie = await request(app).get('/api/v1/auth/me').set('cookie', cookies[name]!).expect(200);
-    const viaBearer = await request(app).get('/api/v1/auth/me').auth(tokens[name]!, { type: 'bearer' }).expect(200);
-    assert.equal(viaCookie.body.user.role, role);
-    assert.deepEqual(viaBearer.body, viaCookie.body);
-  }
-  const me = (await request(app).get('/api/v1/auth/me').auth(tokens.teacher!, { type: 'bearer' })).body;
-  assert.deepEqual(me.classes, [{ id: classId, name: `Test ${tag}`, role: 'teacher', isClassTeacher: true }]);
-  assert.deepEqual(me.flags, { commons: false, banned: false });
-  assert.equal(me.user.passwordHash, undefined);
-});
-
-test('wrong password and unknown email → the same 401; disabled user → 401', async () => {
-  const wrong = await request(app).post('/api/v1/auth/login').send({ email: email('student'), password: 'nope' }).expect(401);
-  const unknown = await request(app).post('/api/v1/auth/login').send({ email: email('nobody'), password: PW }).expect(401);
+test('wrong password and unknown email → the same 401; disabled user → 401 at login and on old sessions', async () => {
+  const wrong = await request(app).post('/api/v1/auth/login').send({ email: await emailOf('s1'), password: 'nope' }).expect(401);
+  const unknown = await request(app).post('/api/v1/auth/login').send({ email: 'nobody@demo.edu', password: PASSWORD }).expect(401);
   assert.deepEqual(wrong.body, unknown.body);
   assert.equal(wrong.body.error.code, 'INVALID_CREDENTIALS');
-  const disabled = await login('disabled').expect(401);
-  assert.deepEqual(disabled.body, wrong.body);
+
+  const s2 = await agent(await emailOf('s2'));
+  await s2.get('/api/v1/auth/me').expect(200);
+  await db.user.update({ where: { id: 's2' }, data: { status: 'disabled' } });
+  assert.deepEqual((await login('s2', 401)).body, wrong.body);
+  await s2.get('/api/v1/auth/me').expect(401);
+
   await request(app).get('/api/v1/auth/me').expect(401);
   await request(app).get('/api/v1/auth/me').auth('garbage', { type: 'bearer' }).expect(401);
 });
 
-test('the wall: teacher on /commons/* → 403, student and admin reach the stub (501), banned → 403 BANNED', async () => {
-  // Mirrors the proposed app wiring: the commons router mounted behind commons().
-  const mini = express().use(cookieParser()).use('/commons', commons(), commonsRouter).use(errorHandler);
-  const as = (name: string, path = '/commons/people') => request(mini).get(path).auth(tokens[name]!, { type: 'bearer' });
-  for (const path of ['/commons/people', '/commons/board-posts/x', '/commons/conversations']) {
-    assert.equal((await as('teacher', path).expect(403)).body.error.code, 'FORBIDDEN');
-    await as('admin', path).expect(501);
-    await as('student', path).expect(501);
+test('the wall: teacher on /commons/* → 403; student and admin reach the stub (501); banned → 403 BANNED', async () => {
+  const [teacher, subjectTeacher, student, admin] = await Promise.all(['teacher', 'subjectTeacher', 'student', 'admin'].map((r) => agent(r)));
+  for (const path of ['/api/v1/commons/people', '/api/v1/commons/board-posts/x', '/api/v1/commons/conversations']) {
+    assert.equal((await teacher!.get(path).expect(403)).body.error.code, 'FORBIDDEN');
+    await subjectTeacher!.get(path).expect(403);
+    await admin!.get(path).expect(501);
+    await student!.get(path).expect(501);
   }
-  await request(mini).get('/commons/people').expect(401);
-  await db.user.update({ where: { id: ids.student! }, data: { bannedAt: new Date() } });
+  await request(app).get('/api/v1/commons/people').expect(401);
+  await db.user.update({ where: { id: 's1' }, data: { bannedAt: new Date() } });
   try {
-    assert.equal((await as('student').expect(403)).body.error.code, 'BANNED');
+    assert.equal((await student!.get('/api/v1/commons/people').expect(403)).body.error.code, 'BANNED');
   } finally {
-    await db.user.update({ where: { id: ids.student! }, data: { bannedAt: null } });
+    await db.user.update({ where: { id: 's1' }, data: { bannedAt: null } });
   }
 });
 
-test('classAccess: member reads, CR-only board, class teacher owns, admin passes all', async () => {
+test('classAccess on the seed: CR boards, subject teacher teaches, class teacher owns, outsider is out, admin passes', async () => {
   const mini = express();
   for (const need of ['read', 'board', 'teach', 'own'] as const) mini.get(`/c/:id/${need}`, classAccess('id', need), (_req, res) => res.json({ ok: true }));
   mini.use(errorHandler);
-  const as = (name: string, need: string, id = classId) => request(mini).get(`/c/${id}/${need}`).auth(tokens[name]!, { type: 'bearer' });
-  const expect = { student: [200, 403, 403, 403], teacher: [200, 200, 200, 200], admin: [200, 200, 200, 200] };
-  for (const [name, codes] of Object.entries(expect))
-    for (const [i, need] of ['read', 'board', 'teach', 'own'].entries()) assert.equal((await as(name, need)).status, codes[i], `${name} ${need}`);
-  await as('student', 'read', 'nope').expect(404);
+  const cases = [
+    ['cr', 'c1', [200, 200, 403, 403]],
+    ['teacher', 'c1', [200, 200, 200, 200]],
+    ['subjectTeacher', 'c1', [200, 403, 200, 403]],
+    ['outsider', 'c2', [403, 403, 403, 403]],
+    ['admin', 'c2', [200, 200, 200, 200]],
+  ] as const;
+  for (const [role, cls, codes] of cases) {
+    const { token } = await agent(role);
+    for (const [i, need] of ['read', 'board', 'teach', 'own'].entries())
+      assert.equal((await request(mini).get(`/c/${cls}/${need}`).auth(token, { type: 'bearer' })).status, codes[i], `${role} ${need} ${cls}`);
+  }
+  const { token } = await agent('student');
+  await request(mini).get('/c/nope/read').auth(token, { type: 'bearer' }).expect(404);
 });
 
-test('CSRF: cookie writes need the APP_URL Origin; Bearer does not', async () => {
-  const cookie = cookies.student!;
-  assert.equal((await request(app).post('/api/v1/auth/logout').set('cookie', cookie).expect(403)).body.error.code, 'CSRF');
-  await request(app).post('/api/v1/auth/logout').set('cookie', cookie).set('origin', 'https://evil.example').expect(403);
-  await request(app).post('/api/v1/auth/logout').set('cookie', cookie).set('origin', ORIGIN).expect(204);
-  await request(app).get('/api/v1/auth/me').set('cookie', cookie).expect(401);
-  await request(app).post('/api/v1/auth/logout').auth(tokens.teacher!, { type: 'bearer' }).expect(204);
-  await request(app).get('/api/v1/auth/me').auth(tokens.teacher!, { type: 'bearer' }).expect(401);
+test('logout + CSRF: cookie writes need the APP_URL Origin; Bearer does not', async () => {
+  assert.ok(riyaCookie, 'needs the login test');
+  assert.equal((await request(app).post('/api/v1/auth/logout').set('cookie', riyaCookie).expect(403)).body.error.code, 'CSRF');
+  await request(app).post('/api/v1/auth/logout').set('cookie', riyaCookie).set('origin', 'https://evil.example').expect(403);
+  await request(app).post('/api/v1/auth/logout').set('cookie', riyaCookie).set('origin', ORIGIN).expect(204);
+  await request(app).get('/api/v1/auth/me').set('cookie', riyaCookie).expect(401);
+  const teacher = await agent('teacher');
+  await teacher.post('/api/v1/auth/logout').expect(204);
+  await teacher.get('/api/v1/auth/me').expect(401);
 });
 
 test('sliding expiry: a session near its end is pushed out by SESSION_DAYS', async () => {
   const { token, tokenHash } = newToken();
-  await db.loginSession.create({ data: { userId: ids.admin!, tokenHash, userAgent: 'test', expiresAt: new Date(Date.now() + 3_600_000) } });
+  await db.loginSession.create({ data: { userId: 'a1', tokenHash, userAgent: 'test', expiresAt: new Date(Date.now() + 3_600_000) } });
   await request(app).get('/api/v1/auth/me').auth(token, { type: 'bearer' }).expect(200);
   const s = await db.loginSession.findUniqueOrThrow({ where: { tokenHash: hashToken(token) } });
   assert.ok(s.expiresAt.getTime() > Date.now() + 29 * 86_400_000);
@@ -146,27 +124,25 @@ test('sliding expiry: a session near its end is pushed out by SESSION_DAYS', asy
 });
 
 test('forgot (always 200) → link in the log → reset → old sessions gone, new password works once', async (t) => {
-  const { token: oldToken, tokenHash } = newToken();
-  await db.loginSession.create({ data: { userId: ids.resetter!, tokenHash, userAgent: 'test', expiresAt: new Date(Date.now() + 86_400_000) } });
+  const s3 = await agent(await emailOf('s3'));
   const log = t.mock.method(console, 'log', () => {});
-  await request(app).post('/api/v1/auth/forgot').send({ email: email('nobody') }).expect(200, { ok: true });
+  await request(app).post('/api/v1/auth/forgot').send({ email: 'nobody@demo.edu' }).expect(200, { ok: true });
   assert.equal(log.mock.callCount(), 0);
-  await request(app).post('/api/v1/auth/forgot').send({ email: email('resetter') }).expect(200, { ok: true });
-  const resetToken = String(log.mock.calls[0]?.arguments[0]).match(/\/reset\/(\S+)/)?.[1];
+  await request(app).post('/api/v1/auth/forgot').send({ email: s3.user.email }).expect(200, { ok: true });
+  await new Promise((r) => setImmediate(r)); // sendMail is not awaited by the route
+  const resetToken = log.mock.calls.map((c) => String(c.arguments[0]).match(/\/reset\/(\S+)/)?.[1]).find(Boolean);
   assert.ok(resetToken);
   log.mock.restore();
 
   await request(app).post('/api/v1/auth/reset').send({ token: resetToken, password: 'short' }).expect(422);
   await request(app).post('/api/v1/auth/reset').send({ token: resetToken, password: 'a brand new password' }).expect(204);
   await request(app).post('/api/v1/auth/reset').send({ token: resetToken, password: 'another new password' }).expect(410);
-  await request(app).get('/api/v1/auth/me').auth(oldToken, { type: 'bearer' }).expect(401);
-  await request(app).post('/api/v1/auth/login').send({ email: email('resetter'), password: 'a brand new password' }).expect(200);
+  await s3.get('/api/v1/auth/me').expect(401);
+  await request(app).post('/api/v1/auth/login').send({ email: s3.user.email, password: 'a brand new password' }).expect(200);
 });
 
 test('rateLimit: max per window per IP → 429', async () => {
-  const mini = express()
-    .post('/x', rateLimit(2, 60_000), notImplemented)
-    .use(errorHandler);
+  const mini = express().post('/x', rateLimit(2, 60_000), notImplemented).use(errorHandler);
   await request(mini).post('/x').expect(501);
   await request(mini).post('/x').expect(501);
   assert.equal((await request(mini).post('/x').expect(429)).body.error.code, 'RATE_LIMITED');

@@ -13,3 +13,6 @@ Every later backend task can write a permission test in a few lines.
 - [ ] `npm test -w server` runs green in under 30s.
 
 ## Notes
+- Done S05. `test/setup.ts` (`--import`ed first) points `DATABASE_URL` at `TEST_DATABASE_URL` and sets `NODE_ENV=test`; it refuses if they're equal. Files run serially (`--test-concurrency=1`): a reset truncates with CASCADE. 31 tests in ~7s.
+- `agent(role | email)` writes a `LoginSession` directly and returns a Bearer supertest agent (+ `.user`, `.token`): no scrypt, no rate limit, no Origin needed. Roles: student/cr = s1 Riya, teacher = t1 Meera, subjectTeacher = t2 Arjun, outsider = t3 Sana (not on c2), admin = a1.
+- `resetDb()` runs `prisma/seed.ts` as a child process (its top-level code disconnects the client). Convention: `before(resetDb); after(() => db.$disconnect());` in files that need the pristine seed.
