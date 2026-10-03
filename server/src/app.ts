@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import express, { Router } from 'express';
 import { config } from './config.js';
 import { errorHandler, notFound } from './lib/http.js';
+import { openApiDocument } from './lib/openapi.js';
 import admin from './modules/admin/routes.js';
 import attendance from './modules/attendance/routes.js';
 import auth from './modules/auth/routes.js';
@@ -40,6 +41,11 @@ const modules: [string | string[], Router][] = [
 const api = Router();
 api.get('/health', (_req, res) => {
   res.json({ ok: true });
+});
+// Module imports above have run, so every route is registered by now.
+const spec = openApiDocument();
+api.get('/openapi.json', (_req, res) => {
+  res.json(spec);
 });
 for (const [path, router] of modules) api.use(path, router);
 

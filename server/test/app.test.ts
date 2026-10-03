@@ -11,6 +11,11 @@ test('GET /api/v1/health → { ok: true }', async () => {
   assert.deepEqual(res.body, { ok: true });
 });
 
+test('GET /api/v1/openapi.json → the generated contract', async () => {
+  const res = await request(app).get('/api/v1/openapi.json').expect(200);
+  assert.ok(res.body.paths['/health']);
+});
+
 test('unknown route → 404 JSON', async () => {
   for (const path of ['/api/v1/nope', '/nope']) {
     const res = await request(app).get(path).expect(404).expect('content-type', /json/);

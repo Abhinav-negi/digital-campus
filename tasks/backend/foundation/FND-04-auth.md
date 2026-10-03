@@ -17,5 +17,6 @@ One middleware that understands cookies (web) and Bearer tokens (Flutter), plus 
 - [ ] Logging in as a seed student, teacher and admin works via both cookie and Bearer.
 - [ ] A teacher token on any `/commons/*` stub → 403; an admin → passes (reaches 501).
 - [ ] A wrong password → 401 with no user enumeration.
+- [ ] Auth routes are declared with `route(registry, …)` (lib/openapi.ts); `npm run gen:api` → `web/src/api/schema.d.ts` contains them (carried over from FND-07).
 
 ## Notes

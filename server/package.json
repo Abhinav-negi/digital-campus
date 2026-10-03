@@ -8,9 +8,11 @@
     "build": "tsc",
     "start": "node --env-file-if-exists=../.env dist/index.js",
     "test": "node --env-file=../.env.example --env-file-if-exists=../.env --test --import tsx 'test/**/*.test.ts'",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "gen:api": "node --env-file=../.env.example --import tsx --input-type=module -e \"const { openApiDocument } = await import('./src/lib/openapi.ts'); await import('./src/app.ts'); console.log(JSON.stringify(openApiDocument()))\" | openapi-typescript -o ../web/src/api/schema.d.ts"
   },
   "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^9.1.0",
     "cookie-parser": "^1.4.7",
     "express": "^5.2.1",
     "zod": "^4.6.5"
