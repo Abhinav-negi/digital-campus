@@ -17,3 +17,7 @@ Small helpers that every module calls, so behaviour stays consistent.
 - [ ] Unit test: `today()` differs from UTC around 20:00 UTC (IST rollover).
 
 ## Notes
+- Done S05. Keys use `randomUUID()` (no cuid dep); extension comes from `contentType`, not the name (stops `x.html` served as HTML). Files land at `.data/uploads/uploads/<userId>/…` (key already starts with `uploads/`).
+- HMAC secret = `S3_SECRET_KEY`, else a dev constant; in prod without a key it's per-process random (links die on restart). `/files/local/*` is not in OpenAPI; clients follow the URL.
+- `audit(actor: {id}, …)` takes `req.user` directly. S3 branch throws until `@aws-sdk/client-s3` + `s3-request-presigner` are installed (OPS-03).
+- **Gap:** `notify` doesn't filter muted types; the schema has no mute column. Add `User.mutedTypes String[]` as a migration before CS-12 (it needs it for notification prefs).
