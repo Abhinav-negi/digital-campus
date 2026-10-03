@@ -11,3 +11,7 @@
 - [ ] Side-by-side parity with `index.html`.
 
 ## Notes
+- ✅ S03: parity checked by headless-Chrome screenshots vs `index.html` at 1280/390 (only diff: random dicebear cast backgrounds; "Try the invite" removed as asked).
+- Body class `landing` activates `:where(.landing)` styles. The Admin link and the flagship "See the project" go to `/login` (logged-out visitors land there anyway).
+- Branch chips are static `CSE IT ECE ME IE`; FS-05/auth swaps in `GET /branches`. Possible follow-up: redirect logged-in users from `/` to `homeOf(me)`.
+- Tests use `node:test` + `renderToString` (no vitest/jsdom). The web `test` script now globs `src/**/*.test.ts(x)` through the `tsx` loader (tsx is hoisted from server).

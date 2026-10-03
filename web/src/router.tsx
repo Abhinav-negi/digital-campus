@@ -48,7 +48,7 @@ const page = (title: string) => async () => ({
 });
 
 const routes: RouteObject[] = [
-  { path: '/', lazy: page('Digital Campus') },
+  { path: '/', lazy: () => import('./routes/landing') },
   { path: '/login', lazy: page('Log in') },
   { path: '/invite/:token', lazy: page('Invite') },
   { path: '/s/*', loader: guard('s'), lazy: page('Student') },
