@@ -1,0 +1,12 @@
+/* Verbatim port of PROTO admin.html <style> (lines 9-17), scoped with zero-specificity :where(). Admin body = "teacher admin". */
+:where(.admin) {
+  .calm { margin-bottom: var(--s5); }
+  .row-item { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; }
+  .row-item .acts { display: flex; gap: var(--s1); margin-left: auto; }
+  .row-item .grow { min-width: 60%; overflow-wrap: anywhere; }
+  @media (max-width: 860px) { .row-item .acts { margin-left: 0; width: 100%; } }
+  .star.on { color: var(--accent); border-color: var(--accent); }
+  .star.on svg { fill: currentColor; }
+  h3.sub { margin: var(--s5) 0 var(--s1); }
+  .rail a.foot-link { padding: var(--s1) var(--s2); color: var(--muted); font-size: 15px; display: block; }
+}

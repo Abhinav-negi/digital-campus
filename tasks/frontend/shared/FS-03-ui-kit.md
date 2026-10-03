@@ -16,3 +16,5 @@
 - [ ] Every component is used on the FS-02 test page; the sheet works on a 390px viewport.
 
 ## Notes
+- S02 🟨 built, **visual check pending** (`/ui`, dev only, at 390 px for the sheet). `toast()` is a plain function; FormSheet auto-closes on success and uploads via `/files/presign` (swap to the FS-05 client). Badge holds Chip, Bar holds Stat, Empty holds CrWillAdd.
+- `lib/dates.ts`: the greeting switches at 17:00 (the prototype says 18 for students and 17 for teachers). `fmt` matches the prototype ("Mon 12 Oct", no comma, DESIGN §8 differs). `rel` uses the local date. `dates.test.ts` passes.

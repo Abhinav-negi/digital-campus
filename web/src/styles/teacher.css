@@ -1,0 +1,71 @@
+/* Verbatim port of PROTO teacher.html <style> (lines 9-76), scoped with zero-specificity :where(). Admin pages carry body.teacher too. */
+:root { --tap: 44px; }
+:where(body.teacher) {
+  .nav-item, a.tab { text-decoration: none; }
+  a.tab { display: inline-flex; align-items: center; }
+  .tab { min-height: var(--tap); }
+  .rail .newpost { margin: var(--s2) 0 0; }
+  .rail .note { padding: var(--s2); color: var(--muted); }
+  .rail .note a { color: var(--muted); text-decoration: underline; }
+  .only-m { display: none; margin-top: var(--s6); text-align: center; }
+  .fab { display: none; }
+  @media (max-width: 860px) {
+    .only-m { display: block; }
+    .fab { display: inline-flex; position: fixed; right: var(--s2); bottom: calc(var(--s10) + var(--s1)); z-index: 19; box-shadow: var(--shadow); }
+    &.attending .bottom-nav, &.attending .fab { display: none; }
+  }
+  .gold { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--warn); }
+  .backlink { display: inline-flex; align-items: center; min-height: var(--tap); color: var(--muted); font-weight: 600; cursor: pointer; background: none; border: 0; }
+
+  /* today */
+  .slot { display: flex; align-items: center; gap: var(--s3); }
+  .slot .time { min-width: var(--s8); line-height: 1.2; }
+  .slot .time b { font-size: 20px; display: block; }
+  .slot.done { background: var(--tint); border-color: transparent; }
+  @media (max-width: 720px) { .slot { flex-wrap: wrap; gap: var(--s2); } .slot .act, .slot .act .btn { width: 100%; } }
+
+  /* attendance */
+  .roster { display: grid; grid-template-columns: repeat(auto-fill, minmax(calc(var(--s10) + var(--s4)), 1fr)); gap: var(--s1); }
+  .tile { display: flex; flex-direction: column; align-items: center; gap: var(--s0); padding: var(--s2) var(--s1); min-height: calc(var(--s10) + var(--s4)); border: 1px solid var(--line); border-radius: var(--r2); background: var(--surface); cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: background .15s, border-color .15s; }
+  .tile .roll { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .04em; }
+  .tile .nm { font-weight: 600; font-size: 15px; line-height: 1.2; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tile .st { font-size: 12px; font-weight: 600; color: var(--success); }
+  .tile .flag { font-size: 12px; padding: 0 var(--s1); }
+  .tile.absent { background: var(--danger-bg); border-color: color-mix(in srgb, var(--danger) 35%, transparent); }
+  .tile.absent .nm, .tile.absent .st { color: var(--danger); }
+  .tile.absent .avatar { opacity: .5; filter: grayscale(1); }
+  .tile.waiting .st { color: var(--muted); }
+  .cnt { font-size: 16px; white-space: nowrap; }
+  .cnt b.neg { color: var(--danger); }
+  .big-cnt .cnt { font-size: 24px; }
+  .savebar { position: sticky; bottom: var(--s2); z-index: 10; margin-top: var(--s3); display: flex; align-items: center; justify-content: space-between; gap: var(--s2); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r2); padding: var(--s2); box-shadow: var(--shadow); }
+  .ring { position: relative; width: calc(var(--s10) * 2); height: calc(var(--s10) * 2); margin: 0 auto; }
+  .ring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring .mid { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+  .ring .code { font-size: 44px; font-weight: 700; letter-spacing: .12em; line-height: 1; color: var(--primary); padding-left: .12em; }
+
+  /* lists, tables, pickers */
+  .main { min-width: 0; }
+  .item { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; }
+  .item .grow { flex: 1 1 calc(var(--s10) * 2); }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s2); margin: var(--s3) 0; }
+  .stats .num { font-size: 24px; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .tbl th { text-align: left; color: var(--muted); font-weight: 600; font-size: 13px; padding: var(--s1); }
+  .tbl td { padding: var(--s1); border-top: 1px solid var(--line); word-break: break-all; }
+  .chk { display: flex; align-items: center; gap: var(--s2); min-height: var(--tap); padding: var(--s1) var(--s2); border: 1px solid var(--line); border-radius: var(--r1); cursor: pointer; }
+  .chk input { width: var(--s3); height: var(--s3); accent-color: var(--primary); flex: none; }
+  .pick { width: 100%; text-align: left; background: var(--surface); cursor: pointer; border: 1px solid var(--line); border-radius: var(--r1); padding: var(--s1) var(--s2); min-height: var(--tap); }
+  .pick.on { border-color: var(--primary); background: var(--tint); }
+  .steps { display: flex; gap: var(--s1); margin-bottom: var(--s3); }
+  .steps i { flex: 1; height: var(--s0); border-radius: var(--pill); background: var(--tint); }
+  .steps i.on { background: var(--primary); }
+  .week { margin-top: var(--s5); margin-bottom: var(--s1); }
+  .dateblk { min-width: var(--s6); text-align: center; line-height: 1.1; }
+  .dateblk b { display: block; font-size: 24px; }
+  .sheet h3 { margin-bottom: var(--s3); }
+  .sheet .actions { display: flex; gap: var(--s1); justify-content: flex-end; margin-top: var(--s3); flex-wrap: wrap; }
+  .field-row { display: flex; gap: var(--s2); }
+  .field-row > * { flex: 1; min-width: 0; }
+  @media (max-width: 720px) { .field-row { flex-direction: column; } .stats { gap: var(--s1); } .stats .num { font-size: 20px; } }
+}

@@ -16,3 +16,5 @@ An empty but correctly wired SPA: routing, data layer, PWA, fonts, dev proxy.
 - [ ] `npm run dev -w web` serves; Lighthouse marks it installable; `npm run build -w web` succeeds, and the initial JS is under 300 KB gzip (SPEC §13.4).
 
 ## Notes
+- S02 ✅: vite 8.3, react-router 8.4, vite-plugin-pwa 1.3. Initial JS 106 KB gzip. No Lighthouse on this machine, so installability was checked by hand: manifest (name, standalone, 192/512 icons) + generated `sw.js`.
+- Placeholder pages are inline `lazy` routes in `router.tsx`; area tasks swap in `import('./routes/<area>')`. The guard uses a plain fetch of `/auth/me` (`ponytail:` → typed client in FS-05). Home: `/s` student, `/a` a chief with no classes, else `/t`.
