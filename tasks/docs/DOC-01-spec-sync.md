@@ -20,3 +20,6 @@ SPEC still describes the old weak admin and teacher self-sign-up. Make it agree 
 - [ ] The Guide row stays removed (done in S01).
 
 ## Notes
+- S02: ~190 changed lines across SPEC §4–§19. The spec is outside git, so the pre-edit copy is `../Digital_Campus.md.bak-S02`.
+- The orchestrator corrected the agent on two points, following CS-01/CS-02/TE-05/TE-06. A class teacher **can remove** students and **can hand over** the class, and the admin can do both too. Only *moving* a student between batches is admin-only (D4).
+- Left as is: a student can still be a member of a second class (`ClassMember`) while `homeClassId` stays fixed. Phases in SPEC §14 are build order, not scope.

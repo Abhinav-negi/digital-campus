@@ -8,8 +8,8 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S01-2026-10-03.md](handoff/S01-2026-10-03.md) |
-| **Progress** | 1 / 78 done |
-| **Ready to start** | OPS-02, FND-01, FS-01, DOC-01 |
+| **Progress** | 2 / 78 done |
+| **Ready to start** | (lanes A, B running) |
 | **Current wave** | Wave 1: Foundation |
 
 ## Waves (dispatch plan)
@@ -25,13 +25,13 @@
 ## Docs
 | ID | Task | Deps | Status |
 |---|---|---|---|
-| [DOC-01](tasks/docs/DOC-01-spec-sync.md) | Sync Digital_Campus.md with the decisions | — | ⬜ |
+| [DOC-01](tasks/docs/DOC-01-spec-sync.md) | Sync Digital_Campus.md with the decisions | — | ✅ |
 
 ## DevOps
 | ID | Task | Deps | Status |
 |---|---|---|---|
 | [OPS-01](tasks/devops/OPS-01-monorepo.md) | Monorepo + workspaces + scripts | — | ✅ |
-| [OPS-02](tasks/devops/OPS-02-docker-compose.md) | Docker Compose (Postgres, Mailpit, MinIO) + .env | OPS-01 | ⬜ |
+| [OPS-02](tasks/devops/OPS-02-docker-compose.md) | Docker Compose (Postgres, Mailpit, MinIO) + .env | OPS-01 | 🟨 |
 | [OPS-03](tasks/devops/OPS-03-dockerfile.md) | Production image (API + PWA) | FND-01, FS-01 | ⬜ |
 | [OPS-04](tasks/devops/OPS-04-deploy-guide.md) | Deploy guide | OPS-03 | ⬜ |
 | [OPS-05](tasks/devops/OPS-05-ci.md) | CI pipeline | FND-08 | ⬜ |
@@ -39,7 +39,7 @@
 ## Backend: Foundation
 | ID | Task | Deps | Status |
 |---|---|---|---|
-| [FND-01](tasks/backend/foundation/FND-01-server-skeleton.md) | Server skeleton + router registry (stubs) | OPS-01 | ⬜ |
+| [FND-01](tasks/backend/foundation/FND-01-server-skeleton.md) | Server skeleton + router registry (stubs) | OPS-01 | 🟨 |
 | [FND-02](tasks/backend/foundation/FND-02-prisma-schema.md) | Full Prisma schema + migration (then frozen) | FND-01, OPS-02 | ⬜ |
 | [FND-03](tasks/backend/foundation/FND-03-seed.md) | Seed: the prototype's demo world | FND-02, FND-04 | ⬜ |
 | [FND-04](tasks/backend/foundation/FND-04-auth.md) | Auth: sessions, passwords, guards (the wall) | FND-02 | ⬜ |
@@ -91,9 +91,9 @@
 ## Frontend: Shared
 | ID | Task | Deps | Status |
 |---|---|---|---|
-| [FS-01](tasks/frontend/shared/FS-01-web-scaffold.md) | Web scaffold (Vite, router, Query, PWA) | OPS-01 | ⬜ |
-| [FS-02](tasks/frontend/shared/FS-02-css-port.md) | Port the design-system CSS verbatim | FS-01 | ⬜ |
-| [FS-03](tasks/frontend/shared/FS-03-ui-kit.md) | UI kit components | FS-02 | ⬜ |
+| [FS-01](tasks/frontend/shared/FS-01-web-scaffold.md) | Web scaffold (Vite, router, Query, PWA) | OPS-01 | 🟨 |
+| [FS-02](tasks/frontend/shared/FS-02-css-port.md) | Port the design-system CSS verbatim | FS-01 | 🟨 |
+| [FS-03](tasks/frontend/shared/FS-03-ui-kit.md) | UI kit components | FS-02 | 🟨 |
 | [FS-04](tasks/frontend/shared/FS-04-app-shell.md) | App shell (rail + bottom nav) | FS-03 | ⬜ |
 | [FS-05](tasks/frontend/shared/FS-05-api-client.md) | API client + query hooks | FS-01, FND-07 | ⬜ |
 | [FS-06](tasks/frontend/shared/FS-06-auth-pages.md) | Login, forgot/reset | FS-04, FS-05, FND-04 | ⬜ |
