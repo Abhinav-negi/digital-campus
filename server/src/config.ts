@@ -9,16 +9,16 @@ const schema = z.object({
   PORT: z.coerce.number().int().default(3000),
   COOKIE_SECURE: z.stringbool().default(false),
   SESSION_DAYS: z.coerce.number().int().positive().default(30),
-  SMTP_HOST: z.string().min(1),
+  SMTP_HOST: z.string().default(''), // empty = mail printed to the server log (D14)
   SMTP_PORT: z.coerce.number().int(),
   SMTP_USER: z.string().default(''),
   SMTP_PASS: z.string().default(''),
   SMTP_FROM: z.string().min(1),
-  S3_ENDPOINT: z.url().optional(), // unset = real AWS S3
+  S3_ENDPOINT: z.url().optional(), // unset = local disk in .data/uploads (D14)
   S3_REGION: z.string().min(1),
   S3_BUCKET: z.string().min(1),
-  S3_ACCESS_KEY: z.string().min(1),
-  S3_SECRET_KEY: z.string().min(1),
+  S3_ACCESS_KEY: z.string().default(''),
+  S3_SECRET_KEY: z.string().default(''),
   S3_FORCE_PATH_STYLE: z.stringbool().default(false),
   ANTHROPIC_API_KEY: z.string().default(''), // empty = document import disabled
   IMPORT_MODEL: z.string().default('claude-sonnet-5-5'),
