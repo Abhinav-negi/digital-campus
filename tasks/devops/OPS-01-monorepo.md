@@ -16,3 +16,6 @@ The root of the repo: npm workspaces `server` and `web`, plus the shared scripts
 - [ ] `npm run typecheck` runs (even if it's a no-op).
 
 ## Notes
+- Done by the orchestrator (S02). npm errors "No workspaces found" on empty dirs, so `server/package.json` and `web/package.json` were seeded as name-only stubs (`@campus/server`, `@campus/web`); FND-01 / FS-01 extend them.
+- Root scripts fan out with `--workspaces --if-present`: a workspace opts in by defining the script. `db:reset` → server; `gen:api` → server then web.
+- `concurrently` is the dev runner; `typescript` is hoisted at the root.

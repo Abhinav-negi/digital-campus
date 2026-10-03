@@ -8,8 +8,8 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S01-2026-10-03.md](handoff/S01-2026-10-03.md) |
-| **Progress** | 0 / 78 done |
-| **Ready to start** | OPS-01, DOC-01 |
+| **Progress** | 1 / 78 done |
+| **Ready to start** | OPS-02, FND-01, FS-01, DOC-01 |
 | **Current wave** | Wave 1: Foundation |
 
 ## Waves (dispatch plan)
@@ -30,7 +30,7 @@
 ## DevOps
 | ID | Task | Deps | Status |
 |---|---|---|---|
-| [OPS-01](tasks/devops/OPS-01-monorepo.md) | Monorepo + workspaces + scripts | — | ⬜ |
+| [OPS-01](tasks/devops/OPS-01-monorepo.md) | Monorepo + workspaces + scripts | — | ✅ |
 | [OPS-02](tasks/devops/OPS-02-docker-compose.md) | Docker Compose (Postgres, Mailpit, MinIO) + .env | OPS-01 | ⬜ |
 | [OPS-03](tasks/devops/OPS-03-dockerfile.md) | Production image (API + PWA) | FND-01, FS-01 | ⬜ |
 | [OPS-04](tasks/devops/OPS-04-deploy-guide.md) | Deploy guide | OPS-03 | ⬜ |
