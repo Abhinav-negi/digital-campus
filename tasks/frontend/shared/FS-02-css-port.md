@@ -16,3 +16,4 @@ Pixel parity starts here. **Verbatim port, no redesign.**
 ## Notes
 - S02 🟨 built, **visual check pending**. Page `<style>` blocks are pasted verbatim inside `:where(body.student|body.teacher|.admin|.landing){…}`; `:where` keeps specificity at zero, so `style.css` still wins where the prototype expects it. `:root{--tap}` and `@keyframes float` were moved out (they can't be nested). Admin uses `body class="teacher admin"`.
 - All four page sheets load in `main.tsx` (+~6 KB gzip). Added at the end of `style.css`: `.badge.clash`, `.empty.cr`, `.preview-table`, `.sheet .head` (so teacher/admin sheets get the header row). The prototype has no reduced-motion rule outside landing; that's left as is.
+- S03 ✅ visual check: headless Chrome screenshots of `/ui` at 1280 and 390 match the prototype (`student.html`): font, tokens, cards, bars, badges, chips. Only the test page's own body-class switcher clips at 390 (test page only).

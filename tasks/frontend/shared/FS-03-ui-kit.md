@@ -18,3 +18,4 @@
 ## Notes
 - S02 🟨 built, **visual check pending** (`/ui`, dev only, at 390 px for the sheet). `toast()` is a plain function; FormSheet auto-closes on success and uploads via `/files/presign` (swap to the FS-05 client). Badge holds Chip, Bar holds Stat, Empty holds CrWillAdd.
 - `lib/dates.ts`: the greeting switches at 17:00 (the prototype says 18 for students and 17 for teachers). `fmt` matches the prototype ("Mon 12 Oct", no comma, DESIGN §8 differs). `rel` uses the local date. `dates.test.ts` passes.
+- S03 ✅ at 390 px via a CDP-driven headless Chrome: both sheets open as bottom sheets (`aria-modal=true`), focus lands inside, Esc closes them.
