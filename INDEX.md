@@ -7,9 +7,9 @@
 ## Now
 | | |
 |---|---|
-| **Latest handoff** | [handoff/S01-2026-10-03.md](handoff/S01-2026-10-03.md) |
-| **Progress** | 3 / 78 done |
-| **Ready to start** | FND-07 · (lane B running) · OPS-02 needs Docker access to verify |
+| **Latest handoff** | [handoff/S02-2026-10-03.md](handoff/S02-2026-10-03.md) |
+| **Progress** | 4 / 78 done |
+| **Ready to start** | FND-07 · FS-04, FS-08 (after the FS-02/03 visual check) · OPS-02 verify (needs Docker) |
 | **Current wave** | Wave 1: Foundation |
 
 ## Waves (dispatch plan)
@@ -91,7 +91,7 @@
 ## Frontend: Shared
 | ID | Task | Deps | Status |
 |---|---|---|---|
-| [FS-01](tasks/frontend/shared/FS-01-web-scaffold.md) | Web scaffold (Vite, router, Query, PWA) | OPS-01 | 🟨 |
+| [FS-01](tasks/frontend/shared/FS-01-web-scaffold.md) | Web scaffold (Vite, router, Query, PWA) | OPS-01 | ✅ |
 | [FS-02](tasks/frontend/shared/FS-02-css-port.md) | Port the design-system CSS verbatim | FS-01 | 🟨 |
 | [FS-03](tasks/frontend/shared/FS-03-ui-kit.md) | UI kit components | FS-02 | 🟨 |
 | [FS-04](tasks/frontend/shared/FS-04-app-shell.md) | App shell (rail + bottom nav) | FS-03 | ⬜ |
