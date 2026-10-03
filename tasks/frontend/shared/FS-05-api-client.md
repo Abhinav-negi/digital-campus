@@ -11,3 +11,7 @@
 - [ ] A sample hook (`useMe`) is typed end to end; changing a server schema + `gen:api` breaks the TS build where it should.
 
 ## Notes
+- Done S05. **Deviation:** a small hand-rolled typed client (same call shape as openapi-fetch: `api.GET(path, {params, body})` → `{data, error, response}`) instead of adding the dep; swapping later only changes client.ts internals. `unwrap()` throws `{code, message}` for react-query.
+- 401 → `location.assign('/login')` except `/auth/*`; 403 → `toast(message)`. `useMe` resolves to `null` on 401/network. Router guard now reads `{user, classes, flags}` (fixed the lost-`classes` bug).
+- **FS-06/07:** after login/logout/invite-accept, `queryClient.invalidateQueries({queryKey:['me']})` or the guard serves a stale `null` (30s staleTime).
+- `crypto.randomUUID` needs HTTPS or localhost; a phone on a plain-http LAN IP will throw.

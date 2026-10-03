@@ -1,41 +1,24 @@
 import { QueryClient } from '@tanstack/react-query';
 import { createBrowserRouter, redirect, type RouteObject } from 'react-router';
+import { meQuery, type Me } from './api/hooks';
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, retry: 1, refetchOnWindowFocus: true } },
 });
 
-export type Me = { id: string; name: string; role: 'student' | 'staff'; isAdmin: boolean; isChief: boolean; classes?: unknown[] };
-
-// ponytail: untyped fetch until FS-05 generates schema.d.ts; swap for the typed client/useMe then.
-// Any failure (401, API down, offline) means "no session".
-export const meQuery = {
-  queryKey: ['me'],
-  queryFn: async (): Promise<Me | null> => {
-    try {
-      const r = await fetch('/api/v1/auth/me', { credentials: 'include' });
-      if (!r.ok) return null;
-      const d = await r.json();
-      return d.user ?? d;
-    } catch {
-      return null;
-    }
-  },
-};
-
 type Area = 's' | 't' | 'a';
-export const homeOf = (u: Me) => (u.role === 'student' ? '/s' : u.isChief && !u.classes?.length ? '/a' : '/t');
-const allowed: Record<Area, (u: Me) => boolean> = {
-  s: (u) => u.role === 'student',
-  t: (u) => u.role === 'staff',
-  a: (u) => u.isAdmin,
+export const homeOf = ({ user, classes }: Me) => (user.role === 'student' ? '/s' : user.isChief && !classes.length ? '/a' : '/t');
+const allowed: Record<Area, (m: Me) => boolean> = {
+  s: (m) => m.user.role === 'student',
+  t: (m) => m.user.role === 'staff',
+  a: (m) => m.user.isAdmin,
 };
 
 const guard = (area: Area) => async () => {
-  const u = await queryClient.fetchQuery(meQuery);
-  if (!u) throw redirect('/login');
-  if (!allowed[area](u)) throw redirect(homeOf(u));
-  return u;
+  const me = await queryClient.fetchQuery(meQuery);
+  if (!me) throw redirect('/login');
+  if (!allowed[area](me)) throw redirect(homeOf(me));
+  return me;
 };
 
 // Placeholder pages; area tasks replace each `lazy` with `() => import('./routes/<area>')`.
