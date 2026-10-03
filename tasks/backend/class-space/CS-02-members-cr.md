@@ -13,3 +13,6 @@
 - [ ] Tests: the dry-run preview counts match the PROTO SAMPLE list (`teacher.html:151`); a non-owner → 403; the CR change notifies; a removed student → 403 on the class.
 
 ## Notes
+- Done S05. `POST /classes/:id/invites {rows, dryRun=true}` ports PROTO parseList (header skipped; bad email, then duplicate within the paste and against all users); a real send returns 201, creates the invited users + members + profiles in one transaction, then calls `createInvite`. Invited `name` = student ID until they set one on accept.
+- Roster: `{id, name, isCR}` for students; `studentIdNo/email/status` for staff and admin only. CR = 1–2 active students (`class-cr` notification). Removing a member keeps `homeClassId` (only the admin moves batches, AD-03).
+- Gap: an existing student can't be added to a second class (a paste marks them Duplicate, as in PROTO). Add an endpoint if SPEC's extra-class case is needed.

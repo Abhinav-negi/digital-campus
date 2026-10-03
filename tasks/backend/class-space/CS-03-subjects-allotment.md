@@ -13,3 +13,6 @@
 - [ ] Tests: the CR adds a subject with Arjun → Arjun's `GET /classes` includes the class + he has a notification; Arjun declines → it's gone + the CR is notified; a plain student → 403 on POST.
 
 ## Notes
+- Done S05. `allot(tx, subjectId, from, to, by)` in classes/subjects.ts: upserts the teacher's ClassMember, drops the old teacher's if it was their last active-term subject, notifies `subject-allotted` (not for self). CS-06 reuses it.
+- "Not me" = `POST …/subjects/:sid/decline` (allotted teacher only) → `subject-declined` to CRs and the class teacher. Past-term subjects → 409 PAST_TERM; delete with attendance → 409 HAS_ATTENDANCE.
+- `GET /staff?q=`: active staff `{id, name, dept}`, no emails, any session.

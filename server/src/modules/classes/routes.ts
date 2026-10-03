@@ -6,6 +6,8 @@ import { db } from '../../lib/db.js';
 import { HttpError, notImplemented, page, pageQuery, paginate } from '../../lib/http.js';
 import { notify } from '../../lib/notify.js';
 import { registry, route } from '../../lib/openapi.js';
+import members from './members.js';
+import subjects from './subjects.js';
 import { activeTerm, classAudience, className, classSummary, listClasses, semesterFor, writable, yearOf } from './service.js';
 
 // CS-01: classes + terms. Later CS tasks add sub-routers for /classes/:id/… (see the bottom of the file).
@@ -271,5 +273,7 @@ router.post(
 // Sub-routers under /classes/:id (CS-02…CS-07): `Router({ mergeParams: true })`, guard each route with
 // `classAccess('id', …)` and put `writable` (./service.ts) on every write. Add one import + one line here:
 // router.use('/:id', members);
+router.use('/:id', members);
+router.use('/:id', subjects);
 router.use(notImplemented); // unbuilt sub-paths 501 until their task lands
 export default router;
