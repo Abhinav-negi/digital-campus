@@ -76,7 +76,8 @@ Add `isolation: "worktree"` only if two lanes must touch overlapping files (rare
 
 ## 5. Verification commands (once FND exists)
 ```
-docker compose up -d && npm run db:reset
+npm run db:start           # own terminal / background; Postgres 17, no Docker (D14)
+npm run prisma -w server -- migrate deploy   # agents: Prisma blocks `migrate reset` without the user's typed consent
 npm run typecheck && npm test
 npm run gen:api            # after any backend task that changed routes
 npm run build

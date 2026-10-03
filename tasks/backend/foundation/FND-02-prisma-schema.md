@@ -12,11 +12,11 @@
 - `lib/db.ts` exports one `PrismaClient`.
 
 ## Done when
-- [ ] `npx prisma migrate dev --name init` applies cleanly on a fresh DB.
-- [ ] Every table in ARCH §7 exists (checked by listing models vs ARCH).
+- [x] `npx prisma migrate dev --name init` applies cleanly on a fresh DB.
+- [x] Every table in ARCH §7 exists (checked by listing models vs ARCH).
 
 ## Notes
-- 🟨 S04: Prisma 6.19.3, 41/41 ARCH §7 models, migration `20261003102946_init` built offline with `migrate diff` (validate/generate/typecheck/tests green). **Pending:** `npm run db:reset` on real Postgres (Docker blocked), then ✅ and freeze.
+- 🟨 S04: Prisma 6.19.3, 41/41 ARCH §7 models, migration `20261003102946_init` built offline with `migrate diff` (validate/generate/typecheck/tests green). ✅ S04: `migrate deploy` on fresh `campus` + `campus_test` (embedded PG 17.10): 41 tables, partial index present, `migrate diff --exit-code` vs schema = no difference. **Schema frozen.**
 - Partial index `Term_one_active_per_class` is hand-written at the end of migration.sql; if a later `migrate dev` emits `DROP INDEX` for it, delete that line.
 - `server` scripts: `npm run prisma -- <cmd>` loads root `.env.example`/`.env` (Prisma 6 only looks in `server/`); `prebuild/pretypecheck/pretest` run `prisma generate` (install scripts don't run here).
 - Commons/Post rows have no `institutionId` (as ARCH §7); derive it from the author. `BoardItem.units` is a required `String[]` (empty = none). `Challenge.winnerIds`, `Report.targetId` have no FK.

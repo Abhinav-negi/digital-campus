@@ -7,9 +7,9 @@
 ## Now
 | | |
 |---|---|
-| **Latest handoff** | [handoff/S03-2026-10-03.md](handoff/S03-2026-10-03.md) |
-| **Progress** | 9 / 78 done |
-| **Ready to start** | OPS-02 verify (needs Docker group fix) → FND-02. FS-05 is held until FND-04 (needs `/auth/me` in the spec) |
+| **Latest handoff** | [handoff/S04-2026-10-03.md](handoff/S04-2026-10-03.md) |
+| **Progress** | 11 / 78 done |
+| **Ready to start** | FND-04 · FND-06 (parallel). Then FND-03/05 → FND-08. FS-05 right after FND-04. Start Postgres first: `npm run db:start` (D14) |
 | **Current wave** | Wave 1: Foundation |
 
 ## Waves (dispatch plan)
@@ -31,8 +31,8 @@
 | ID | Task | Deps | Status |
 |---|---|---|---|
 | [OPS-01](tasks/devops/OPS-01-monorepo.md) | Monorepo + workspaces + scripts | — | ✅ |
-| [OPS-02](tasks/devops/OPS-02-docker-compose.md) | Docker Compose (Postgres, Mailpit, MinIO) + .env | OPS-01 | ⛔ |
-| [OPS-03](tasks/devops/OPS-03-dockerfile.md) | Production image (API + PWA) | FND-01, FS-01 | ⬜ |
+| [OPS-02](tasks/devops/OPS-02-local-services.md) | Local services without Docker (`db:start`) + .env | OPS-01 | ✅ |
+| [OPS-03](tasks/devops/OPS-03-prod-build.md) | Production build (API + PWA, one Node process) | FND-01, FS-01 | ⬜ |
 | [OPS-04](tasks/devops/OPS-04-deploy-guide.md) | Deploy guide | OPS-03 | ⬜ |
 | [OPS-05](tasks/devops/OPS-05-ci.md) | CI pipeline | FND-08 | ⬜ |
 
@@ -40,7 +40,7 @@
 | ID | Task | Deps | Status |
 |---|---|---|---|
 | [FND-01](tasks/backend/foundation/FND-01-server-skeleton.md) | Server skeleton + router registry (stubs) | OPS-01 | ✅ |
-| [FND-02](tasks/backend/foundation/FND-02-prisma-schema.md) | Full Prisma schema + migration (then frozen) | FND-01, OPS-02 | 🟨 |
+| [FND-02](tasks/backend/foundation/FND-02-prisma-schema.md) | Full Prisma schema + migration (then frozen) | FND-01, OPS-02 | ✅ |
 | [FND-03](tasks/backend/foundation/FND-03-seed.md) | Seed: the prototype's demo world | FND-02, FND-04 | ⬜ |
 | [FND-04](tasks/backend/foundation/FND-04-auth.md) | Auth: sessions, passwords, guards (the wall) | FND-02 | ⬜ |
 | [FND-05](tasks/backend/foundation/FND-05-invites-mail.md) | Invites + email | FND-04 | ⬜ |
@@ -142,7 +142,7 @@
 | [QA-02](tasks/qa/QA-02-lab-demo.md) | Lab-demo walk-through | all ST, TE, AF | ⬜ |
 | [QA-03](tasks/qa/QA-03-visual-parity.md) | Visual parity with the prototype | all ST, TE, AF, FS-08 | ⬜ |
 | [QA-04](tasks/qa/QA-04-review.md) | Code + security review | QA-01 | ⬜ |
-| [QA-05](tasks/qa/QA-05-prod-smoke.md) | Production image smoke test | OPS-03, OPS-04 | ⬜ |
+| [QA-05](tasks/qa/QA-05-prod-smoke.md) | Production build smoke test | OPS-03, OPS-04 | ⬜ |
 
 ---
 

@@ -4,7 +4,7 @@
 
 ## Do
 Run the full script in the browser with the seed data and record a pass or fail per step:
-1. A teacher creates a class, pastes 30 rows, an invite is accepted on a phone (Mailpit link) and a password set.
+1. A teacher creates a class, pastes 30 rows, an invite is accepted on a phone (link from the server log, or real SMTP) and a password set.
 2. Make CR → the CR's phone shows Edit.
 3. The CR imports a timetable PDF (or adds it by hand) and an exam → the student Today and the teacher Upcoming update; the allotted teacher sees the class.
 4. One post to two classes → "12 of 30 seen" → Remind.

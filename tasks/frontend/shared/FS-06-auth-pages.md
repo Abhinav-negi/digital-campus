@@ -10,6 +10,6 @@
 **Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. Compare side by side with the prototype at 1280px and 390px before calling it done.
 
 ## Done when
-- [ ] Logging in as each seed role lands on the right area; reset works through Mailpit.
+- [ ] Logging in as each seed role lands on the right area; reset works through the emailed link (server log).
 
 ## Notes

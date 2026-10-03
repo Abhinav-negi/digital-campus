@@ -32,6 +32,7 @@ Architecture in one line: **one TypeScript monorepo → one container (REST API 
 | D11 | **Clashes are allowed, never blocked.** Overlaps within one class, or one teacher in two classes, are computed on read and shown as a **Clash** badge. Both teachers are notified ("who's taking it?") with Cancel / Postpone. The clash clears when one acts; otherwise it stays as information. |
 | D12 | Scope v1 = **full prototype parity**. Deferred: GitHub commit sync, the LeetCode summary, web push, offline attendance sync (see §15). |
 | D13 | Later: **branch-scoped admins** (HOD per branch). |
+| D14 | **No Docker anywhere** (S04). Dev Postgres 17 = `npm run db:start` (`embedded-postgres`, no sudo). `SMTP_HOST` empty → emails are printed to the server log. `S3_ENDPOINT` empty → files live on local disk (`.data/uploads`) behind the same presign API. Prod is a plain Node process (`npm run build && npm start`); every host above runs Node natively. Prod still switches by env vars only. |
 
 ---
 
@@ -66,13 +67,13 @@ Architecture in one line: **one TypeScript monorepo → one container (REST API 
  └───────┬───────────────┬──────────┘
          │  HTTPS /api/v1 (JSON, OpenAPI)
  ┌───────▼───────────────▼─────────────────────────┐
- │ Node 24 · Express 5 (one container)              │
+ │ Node 24 · Express 5 (one Node process)           │
  │  /api/v1/*  modules → zod → Prisma               │
  │  /*         static web/dist (PWA)                │
  │  node-cron  reminders · expiry nudges            │
  └──┬──────────┬───────────┬──────────┬────────────┘
     │          │           │          │
- Postgres   S3/MinIO     SMTP/Mailpit  Anthropic API
+ Postgres   S3 / disk    SMTP / log    Anthropic API
  (Prisma)  (presigned    (invites,    (document
            uploads)      resets)      import only)
 ```
@@ -87,14 +88,14 @@ Realtime = **polling** (check-in list every 2s, seen counts and notifications ev
 | API | **Express 5**, **zod** for every input, `@asteasolutions/zod-to-openapi` → `GET /api/v1/openapi.json` | |
 | DB | **PostgreSQL 17 + Prisma** | migrations in `server/prisma/migrations` |
 | Auth | opaque session token (32 random bytes; SHA-256 stored in `LoginSession`; 30-day sliding). Web: httpOnly `SameSite=Lax` cookie + Origin check on writes. App: `Authorization: Bearer`. Passwords: `node:crypto` scrypt. `express-rate-limit` on auth routes. | |
-| Email | nodemailer → Mailpit (dev) / SMTP (prod) | |
-| Files | `@aws-sdk/client-s3` + presigner → MinIO (dev) / S3 or R2 (prod) | client PUTs directly |
+| Email | nodemailer → server log (dev, `jsonTransport`) / SMTP (prod) | D14 |
+| Files | `@aws-sdk/client-s3` + presigner → S3 or R2 (prod); local disk + HMAC-signed URLs (dev, tests) | client PUTs directly; D14 |
 | Import | `@anthropic-ai/sdk`. Document/image block in, zod-validated JSON out. Model from env `IMPORT_MODEL` (default `claude-sonnet-5-5`). **Load the `claude-api` skill before writing it.** | |
 | Jobs | `node-cron` in-process | `ponytail:` single instance; pg-boss if scaled out |
 | Web | React 19, Vite, react-router, TanStack Query, `openapi-fetch` + `openapi-typescript`, `vite-plugin-pwa`, `@fontsource/josefin-sans` | **No Tailwind**: `style.css` is ported verbatim (DESIGN.md) |
 | Avatars | DiceBear `notionists` URL + initials fallback (same as PROTO data.js:329-334) | |
 | Tests | `node:test` + `supertest` on a separate test DB | |
-| Dev infra | Docker Compose: `postgres:17`, `axllent/mailpit`, `minio/minio` (+ bucket init) | |
+| Dev infra | `npm run db:start`: Postgres 17 via `embedded-postgres` (dbs `campus` + `campus_test`, data in `.data/pg`). No Docker | D14 |
 
 ---
 
@@ -102,10 +103,10 @@ Realtime = **polling** (check-in list every 2s, seen counts and notifications ev
 ```
 digital-campus/
   ORCHESTRATOR.md  ARCHITECTURE.md  DESIGN.md  INDEX.md  handoff/  tasks/
-  package.json            workspaces + root scripts (dev, test, db:reset, gen:api, build)
-  docker-compose.yml  .env.example  README.md  docs/DEPLOY.md
+  package.json            workspaces + root scripts (dev, test, db:start, db:reset, gen:api, build, start)
+  scripts/db.mjs          local Postgres (D14) · .data/ (gitignored: pg data, uploads)
+  .env.example  README.md  docs/DEPLOY.md
   server/
-    Dockerfile
     prisma/schema.prisma  prisma/seed.ts
     src/index.ts          boot: config → app.listen → jobs
     src/app.ts            express, /api/v1 router registry, error handler, static web
@@ -235,8 +236,8 @@ Exact endpoints live in each task file, and the generated OpenAPI is the final c
 ## 12. Local development
 ```
 cp .env.example .env
-docker compose up -d          # postgres:5432 · mailpit smtp:1025 ui:8025 · minio:9000 console:9001
 npm install
+npm run db:start              # postgres:5432 in the foreground; keep this terminal open
 npm run db:reset              # prisma migrate reset + seed (PROTO data.js cast)
 npm run dev                   # server :3000 (tsx watch) + web :5173 (proxy /api → :3000)
 npm test
@@ -246,9 +247,9 @@ Seed logins (demo password `campus123`): chief admin `academics@demo.edu`, teach
 ---
 
 ## 13. Production
-- **One image** (`server/Dockerfile`, multi-stage): build web + server → run `prisma migrate deploy && node dist/index.js`, serving `/api/v1` and `web/dist`.
+- **One Node process**: `npm ci && npm run build`, then `npm start` (= `prisma migrate deploy && node dist/index.js`), serving `/api/v1` and `web/dist`. No Dockerfile (D14); add one only if a host demands it.
 - **Switching from local = env vars only**: `DATABASE_URL` (Neon/Supabase/RDS), `S3_*` (S3/R2), `SMTP_*` (Resend/SES), `APP_URL`, `COOKIE_SECURE=true`, `ANTHROPIC_API_KEY`.
-- Any container host (Render, Fly, Railway, a VPS with Docker). HTTPS terminated by the host. Daily DB backups by the provider.
+- Any Node host (Render, Railway, Fly, a VPS with Node 24 + systemd). HTTPS terminated by the host. Daily DB backups by the provider.
 - Details: `docs/DEPLOY.md` (task OPS-04).
 
 ---

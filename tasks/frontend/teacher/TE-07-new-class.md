@@ -10,6 +10,6 @@
 **Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. Compare side by side with the prototype at 1280px and 390px before calling it done.
 
 ## Done when
-- [ ] Invites appear in Mailpit; the class shows in Classes with the CR set.
+- [ ] Invite emails appear in the server log; the class shows in Classes with the CR set.
 
 ## Notes
