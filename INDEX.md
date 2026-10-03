@@ -9,7 +9,7 @@
 |---|---|
 | **Latest handoff** | [handoff/S05-2026-10-03.md](handoff/S05-2026-10-03.md) |
 | **Progress** | 19 / 78 done |
-| **Ready to start** | Wave 2 open (all FND ✅). In progress: CS-01 · AD-01/02/04 · CM-01. FS-07 after CM-01 (needs PATCH /me/profile). Next: CM-01, AD-05, CS-02/03/07/08/12, OPS-03, OPS-05 |
+| **Ready to start** | Wave 2 open (all FND ✅). In progress: CS-02/03 · AD-01/02/04 · CM-01. FS-07 after CM-01 (needs PATCH /me/profile). Next: CM-01, AD-05, CS-02/03/07/08/12, OPS-03, OPS-05 |
 | **Current wave** | Wave 2: Backend (FS-06/07 finishing Wave 1) |
 
 ## Waves (dispatch plan)
@@ -52,8 +52,8 @@
 | ID | Task | Deps | Status |
 |---|---|---|---|
 | [CS-01](tasks/backend/class-space/CS-01-classes-terms.md) | Classes, terms, promotion, graduate, handover | FND | ✅ |
-| [CS-02](tasks/backend/class-space/CS-02-members-cr.md) | Roster, student invites (dry-run), CR | CS-01 | ⬜ |
-| [CS-03](tasks/backend/class-space/CS-03-subjects-allotment.md) | Staff directory + subjects + allotment + "Not me" | CS-01 | ⬜ |
+| [CS-02](tasks/backend/class-space/CS-02-members-cr.md) | Roster, student invites (dry-run), CR | CS-01 | 🟨 |
+| [CS-03](tasks/backend/class-space/CS-03-subjects-allotment.md) | Staff directory + subjects + allotment + "Not me" | CS-01 | 🟨 |
 | [CS-04](tasks/backend/class-space/CS-04-timetable.md) | Weekly timetable | CS-03 | ⬜ |
 | [CS-05](tasks/backend/class-space/CS-05-schedule-clashes.md) | Per-date changes, events, clashes | CS-04 | ⬜ |
 | [CS-06](tasks/backend/class-space/CS-06-document-import.md) | PDF/photo import via the Claude API | CS-03, CS-04, CS-07 | ⬜ |
