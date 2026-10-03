@@ -1,24 +1,21 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { config } from '../../config.js';
 import {
   auth,
   authenticate,
   clearSessionCookie,
   hashPassword,
   hashToken,
-  newToken,
   rateLimit,
+  sendResetLink,
   sessionToken,
   startSession,
   verifyPassword,
 } from '../../lib/auth.js';
 import { db } from '../../lib/db.js';
 import { HttpError, notImplemented } from '../../lib/http.js';
-import { sendMail } from '../../lib/mail.js';
 import { registry, route } from '../../lib/openapi.js';
 
-const RESET_MS = 60 * 60 * 1000;
 
 const user = z
   .object({
@@ -131,14 +128,10 @@ router.post(
   async (req, res) => {
     const found = await db.user.findUnique({ where: { email: (req.body as { email: string }).email } });
     if (found?.status === 'active') {
-      const { token, tokenHash } = newToken();
-      await db.passwordReset.create({ data: { userId: found.id, tokenHash, expiresAt: new Date(Date.now() + RESET_MS) } });
       // Not awaited: same response time and status whether or not the email exists.
-      sendMail(
-        found.email,
-        'Reset your password',
-        `Hi ${found.name},\n\nSomeone asked to reset your Digital Campus password. If it was you, set a new one here:\n\n${config.APP_URL}/reset/${token}\n\nThe link expires in an hour. If it was not you, ignore this email.\n`,
-      ).catch((err: Error) => console.error(`[mail] reset email failed: ${err.message}`));
+      sendResetLink(found, "Someone asked to reset your Digital Campus password. If it wasn't you, ignore this email. Otherwise set a new one here:").catch(
+        (err: Error) => console.error(`[mail] reset email failed: ${err.message}`),
+      );
     }
     res.json({ ok: true });
   },

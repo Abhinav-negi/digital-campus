@@ -11,3 +11,4 @@
 - [ ] Tests: deleting a used branch → 409; a new branch appears in the class-create picker.
 
 ## Notes
+- Done S05. `institutionOf(userId)` exported from admin/school.ts; branch codes uppercased, duplicate → 409 BRANCH_EXISTS. `GET /branches` (any session) = `branchesRouter`, mounted in app.ts by the orchestrator.

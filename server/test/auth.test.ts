@@ -129,7 +129,8 @@ test('forgot (always 200) → link in the log → reset → old sessions gone, n
   await request(app).post('/api/v1/auth/forgot').send({ email: 'nobody@demo.edu' }).expect(200, { ok: true });
   assert.equal(log.mock.callCount(), 0);
   await request(app).post('/api/v1/auth/forgot').send({ email: s3.user.email }).expect(200, { ok: true });
-  await new Promise((r) => setImmediate(r)); // sendMail is not awaited by the route
+  // The route doesn't await the reset write + mail (same timing either way): wait for the log line.
+  for (let i = 0; i < 100 && log.mock.callCount() === 0; i++) await new Promise((r) => setTimeout(r, 10));
   const resetToken = log.mock.calls.map((c) => String(c.arguments[0]).match(/\/reset\/(\S+)/)?.[1]).find(Boolean);
   assert.ok(resetToken);
   log.mock.restore();

@@ -10,3 +10,4 @@
 - [ ] Tests: grant → the user passes `admin()`; revoking the chief → 409; granting to a student → 422.
 
 ## Notes
+- Done S05. `PUT /admin/users/:id/admin`; notification type `admin-badge`. Self-revoke needs no check: the chief always keeps the badge.

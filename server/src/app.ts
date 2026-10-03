@@ -5,6 +5,7 @@ import { config } from './config.js';
 import { errorHandler, notFound } from './lib/http.js';
 import { openApiDocument } from './lib/openapi.js';
 import admin from './modules/admin/routes.js';
+import { branchesRouter } from './modules/admin/school.js';
 import attendance from './modules/attendance/routes.js';
 import auth from './modules/auth/routes.js';
 import classes from './modules/classes/routes.js';
@@ -35,6 +36,7 @@ const modules: [string | string[], Router][] = [
   ['/me', me],
   ['/commons', commons],
   ['/tickets', tickets],
+  ['/branches', branchesRouter],
   ['/admin', admin],
 ];
 

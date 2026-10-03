@@ -4,6 +4,7 @@ import type { Request, RequestHandler, Response } from 'express';
 import { config } from '../config.js';
 import { db } from './db.js';
 import { HttpError } from './http.js';
+import { sendMail } from './mail.js';
 
 // The wall (ARCH §3). Every guard authenticates on its own, so `router.use(commons())` is enough;
 // stacking `auth(), commons()` costs one session lookup, not two.
@@ -51,6 +52,16 @@ export const hashToken = (token: string) => createHash('sha256').update(token).d
 export const newToken = () => {
   const token = randomBytes(32).toString('base64url');
   return { token, tokenHash: hashToken(token) };
+};
+
+// --- password reset links (forgot + admin reset share one token/expiry rule) ---
+const RESET_MS = 60 * 60 * 1000;
+
+/** Store a single-use reset token (1 hour) and email the link; `intro` is the line above the link. */
+export const sendResetLink = async (user: { id: string; email: string; name: string }, intro: string) => {
+  const { token, tokenHash } = newToken();
+  await db.passwordReset.create({ data: { userId: user.id, tokenHash, expiresAt: new Date(Date.now() + RESET_MS) } });
+  await sendMail(user.email, 'Reset your password', `Hi ${user.name},\n\n${intro}\n\n${config.APP_URL}/reset/${token}\n\nThe link expires in an hour.\n`);
 };
 
 // --- sessions ---

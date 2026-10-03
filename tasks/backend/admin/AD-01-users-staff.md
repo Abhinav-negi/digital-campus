@@ -15,3 +15,7 @@
 - [ ] Tests: a non-admin → 403; a disabled user's session is rejected immediately; the chief can't be disabled (409).
 
 ## Notes
+- Done S05. `deleteUser(id, actor)` anonymises rather than deletes (history FKs are Restrict): Commons content + personal rows removed, the name becomes "Deleted student/teacher", the email `deleted-<id>@deleted.invalid`; attendance, tickets, board edits and audit stay. Active class teacher → 409 CLASS_TEACHER (hand over first).
+- Toggling an `invited` user's status → 409 INVITE_PENDING. lastLoginAt = newest LoginSession.createdAt (no column).
+- Orchestrator: forgot + admin reset now share `sendResetLink(user, intro)` in lib/auth.ts (one token/expiry rule).
+- Follow-ups: CS-09/10 read history from `Attendance` rows, not the current roster (deleted students lose ClassMember). AD-06 must tolerate reports whose target was deleted.
