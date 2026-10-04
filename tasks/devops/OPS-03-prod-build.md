@@ -16,3 +16,4 @@ One build that runs on any Node 24 host, configured only by env. No Dockerfile (
 
 ## Notes
 - S04: was "Dockerfile". A Dockerfile is added only if a chosen host can't run Node directly.
+- S05 attempt: build OK; `NODE_ENV=production npm start` failed right after `migrate deploy` (log not inspected). Reverted; start here.
