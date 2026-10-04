@@ -79,7 +79,7 @@ const roster = (classId: string, history?: Prisma.AttendanceWhereInput, tx: Pris
   });
 
 /** Each student's standing in one subject, over saved sessions only (an open check-in isn't final). */
-const standing = async (subjectId: string, studentIds: string[], min: number, tx: Prisma.TransactionClient = db) => {
+export const standing = async (subjectId: string, studentIds: string[], min: number, tx: Prisma.TransactionClient = db) => {
   const groups = await tx.attendance.groupBy({
     by: ['studentId', 'present'],
     where: { studentId: { in: studentIds }, session: { subjectId, savedAt: { not: null } } },

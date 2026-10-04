@@ -17,3 +17,10 @@
 - [ ] Tests call the job functions with a fixed date and assert the notifications; the mute rule is enforced.
 
 ## Notes
+- `text` lives in each notification's payload (set by whoever calls `notify`); the inbox renders `link` per type/payload keys and the `/s` vs `/t` shell. Link paths are a guess until the web routes exist.
+- Job idempotency is derived from existing rows (payload `boardItemId`+`days`, `postId`+`expiresAt`), so no schema change. Extending a post changes `expiresAt`, so it nudges again.
+- New types: `exam-reminder`, `deadline-reminder`, `board-expiring`, `attendance-digest` (all mutable). Muted users get no row, so a re-run does not retry them.
+- Attendance digest: skipped if a digest exists in the last 7 days or the low-subject set equals the last digest's. Reuses `standing` (now exported from attendance/routes.ts).
+- Invite cleanup: unaccepted, `expiresAt < now` and `createdAt` older than 30 days. `start()` is a no-op when NODE_ENV=test.
+- Run `npm run gen:api` to refresh the OpenAPI client for the new /me routes (not run).
+
