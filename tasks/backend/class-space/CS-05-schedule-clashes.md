@@ -21,3 +21,4 @@
 - Cancelled/moved slots stay in the list with `off: true` + `change` (badges, undo) and never clash. Item id = slot id, or the change id for extra/event/moved. A new cancel/move replaces the previous one for the same slot and date.
 - `clashWith` items name the other class; includes the same teacher in another class. Clash notifications come from a before/after diff on the affected dates (both teachers, including the actor); class-change notifications skip the actor. Timetable writes don't notify clashes.
 - Orchestrator: the own-subject check also requires `classId` (defence in depth).
+- Security (S05): `GET …/schedule` filters cross-class `clashWith` entries for students (staff/admin still see the same teacher's other classes).

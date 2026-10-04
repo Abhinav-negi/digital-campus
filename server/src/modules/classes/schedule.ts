@@ -178,7 +178,10 @@ router.get(
     const to = q.to ? new Date(q.to) : from;
     if (to < from || to > addDays(from, MAX_DAYS - 1)) throw new HttpError(422, 'VALIDATION', `to must be from..from + ${MAX_DAYS - 1} days`);
     const w = await load(db, classId, from, to);
-    res.json({ days: w.days.map((d) => ({ date: iso(d.date), items: d.items.filter((i) => i.classId === classId).map((i) => present(w, d.items, i)) })) });
+    // Cross-class clashes (the same teacher elsewhere) are for staff; students only see their own class's items.
+    const staff = req.user!.role === 'staff' || req.user!.isAdmin;
+    const view = (item: ReturnType<typeof present>) => (staff ? item : { ...item, clashWith: item.clashWith.filter((c) => c.classId === classId) });
+    res.json({ days: w.days.map((d) => ({ date: iso(d.date), items: d.items.filter((i) => i.classId === classId).map((i) => view(present(w, d.items, i))) })) });
   },
 );
 

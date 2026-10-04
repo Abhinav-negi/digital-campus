@@ -120,13 +120,16 @@ test('a clash notifies both teachers, across classes too; cancelling one clears 
   assert.deepEqual(p.items.map((i) => i.id).sort(), [extra.id, 'tt2'].sort());
   assert.ok(p.items.every((i) => i.cancel));
 
-  const item = (await scheduleOn(cr, date)).find((i) => i.id === extra.id)!;
+  const meera = await agent('teacher');
+  const item = (await scheduleOn(meera, date)).find((i) => i.id === extra.id)!;
   assert.deepEqual(item.clashWith.map((c) => c.className).sort(), ['CSE · 2nd year · A', 'CSE · 2nd year · B']);
-  const c2 = await scheduleOn(await agent('teacher'), date, 'c2');
+  // Students only see clashes inside their own class, never another class's schedule.
+  assert.deepEqual((await scheduleOn(cr, date)).find((i) => i.id === extra.id)!.clashWith.map((c) => c.className), ['CSE · 2nd year · A']);
+  const c2 = await scheduleOn(meera, date, 'c2');
   assert.ok(c2.some((i) => i.clashWith.some((c) => c.id === extra.id)));
 
   await cr.post(changes).send({ date, kind: 'cancelled', slotId: 'tt2' }).expect(201);
-  assert.deepEqual((await scheduleOn(cr, date)).find((i) => i.id === extra.id)!.clashWith.map((c) => c.className), ['CSE · 2nd year · B']);
+  assert.deepEqual((await scheduleOn(meera, date)).find((i) => i.id === extra.id)!.clashWith.map((c) => c.className), ['CSE · 2nd year · B']);
   await cr.delete(`${changes}/${extra.id}`).expect(204);
   assert.equal(await db.notification.count({ where: { type: 'clash' } }), got.length); // undoing removes clashes, never adds
 });
