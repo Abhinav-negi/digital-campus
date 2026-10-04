@@ -46,18 +46,7 @@ enum BoardItemKind {
   file
 }
 
-enum ImportKind {
-  timetable
-  syllabus
-  datesheet
-}
 
-enum ImportStatus {
-  processing
-  ready
-  failed
-  applied
-}
 
 enum PostKind {
   announcement
@@ -234,7 +223,6 @@ model User {
   subjectsAssigned Subject[]           @relation("SubjectAssignedBy")
   scheduleChanges  ScheduleChange[]
   boardItems       BoardItem[]
-  imports          DocumentImport[]
   posts            Post[]
   postsSeen        PostSeen[]
   reminders        Reminder[]
@@ -340,7 +328,6 @@ model Class {
   slots           TimetableSlot[]
   scheduleChanges ScheduleChange[]
   boardItems      BoardItem[]
-  imports         DocumentImport[]
   postTargets     PostTarget[]
   auditLogs       AuditLog[]
 }
@@ -362,7 +349,6 @@ model Term {
   slots              TimetableSlot[]
   scheduleChanges    ScheduleChange[]
   boardItems         BoardItem[]
-  imports            DocumentImport[]
   attendanceSessions AttendanceSession[]
 
   @@index([classId])
@@ -486,23 +472,6 @@ model BoardItem {
   @@index([classId, kind])
 }
 
-model DocumentImport {
-  id        String       @id @default(cuid())
-  classId   String
-  termId    String
-  kind      ImportKind
-  fileKey   String
-  status    ImportStatus @default(processing)
-  draft     Json?
-  error     String?
-  authorId  String
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-
-  class  Class @relation(fields: [classId], references: [id], onDelete: Cascade)
-  term   Term  @relation(fields: [termId], references: [id], onDelete: Cascade)
-  author User  @relation(fields: [authorId], references: [id], onDelete: Restrict)
-}
 
 model Post {
   id        String    @id @default(cuid())

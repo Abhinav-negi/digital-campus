@@ -20,8 +20,6 @@ const schema = z.object({
   S3_ACCESS_KEY: z.string().default(''),
   S3_SECRET_KEY: z.string().default(''),
   S3_FORCE_PATH_STYLE: z.stringbool().default(false),
-  ANTHROPIC_API_KEY: z.string().default(''), // empty = document import disabled
-  IMPORT_MODEL: z.string().default('claude-sonnet-5-5'),
   INSTITUTION_TZ: z.string().default('Asia/Kolkata'),
 });
 
