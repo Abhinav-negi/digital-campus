@@ -15,3 +15,8 @@
 - [ ] Tests: Focus blocks a cold request but not a post-linked one; the sixth request → 429; a non-participant student → 403; a blocked user can't request.
 
 ## Notes
+- Cap counts only cold requests (`postId: null`) by institution-tz day via `sameDay`; post-linked messages are exempt (PROTO msgPost has no cap).
+- Post-linked allowed kinds: gig/market/lost/found (asks → 422), blocked either way → 403 `BLOCKED`; reuses my existing conversation for that post (200) else creates accepted (201).
+- Admin may GET any conversation's messages; all writes (request, send) are student-only (admin → 403); respond is recipient-only.
+- An ignored request shows to the sender as `requested`, dropped from their list after 7 days (by `createdAt`); recipients never list ignored ones. Notifications: `message-request`, `message-accepted`, `message`.
+- Exported `effective` from profiles.ts (Focus past its date = open) to reuse the Focus rule. Message list is oldest-first, cursor-paged (poll with the last id).

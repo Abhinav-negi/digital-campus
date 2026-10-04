@@ -64,7 +64,7 @@ export const personSelect = {
 type PersonRow = Prisma.UserGetPayload<{ select: typeof personSelect }>;
 type ProfileRow = NonNullable<PersonRow['profile']>;
 
-const effective = (p: Pick<ProfileRow, 'availability' | 'focusUntil'>, on = today()): Avail =>
+export const effective = (p: Pick<ProfileRow, 'availability' | 'focusUntil'>, on = today()): Avail =>
   p.availability === 'focus' && p.focusUntil && p.focusUntil < on ? 'open' : p.availability;
 
 export const toCard = (u: PersonRow, myBranchId: string | null, on = today()): z.infer<typeof personCard> => {

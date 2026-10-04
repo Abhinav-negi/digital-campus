@@ -4,6 +4,7 @@ import { notImplemented } from '../../lib/http.js';
 import board from './board.js';
 import boardActions from './board-actions.js';
 import challenges from './challenges.js';
+import conversations from './conversations.js';
 import profiles from './profiles.js';
 import projects from './projects.js';
 
@@ -15,5 +16,6 @@ router.use(board);
 router.use(boardActions);
 router.use(projects);
 router.use(challenges);
+router.use(conversations);
 router.use(notImplemented);
 export default router;
