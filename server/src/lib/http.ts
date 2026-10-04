@@ -42,6 +42,11 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     res.status(err.status).json({ error: { code: err.code, message: err.message } });
     return;
   }
+  // A unique index lost a race (double tap, concurrent invite): the check-then-insert path's 409, not a 500.
+  if (err?.code === 'P2002') {
+    res.status(409).json({ error: { code: 'CONFLICT', message: 'That already exists' } });
+    return;
+  }
   // body-parser and friends set `status` (400 bad JSON, 413 too large).
   const status = typeof err?.status === 'number' && err.status >= 400 && err.status < 500 ? err.status : 500;
   if (status === 500) console.error(err);

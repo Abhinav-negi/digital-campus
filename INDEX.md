@@ -8,8 +8,8 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S05-2026-10-03.md](handoff/S05-2026-10-03.md) |
-| **Progress** | 26 / 78 done |
-| **Ready to start** | Wave 2 open (all FND ✅). In progress: CM-02/03 · CS-04/05 · AD-05. Ready: AD-03, CM-04, CM-05, CS-07, CS-08, CS-12 (needs mutedTypes migration), OPS-03, OPS-05. Next: CM-01, AD-05, CS-02/03/07/08/12, OPS-03, OPS-05 |
+| **Progress** | 28 / 78 done |
+| **Ready to start** | Wave 2 open (all FND ✅). In progress: CS-04/05 · AD-05. Ready: AD-03, CM-04, CM-05, CS-07, CS-08, CS-12 (needs mutedTypes migration), OPS-03, OPS-05. Next: CM-01, AD-05, CS-02/03/07/08/12, OPS-03, OPS-05 |
 | **Current wave** | Wave 2: Backend (Wave 1 ✅) |
 
 ## Waves (dispatch plan)
@@ -68,8 +68,8 @@
 | ID | Task | Deps | Status |
 |---|---|---|---|
 | [CM-01](tasks/backend/commons/CM-01-profiles-people.md) | Profiles, People search, data export | FND | ✅ |
-| [CM-02](tasks/backend/commons/CM-02-board-posts.md) | Board posts, feed, caps, expiry | CM-01 | 🟨 |
-| [CM-03](tasks/backend/commons/CM-03-board-actions-thanks.md) | Answers, interest/assign, claims, thanks | CM-02 | 🟨 |
+| [CM-02](tasks/backend/commons/CM-02-board-posts.md) | Board posts, feed, caps, expiry | CM-01 | ✅ |
+| [CM-03](tasks/backend/commons/CM-03-board-actions-thanks.md) | Answers, interest/assign, claims, thanks | CM-02 | ✅ |
 | [CM-04](tasks/backend/commons/CM-04-projects.md) | Projects, join requests, updates | CM-01 | ⬜ |
 | [CM-05](tasks/backend/commons/CM-05-challenges.md) | Challenges, submissions, likes | CM-01 | ⬜ |
 | [CM-06](tasks/backend/commons/CM-06-conversations.md) | Message requests + conversations | CM-02 | ⬜ |

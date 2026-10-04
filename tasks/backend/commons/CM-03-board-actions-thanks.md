@@ -17,3 +17,5 @@
 - [ ] Tests: only the author can assign, confirm or thank; a duplicate thanks → 409; thanks count in the profile track record.
 
 ## Notes
+- Done S05. Author-only actions: assign, done, confirm, thank (admins also 403). Thanks only to actual helpers (answerer, assignee, confirmed claimer). `done` = status done + automatic thanks + notify.
+- Orchestrator: unique indexes `Thanks(postId, toId)` and `Claim(postId, userId)` (migration `thanks_claim_unique`); the errorHandler maps Prisma P2002 → 409 CONFLICT, so every lost race is a 409, not a 500.

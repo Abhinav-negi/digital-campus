@@ -23,7 +23,7 @@ const links = z.object({
 });
 const emptyLinks = { github: '', leetcode: '', linkedin: '', other: [] };
 
-const personCard = z
+export const personCard = z
   .object({
     id: z.string(),
     name: z.string(),
@@ -55,7 +55,7 @@ const personProfile = personCard
   .meta({ id: 'PersonProfile' });
 
 // --- shared reads ---
-const personSelect = {
+export const personSelect = {
   id: true,
   name: true,
   profile: true,
@@ -67,7 +67,7 @@ type ProfileRow = NonNullable<PersonRow['profile']>;
 const effective = (p: Pick<ProfileRow, 'availability' | 'focusUntil'>, on = today()): Avail =>
   p.availability === 'focus' && p.focusUntil && p.focusUntil < on ? 'open' : p.availability;
 
-const toCard = (u: PersonRow, myBranchId: string | null, on = today()): z.infer<typeof personCard> => {
+export const toCard = (u: PersonRow, myBranchId: string | null, on = today()): z.infer<typeof personCard> => {
   const branch = u.homeClass?.branch ?? null;
   const year = u.homeClass?.terms[0]?.yearOfStudy ?? null;
   const p = u.profile ?? { availability: 'open' as const, focusUntil: null, headline: '', skills: [], helpsJuniors: false };
@@ -88,7 +88,7 @@ const toCard = (u: PersonRow, myBranchId: string | null, on = today()): z.infer<
 };
 
 /** The viewer's institution and branch (for scoping and the other-branch flag). */
-const viewerOf = (id: string) =>
+export const viewerOf = (id: string) =>
   db.user.findUniqueOrThrow({ where: { id }, select: { institutionId: true, homeClass: { select: { branchId: true } } } });
 
 /** The sender of an ignored request is never told (SPEC §9.7): it reads as still requested. */

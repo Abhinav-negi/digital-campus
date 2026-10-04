@@ -705,6 +705,7 @@ model Claim {
   post BoardPost @relation(fields: [postId], references: [id], onDelete: Cascade)
   user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([postId, userId]) // one claim per person per Found post (CM-03)
   @@index([postId])
 }
 
@@ -721,6 +722,7 @@ model Thanks {
   /// A thank-you outlives the post it was for.
   post BoardPost? @relation(fields: [postId], references: [id], onDelete: SetNull)
 
+  @@unique([postId, toId]) // one thank-you per helper per post (CM-03); NULL postIds don't collide
   @@index([toId])
 }
 

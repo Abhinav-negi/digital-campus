@@ -28,6 +28,15 @@ test('bad JSON body → 400 JSON', async () => {
   assert.equal(res.body.error.code, 'BAD_REQUEST');
 });
 
+test('unique-index race (Prisma P2002) → 409 CONFLICT, not 500', async () => {
+  const mini = express()
+    .get('/dup', () => {
+      throw Object.assign(new Error('Unique constraint failed'), { code: 'P2002' });
+    })
+    .use(errorHandler);
+  assert.equal((await request(mini).get('/dup').expect(409)).body.error.code, 'CONFLICT');
+});
+
 test('validate: zod failure → 422 VALIDATION, success → parsed values', async () => {
   const mini = express()
     .use(express.json())
