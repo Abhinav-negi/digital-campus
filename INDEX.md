@@ -8,8 +8,8 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S05-2026-10-03.md](handoff/S05-2026-10-03.md) |
-| **Progress** | 35 / 78 done |
-| **Ready to start** | 🟨 AD-03/08 · CS-09/10 (agents were mid-run when the session hit its usage limit: verify any uncommitted files first). Ready: CM-06, AD-07, CS-12, OPS-03, OPS-05 |
+| **Progress** | 37 / 78 done |
+| **Ready to start** | 🟨 CS-09/10 (agent were mid-run when the session hit its usage limit: verify any uncommitted files first). Ready: CM-06, AD-07, CS-12, OPS-03, OPS-05 |
 | **Current wave** | Wave 2: Backend (Wave 1 ✅) |
 
 ## Waves (dispatch plan)
@@ -81,12 +81,12 @@
 |---|---|---|---|
 | [AD-01](tasks/backend/admin/AD-01-users-staff.md) | Users, staff invites, disable, reset, delete | FND | ✅ |
 | [AD-02](tasks/backend/admin/AD-02-admin-badge.md) | Admin badge grant/revoke | AD-01 | ✅ |
-| [AD-03](tasks/backend/admin/AD-03-student-details.md) | Edit student details, move batch | AD-01, CS-02 | 🟨 |
+| [AD-03](tasks/backend/admin/AD-03-student-details.md) | Edit student details, move batch | AD-01, CS-02 | ✅ |
 | [AD-04](tasks/backend/admin/AD-04-school.md) | Institution + branches | FND | ✅ |
 | [AD-05](tasks/backend/admin/AD-05-tickets-inbox.md) | Tickets + admin inbox | FND | ✅ |
 | [AD-06](tasks/backend/admin/AD-06-moderation.md) | Moderation, bans, conversation access | CM-06, CM-07 | ⬜ |
 | [AD-07](tasks/backend/admin/AD-07-featured-flagship.md) | Featured + flagship | CM-04, CM-05 | ⬜ |
-| [AD-08](tasks/backend/admin/AD-08-audit-overview.md) | Audit log + overview | AD-05 | 🟨 |
+| [AD-08](tasks/backend/admin/AD-08-audit-overview.md) | Audit log + overview | AD-05 | ✅ |
 
 ## Frontend: Shared
 | ID | Task | Deps | Status |

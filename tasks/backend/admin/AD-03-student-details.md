@@ -11,3 +11,4 @@
 - [ ] Tests: after a move the student sees the new class and loses the old one; the audit has before/after.
 
 ## Notes
+- Done S05. Move = drop old ClassMember (incl. CR) + upsert new + homeClassId, one transaction, attendance untouched; invited students get a re-sent invite. Overview counts the last 7 days; classesWithoutTimetable = live classes with no slots in the active term (the 18 thin ones on the seed).
