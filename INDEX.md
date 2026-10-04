@@ -9,7 +9,7 @@
 |---|---|
 | **Latest handoff** | [handoff/S05-2026-10-03.md](handoff/S05-2026-10-03.md) |
 | **Progress** | 26 / 78 done |
-| **Ready to start** | Wave 2 open (all FND ✅). In progress: CM-02/03 · CS-04/05. Ready: AD-03, AD-05, CM-04, CM-05, CS-07, CS-08, CS-12 (needs mutedTypes migration), OPS-03, OPS-05. Next: CM-01, AD-05, CS-02/03/07/08/12, OPS-03, OPS-05 |
+| **Ready to start** | Wave 2 open (all FND ✅). In progress: CM-02/03 · CS-04/05 · AD-05. Ready: AD-03, CM-04, CM-05, CS-07, CS-08, CS-12 (needs mutedTypes migration), OPS-03, OPS-05. Next: CM-01, AD-05, CS-02/03/07/08/12, OPS-03, OPS-05 |
 | **Current wave** | Wave 2: Backend (Wave 1 ✅) |
 
 ## Waves (dispatch plan)
@@ -83,7 +83,7 @@
 | [AD-02](tasks/backend/admin/AD-02-admin-badge.md) | Admin badge grant/revoke | AD-01 | ✅ |
 | [AD-03](tasks/backend/admin/AD-03-student-details.md) | Edit student details, move batch | AD-01, CS-02 | ⬜ |
 | [AD-04](tasks/backend/admin/AD-04-school.md) | Institution + branches | FND | ✅ |
-| [AD-05](tasks/backend/admin/AD-05-tickets-inbox.md) | Tickets + admin inbox | FND | ⬜ |
+| [AD-05](tasks/backend/admin/AD-05-tickets-inbox.md) | Tickets + admin inbox | FND | 🟨 |
 | [AD-06](tasks/backend/admin/AD-06-moderation.md) | Moderation, bans, conversation access | CM-06, CM-07 | ⬜ |
 | [AD-07](tasks/backend/admin/AD-07-featured-flagship.md) | Featured + flagship | CM-04, CM-05 | ⬜ |
 | [AD-08](tasks/backend/admin/AD-08-audit-overview.md) | Audit log + overview | AD-05 | ⬜ |
