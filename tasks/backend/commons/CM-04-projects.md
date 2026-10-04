@@ -18,3 +18,7 @@
 
 ## Notes
 - From CM-01 (S05): validate `repoUrl` as an http(s) URL (`z.url({ protocol: /^https?$/ })`), never a bare string; it's rendered as a link.
+- Done S05. Project data: `branches`, `crossBranch`, members (owner first), `me` (member/requested/none). Pending requests are visible to the owner only. List = `featured` (featured + community, featured first) and `all`; no pagination (`ponytail:`). Hidden projects → 404 except for the owner and admins.
+- Accept/decline only while pending (conditional update; else 409). Notifications: `project-join` (to the owner) and `project-join-reply`. Made-up limits: title 140, description 2000, roles 10×40, note 300, update 1000.
+- JoinRequest "one pending" is check-then-insert (a partial unique index can't be expressed in Prisma); accepting a duplicate fails on ProjectMember's unique index → 409.
+- For AD-07: the list takes the newest `flagship`, so `PUT /admin/flagship` must clear the previous one in the same transaction. For CM-08: reuse `projectDetail`, `by`, `byline`, `viewer` from projects.ts.

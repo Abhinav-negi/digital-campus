@@ -352,12 +352,12 @@ async function seedDemo() {
       await tx.answer.createMany({ data: answers });
       await tx.interest.createMany({ data: interests });
       await tx.thanks.createMany({ data: thanks });
-      await tx.project.createMany({ data: projects.map(({ members, repo, ...p }) => ({ ...p, roles: [...p.roles], repoUrl: repo || null })) });
+      await tx.project.createMany({ data: projects.map(({ members, repo, ...p }) => ({ ...p, roles: [...p.roles], repoUrl: repo ? `https://${repo}` : null })) });
       await tx.projectMember.createMany({ data: projects.flatMap((p) => p.members.map((m) => ({ projectId: p.id, ...m }))) });
       await tx.joinRequest.createMany({ data: joinRequests });
       await tx.projectUpdate.createMany({ data: updates });
       await tx.challenge.createMany({ data: challenges.map(({ submissions, ...c }) => c) });
-      await tx.submission.createMany({ data: challenges.flatMap((c) => c.submissions.map(({ likes, ...s }) => ({ ...s, challengeId: c.id }))) });
+      await tx.submission.createMany({ data: challenges.flatMap((c) => c.submissions.map(({ likes, ...s }) => ({ ...s, url: `https://${s.url}`, challengeId: c.id }))) });
       await tx.submissionLike.createMany({ data: challenges.flatMap((c) => c.submissions.flatMap((s) => s.likes.map((userId) => ({ submissionId: s.id, userId })))) });
       await tx.conversation.createMany({ data: conversations.map(({ messages, ...c }) => c) });
       await tx.message.createMany({ data: conversations.flatMap((c) => c.messages.map((m, i) => ({ conversationId: c.id, senderId: m.senderId, body: m.body, createdAt: new Date(m.at.getTime() + i * 60_000) }))) });

@@ -8,8 +8,8 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S05-2026-10-03.md](handoff/S05-2026-10-03.md) |
-| **Progress** | 31 / 78 done |
-| **Ready to start** | In progress: CS-07/08 · CM-04/05 · AD-03/08. Ready next: CS-09, CS-12, CM-06, OPS-03, OPS-05 |
+| **Progress** | 33 / 78 done |
+| **Ready to start** | In progress: CS-07/08 · AD-03/08. Ready next: CM-06, AD-07, CS-09, CS-12, CM-06, OPS-03, OPS-05 |
 | **Current wave** | Wave 2: Backend (Wave 1 ✅) |
 
 ## Waves (dispatch plan)
@@ -70,8 +70,8 @@
 | [CM-01](tasks/backend/commons/CM-01-profiles-people.md) | Profiles, People search, data export | FND | ✅ |
 | [CM-02](tasks/backend/commons/CM-02-board-posts.md) | Board posts, feed, caps, expiry | CM-01 | ✅ |
 | [CM-03](tasks/backend/commons/CM-03-board-actions-thanks.md) | Answers, interest/assign, claims, thanks | CM-02 | ✅ |
-| [CM-04](tasks/backend/commons/CM-04-projects.md) | Projects, join requests, updates | CM-01 | 🟨 |
-| [CM-05](tasks/backend/commons/CM-05-challenges.md) | Challenges, submissions, likes | CM-01 | 🟨 |
+| [CM-04](tasks/backend/commons/CM-04-projects.md) | Projects, join requests, updates | CM-01 | ✅ |
+| [CM-05](tasks/backend/commons/CM-05-challenges.md) | Challenges, submissions, likes | CM-01 | ✅ |
 | [CM-06](tasks/backend/commons/CM-06-conversations.md) | Message requests + conversations | CM-02 | ⬜ |
 | [CM-07](tasks/backend/commons/CM-07-blocks-reports.md) | Block + report + auto-hide | CM-02, CM-04 | ⬜ |
 | [CM-08](tasks/backend/commons/CM-08-commons-card.md) | "From the Commons" card | CM-03, CM-04 | ⬜ |

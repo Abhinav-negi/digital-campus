@@ -825,6 +825,7 @@ model Submission {
 
   likes SubmissionLike[]
 
+  @@unique([challengeId, userId]) // one submission per person per challenge (CM-05)
   @@index([challengeId])
 }
 

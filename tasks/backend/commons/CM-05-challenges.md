@@ -15,3 +15,6 @@
 - [ ] Tests: likes are frozen after the end; the likes winner is computed; a second submission → 409.
 
 ## Notes
+- Done S05. Likes freeze after the end date (422). Likes-judged winners = all tied at max likes (none at 0); owner-judged winners must have submitted and the challenge must have ended. No liking your own submission (403, not in the spec). A challenge stays live through its end date (institution tz).
+- Orchestrator: `Submission @@unique([challengeId, userId])` (migration `submission_unique`); seed `repoUrl` and submission URLs now carry `https://`.
+- Not built: the profile mark for challenge winners/finishers (no CM-01 field yet). `challenge-winner` notification type for CS-12.
