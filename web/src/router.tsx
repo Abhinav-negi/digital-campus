@@ -32,10 +32,11 @@ const page = (title: string) => async () => ({
 
 const routes: RouteObject[] = [
   { path: '/', lazy: () => import('./routes/landing') },
-  { path: '/login', lazy: () => import('./routes/auth/login') },
+  // Already logged in → your home, not the form.
+  { path: '/login', loader: async () => { const me = await queryClient.fetchQuery(meQuery); return me ? redirect(homeOf(me)) : null; }, lazy: () => import('./routes/auth/login') },
   { path: '/forgot', lazy: () => import('./routes/auth/forgot') },
   { path: '/reset/:token', lazy: () => import('./routes/auth/reset') },
-  { path: '/invite/:token', lazy: page('Invite') },
+  { path: '/invite/:token', lazy: () => import('./routes/onboarding') },
   { path: '/s/*', loader: guard('s'), lazy: page('Student') },
   { path: '/t/*', loader: guard('t'), lazy: page('Teacher') },
   { path: '/a/*', loader: guard('a'), lazy: page('Admin') },
