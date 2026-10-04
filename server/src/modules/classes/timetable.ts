@@ -2,6 +2,7 @@ import type { Prisma } from '@prisma/client';
 import { Router } from 'express';
 import { z } from 'zod';
 import { audit } from '../../lib/audit.js';
+import type { AuthUser } from '../../lib/auth.js';
 import { classAccess } from '../../lib/auth.js';
 import { addDays } from '../../lib/dates.js';
 import { db } from '../../lib/db.js';
@@ -81,6 +82,22 @@ const findSlot = async (tx: Prisma.TransactionClient, classId: string, slotId: s
 
 const line = (s: { weekday: number; start: string; end: string; subjectId: string; room?: string | null }) => `${s.weekday} ${s.start}-${s.end} ${s.subjectId}${s.room ? ` ${s.room}` : ''}`;
 const snapshot = (s: SlotBody | { subjectId: string; weekday: number; start: string; end: string; room: string | null }) => ({ subjectId: s.subjectId, weekday: s.weekday, start: s.start, end: s.end, room: s.room ?? null });
+
+/** Replace the active term's whole week + audit (PUT /timetable; reused by CS-06 apply, which has just created its subjects in `tx`). */
+export const replaceWeek = async (tx: Prisma.TransactionClient, user: AuthUser, classId: string, slots: SlotBody[]) => {
+  const term = await activeTerm(classId, tx);
+  await assertSubjects(tx, term.id, slots.map((s) => s.subjectId));
+  const before = await tx.timetableSlot.findMany({ where: { termId: term.id }, orderBy: [{ weekday: 'asc' }, { start: 'asc' }] });
+  // ponytail: replacing drops the old slot ids, so their per-date changes go too (cascade); match slots if that bites.
+  await tx.timetableSlot.deleteMany({ where: { termId: term.id } });
+  await tx.timetableSlot.createMany({ data: slots.map((s) => ({ ...snapshot(s), classId, termId: term.id })) });
+  await audit(
+    user,
+    { action: 'timetable.replace', classId, targetType: 'Term', targetId: term.id, before: { count: before.length, slots: before.map(line) }, after: { count: slots.length, slots: slots.map(line) } },
+    tx,
+  );
+  return toWeek(term.id, await termSlots(tx, term.id));
+};
 
 const router = Router({ mergeParams: true });
 
@@ -194,20 +211,7 @@ router.put(
   async (req, res) => {
     const classId = String(req.params.id);
     const { slots } = req.body as { slots: SlotBody[] };
-    const result = await db.$transaction(async (tx) => {
-      const term = await activeTerm(classId, tx);
-      await assertSubjects(tx, term.id, slots.map((s) => s.subjectId));
-      const before = await tx.timetableSlot.findMany({ where: { termId: term.id }, orderBy: [{ weekday: 'asc' }, { start: 'asc' }] });
-      // ponytail: replacing drops the old slot ids, so their per-date changes go too (cascade); match slots if that bites.
-      await tx.timetableSlot.deleteMany({ where: { termId: term.id } });
-      await tx.timetableSlot.createMany({ data: slots.map((s) => ({ ...snapshot(s), classId, termId: term.id })) });
-      await audit(
-        req.user!,
-        { action: 'timetable.replace', classId, targetType: 'Term', targetId: term.id, before: { count: before.length, slots: before.map(line) }, after: { count: slots.length, slots: slots.map(line) } },
-        tx,
-      );
-      return toWeek(term.id, await termSlots(tx, term.id));
-    });
+    const result = await db.$transaction((tx) => replaceWeek(tx, req.user!, classId, slots));
     res.json(result);
   },
 );

@@ -54,12 +54,12 @@
 | [CS-03](tasks/backend/class-space/CS-03-subjects-allotment.md) | Staff directory + subjects + allotment + "Not me" | CS-01 | ✅ |
 | [CS-04](tasks/backend/class-space/CS-04-timetable.md) | Weekly timetable | CS-03 | ✅ |
 | [CS-05](tasks/backend/class-space/CS-05-schedule-clashes.md) | Per-date changes, events, clashes | CS-04 | ✅ |
-| [CS-06](tasks/backend/class-space/CS-06-chatbot-import.md) | Import via any chatbot: prompt → pasted JSON → preview → apply | CS-03, CS-04, CS-07 | ⬜ |
+| [CS-06](tasks/backend/class-space/CS-06-chatbot-import.md) | Import via any chatbot: prompt → pasted JSON → preview → apply | CS-03, CS-04, CS-07 | ✅ |
 | [CS-07](tasks/backend/class-space/CS-07-board-items.md) | Board items + edit history | CS-01 | ✅ |
 | [CS-08](tasks/backend/class-space/CS-08-posts.md) | Teacher posts, seen, remind | CS-01 | ✅ |
 | [CS-09](tasks/backend/class-space/CS-09-attendance-roll.md) | Attendance roll, past, corrections, views | CS-03 | ✅ |
 | [CS-10](tasks/backend/class-space/CS-10-attendance-code.md) | Attendance check-in code | CS-09 | ✅ |
-| [CS-11](tasks/backend/class-space/CS-11-today-upcoming.md) | Today, Upcoming, reminders | CS-05, CS-07, CS-08, CS-09 | ⬜ |
+| [CS-11](tasks/backend/class-space/CS-11-today-upcoming.md) | Today, Upcoming, reminders | CS-05, CS-07, CS-08, CS-09 | 🟨 |
 | [CS-12](tasks/backend/class-space/CS-12-notifications-jobs.md) | Notifications inbox + jobs | CS-01 | ⬜ |
 
 ## Backend: Commons

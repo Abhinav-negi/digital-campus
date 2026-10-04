@@ -111,7 +111,7 @@ const fromBody = (kind: Kind, f: Fields): Item => ({
 });
 
 /** Create + audit; a new exam or deadline tells the class (not the author). Reused by from-post. */
-const create = async (tx: Prisma.TransactionClient, user: AuthUser, classId: string, b: Item, extra: Record<string, string> = {}) => {
+export const create = async (tx: Prisma.TransactionClient, user: AuthUser, classId: string, b: Item, extra: Record<string, string> = {}) => {
   await check(tx, classId, user, b);
   // Notices and files persist across terms (termId null); the rest belong to the active term.
   const termId = b.kind === 'notice' || b.kind === 'file' ? null : (await activeTerm(classId, tx)).id;
