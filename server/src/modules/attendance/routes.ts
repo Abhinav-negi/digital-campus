@@ -8,7 +8,7 @@ import { db } from '../../lib/db.js';
 import { HttpError, notFound } from '../../lib/http.js';
 import { notify } from '../../lib/notify.js';
 import { registry, route } from '../../lib/openapi.js';
-import { codeAt, codeMatches, isOpen, newSecret, recordFail, secondsLeft, stepAt, tooManyGuesses, WINDOW_MS } from './code.js';
+import { codeAt, codeMatches, isOpen, newSecret, refundGuess, secondsLeft, stepAt, takeGuess, WINDOW_MS } from './code.js';
 import { attendanceSummary } from './math.js';
 
 // CS-09 roll + views, CS-10 check-in code (ARCH §3, §9.5, SPEC §8).
@@ -273,17 +273,15 @@ checkin.post(
     const me = req.user!;
     if (me.role !== 'student') throw new HttpError(403, 'FORBIDDEN', 'Only students check in');
     const now = Date.now();
-    if (tooManyGuesses(me.id, now)) throw new HttpError(429, 'RATE_LIMITED', 'Too many attempts, try again in a minute');
+    if (!takeGuess(me.id, now)) throw new HttpError(429, 'RATE_LIMITED', 'Too many attempts, try again in a minute');
     const open = await db.attendanceSession.findMany({
       where: { date: today(), codeOpenedAt: { gt: new Date(now - WINDOW_MS) }, subject: { class: { members: { some: { userId: me.id, role: { in: ['student', 'cr'] } } } } } },
       select: { id: true, codeSecret: true, codeOpenedAt: true, savedAt: true, subject: { select: { id: true, name: true } } },
     });
     const { code } = req.body as { code: string };
     const s = open.find((o) => isOpen(o, now) && codeMatches(o.codeSecret!, o.codeOpenedAt!, now, code));
-    if (!s) {
-      recordFail(me.id, now);
-      throw new HttpError(422, 'BAD_CODE', "That code didn't match");
-    }
+    if (!s) throw new HttpError(422, 'BAD_CODE', "That code didn't match");
+    refundGuess(me.id);
     const deviceId = req.deviceId ?? null;
     await db.$transaction(async (tx) => {
       const others = deviceId ? await tx.attendance.findMany({ where: { sessionId: s.id, deviceId, studentId: { not: me.id } }, select: { id: true } }) : [];

@@ -77,3 +77,10 @@ test('wrong guesses are rate-limited per student; staff cannot check in', async 
   await (await student('s7')).post('/api/v1/checkin').send({ code: '12a4' }).expect(422);
   await (await agent('teacher')).post('/api/v1/checkin').send({ code: '0000' }).expect(403);
 });
+
+test('parallel wrong guesses cannot outrun the limit (counted before any await)', async () => {
+  const s = await student('s9');
+  const codes = await Promise.all(Array.from({ length: 20 }, () => s.post('/api/v1/checkin').send({ code: '0000' }).then((r) => r.status)));
+  assert.equal(codes.filter((c) => c === 422).length, 5);
+  assert.equal(codes.filter((c) => c === 429).length, 15);
+});

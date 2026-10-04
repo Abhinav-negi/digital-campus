@@ -37,13 +37,17 @@ export const MAX_FAILS = 5;
 const FAIL_WINDOW_MS = 60_000;
 const fails = new Map<string, { count: number; resetAt: number }>();
 
-export const tooManyGuesses = (userId: string, now: number) => {
-  const f = fails.get(userId);
-  return !!f && f.resetAt > now && f.count >= MAX_FAILS;
-};
-
-export const recordFail = (userId: string, now: number) => {
+/**
+ * Count a guess BEFORE any await, so parallel requests can't all pass the check (TOCTOU brute force).
+ * False once the student is over MAX_FAILS in the window; a correct code gives the attempt back.
+ */
+export const takeGuess = (userId: string, now: number) => {
   let f = fails.get(userId);
   if (!f || f.resetAt <= now) fails.set(userId, (f = { count: 0, resetAt: now + FAIL_WINDOW_MS }));
-  f.count++;
+  return ++f.count <= MAX_FAILS;
+};
+
+export const refundGuess = (userId: string) => {
+  const f = fails.get(userId);
+  if (f && f.count > 0) f.count--;
 };

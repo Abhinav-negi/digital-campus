@@ -14,3 +14,4 @@
 ## Notes
 - Done S05. 4-digit HMAC code per 20s step, 2-minute window, current + previous step accepted (timing-safe). Guess limit 5/min per student, not per IP (one classroom Wi-Fi; in-memory `ponytail:`). Same device for two accounts → both flagged, both present. Opening the code resets everyone to absent-pending (PROTO); the teacher's PUT closes it.
 - TE-03: `POST …/:id/code`, poll `GET …/:id/code` every 2s (`secondsLeft`, `checkedIn`, `flagged`), save with `PUT`.
+- Security (S05): guesses are counted synchronously before any await (`takeGuess`), and a correct code refunds one (`refundGuess`). 20 parallel wrong guesses → exactly 5×422 + 15×429 (test).
