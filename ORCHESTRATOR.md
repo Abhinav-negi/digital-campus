@@ -4,6 +4,14 @@ You are the **orchestrator** of the Digital Campus build. You don't write most o
 
 The docs are split into many small files **on purpose**: read only what the current step needs. Never read every task file "to get context".
 
+**This file wins** over the global `orchestrator` skill wherever they differ (status symbols, handoff format, file names).
+
+**Budget rules (S06, after usage limits killed lanes twice in S05):**
+- Subagents run on **`model: "sonnet"`**; `"haiku"` for read-only or mechanical work. Never inherit Opus.
+- **One task per subagent.** Verify and commit it before giving that lane its next task.
+- **At most 2 lanes at once.** Parallel lanes save time, not tokens.
+- **Project-ready first (D16):** the "Deployment (later)" tasks in INDEX are not dispatched until the user asks.
+
 ---
 
 ## 1. File map
@@ -32,17 +40,16 @@ The docs are split into many small files **on purpose**: read only what the curr
 ```
 pick → brief → dispatch → verify → record → (repeat) → handoff
 ```
-**Pick.** Ready = status ⬜ and every dep ✅. Prefer the current wave's lanes. Group ready tasks into **lanes that don't share owned files** (each task file has an "Owns" line). Up to 3 lanes in parallel.
+**Pick.** Ready = status ⬜ and every dep ✅. Prefer the current wave's lanes. Group ready tasks into **lanes that don't share owned files** (each task file has an "Owns" line). At most 2 lanes in parallel.
 
-**Brief.** One subagent per lane, using the template in §4. A lane may hold 1–4 consecutive tasks of the same area (e.g. CS-01 → CS-02 → CS-03) when they're small. Mark them 🟨 in INDEX before dispatching.
+**Brief.** One subagent per task, using the template in §4. Mark it 🟨 in INDEX before dispatching.
 
-**Dispatch.** `Agent` tool, `subagent_type: general-purpose`. Run lanes in the background and in parallel. Don't duplicate their work while they run; prepare the next briefs or review finished lanes.
+**Dispatch.** `Agent` tool, `subagent_type: general-purpose`, **`model: "sonnet"`**. Run lanes in the background and in parallel. Don't duplicate their work while they run; prepare the next briefs or review finished lanes.
 
 **Verify (never skip).** For each returned task:
-- Read the diff (`git diff --stat`, then the important files).
-- Run that task's **Done when** checks yourself: tests, curl, the build. Paste the real output into your notes; the agent's claim alone isn't proof.
-- Check it touched only its **Owns** files. Anything else gets reverted or moved, with a reason.
-- Visual tasks: compare with the prototype (DESIGN.md "Visual rule").
+- `git diff --stat`: check it touched only its **Owns** files. Anything else gets reverted or moved, with a reason. Open only the risky files (guards, money/attendance maths, deletes), not the whole diff.
+- Run that task's **Done when** checks yourself: tests, curl, the build. The agent's claim alone isn't proof.
+- No screenshots per task: the visual comparison happens once, in QA-03.
 
 **Record.**
 - INDEX: ✅ (or ⛔ with the reason in the task's Notes). Update "Progress" and "Ready to start".
@@ -114,7 +121,7 @@ Create `handoff/S<nn>-<YYYY-MM-DD>.md` (next number) with this shape, **under 40
 Then update INDEX "Now" (latest handoff link, progress, ready list, current wave) and commit: `git commit -m "handoff S<nn>"`.
 
 ## 9. Conventions
-- Task IDs: `DOC OPS FND CS CM AD FS ST TE AF QA` + a 2-digit number. New tasks take the next number in their region.
+- Task IDs: `DOC OPS FND CS CM AD FS ST TE AF QA` + a 2-digit number. New tasks take the next number in their region. A split task keeps its number plus a letter (ST-03a/b/c); a dep on "ST-03" means all of its parts.
 - Task files are 20–40 lines. If one grows past that, split it.
 - Citation forms: `ARCH §9.3`, `SPEC §7.1`, `PROTO student.html:147-177`, `D11`.
 - Commits: `<ID>: <imperative summary>`. End commit messages with the Co-Authored-By line from the session's system instructions, if any.

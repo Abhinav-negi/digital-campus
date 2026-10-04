@@ -7,7 +7,7 @@
 - **Add teacher** sheet (name, email, department) → invite sent.
 - The user sheet: edit details (students: name, ID, email; Move to batch picker), Disable/Enable, Reset password, **Make admin / Remove admin** (disabled for the chief with a tooltip), Ban/Unban (Commons), Delete (strong confirm).
 
-**Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. Compare side by side with the prototype at 1280px and 390px before calling it done.
+**Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. No screenshots here: QA-03 does one visual pass at the end.
 
 ## Done when
 - [ ] Add teacher → they accept the invite → they appear active; badge grant works.

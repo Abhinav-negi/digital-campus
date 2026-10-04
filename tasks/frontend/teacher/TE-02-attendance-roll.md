@@ -7,7 +7,7 @@
 - Editing a saved session shows the previous absentees preselected and saves as a correction.
 - Hide the bottom nav while attending (`body.attending`).
 
-**Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. Compare side by side with the prototype at 1280px and 390px before calling it done.
+**Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. No screenshots here: QA-03 does one visual pass at the end.
 
 ## Done when
 - [ ] Tap 3 absent + save → the student's % changes (the SPEC §15 demo step 5).

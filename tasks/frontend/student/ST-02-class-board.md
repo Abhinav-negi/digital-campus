@@ -8,7 +8,7 @@
 - **Every empty section → a `<CrWillAdd>` placeholder.**
 - A term switcher (past terms read-only) when more than one term exists.
 
-**Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. Compare side by side with the prototype at 1280px and 390px before calling it done.
+**Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. No screenshots here: QA-03 does one visual pass at the end.
 
 ## Done when
 - [ ] Parity with the prototype board; the past-term switcher shows old data read-only.

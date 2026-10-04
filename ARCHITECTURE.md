@@ -26,13 +26,14 @@ Architecture in one line: **one TypeScript monorepo → one container (REST API 
 | D5 | **Batch promotion.** The class teacher (or admin) taps **Start next semester** after exams: the semester goes +1, `yearOfStudy = ceil(semester/2)`, the roster carries over, and the old term stays viewable read-only. After semester 8: **Graduate** → archived; students keep their Commons profile. |
 | D6 | **Admin inbox.** Any student or teacher can open a **ticket** (request or issue). The admin replies. Commons **reports** appear in the same inbox. |
 | D7 | **The CR fills the class.** The CR (or class teacher) creates subjects and picks each subject's teacher from the **staff directory**. That teacher is **auto-allotted**: the class appears on their dashboard, and they get a notification with a **"Not me"** button (it unassigns them and tells the CR). |
-| D8 | **Document import via the Claude API.** The CR uploads a timetable / syllabus / datesheet PDF or photo → structured draft → **editable preview** (unmatched teachers and bad rows highlighted) → confirm. If there's no API key, the import is hidden and manual entry still works. |
+| D8 | **Import via any chatbot (S06, was the Claude API).** The app shows a ready-made prompt per kind (timetable / syllabus / datesheet). The CR gives it + their PDF or photo to any chatbot (ChatGPT, Gemini, Claude), pastes back the JSON → the server validates it → **editable preview** (unmatched teachers and bad rows highlighted) → confirm. No API key, no cost, no AI in the server; manual entry still works. |
 | D9 | **Friendly empty states.** Anything not yet added shows a placeholder such as "Your CR will add the timetable soon". |
 | D10 | **The timetable follows reality.** Weekly slots are the base, plus **per-date changes** (cancel, move, extra class, event). The CR edits the week ahead; a teacher cancels or postpones **their own** class (later today or another date). |
 | D11 | **Clashes are allowed, never blocked.** Overlaps within one class, or one teacher in two classes, are computed on read and shown as a **Clash** badge. Both teachers are notified ("who's taking it?") with Cancel / Postpone. The clash clears when one acts; otherwise it stays as information. |
 | D12 | Scope v1 = **full prototype parity**. Deferred: GitHub commit sync, the LeetCode summary, web push, offline attendance sync (see §15). |
 | D13 | Later: **branch-scoped admins** (HOD per branch). |
 | D14 | **No Docker anywhere** (S04). Dev Postgres 17 = `npm run db:start` (`embedded-postgres`, no sudo). `SMTP_HOST` empty → emails are printed to the server log. `S3_ENDPOINT` empty → files live on local disk (`.data/uploads`) behind the same presign API. Prod is a plain Node process (`npm run build && npm start`); every host above runs Node natively. Prod still switches by env vars only. |
+| D16 | **Project-ready first, ship-ready later (S06).** Build and verify everything on localhost (local Postgres, local disk files, real email via Gmail SMTP). Deployment-only work (prod build, deploy guide, CI, S3 driver, prod smoke) is parked in INDEX "Deployment (later)" and listed in `docs/DEPLOY-CHECKLIST.md`. Code still switches by env vars only, so nothing is removed. |
 | D15 | **One institution per deployment in v1.** `institutionId` stays on top-level rows (ARCH §7), but admin queries are not scoped by it. Turning on multi-institution means scoping every admin and staff lookup by `institutionId` first (QA-04 checks this). |
 
 ---
@@ -72,11 +73,11 @@ Architecture in one line: **one TypeScript monorepo → one container (REST API 
  │  /api/v1/*  modules → zod → Prisma               │
  │  /*         static web/dist (PWA)                │
  │  node-cron  reminders · expiry nudges            │
- └──┬──────────┬───────────┬──────────┬────────────┘
-    │          │           │          │
- Postgres   S3 / disk    SMTP / log    Anthropic API
- (Prisma)  (presigned    (invites,    (document
-           uploads)      resets)      import only)
+ └──┬──────────┬───────────┬──────────────────────┘
+    │          │           │
+ Postgres   S3 / disk    SMTP / log
+ (Prisma)  (presigned    (invites,
+           uploads)      resets)
 ```
 Realtime = **polling** (check-in list every 2s, seen counts and notifications every 30s). There's no socket server.
 
@@ -91,7 +92,7 @@ Realtime = **polling** (check-in list every 2s, seen counts and notifications ev
 | Auth | opaque session token (32 random bytes; SHA-256 stored in `LoginSession`; 30-day sliding). Web: httpOnly `SameSite=Lax` cookie + Origin check on writes. App: `Authorization: Bearer`. Passwords: `node:crypto` scrypt. `express-rate-limit` on auth routes. | |
 | Email | nodemailer → server log (dev, `jsonTransport`) / SMTP (prod) | D14 |
 | Files | `@aws-sdk/client-s3` + presigner → S3 or R2 (prod); local disk + HMAC-signed URLs (dev, tests) | client PUTs directly; D14 |
-| Import | `@anthropic-ai/sdk`. Document/image block in, zod-validated JSON out. Model from env `IMPORT_MODEL` (default `claude-sonnet-5-5`). **Load the `claude-api` skill before writing it.** | |
+| Import | No SDK. Prompt texts served by the API; the pasted chatbot JSON is zod-validated | D8 |
 | Jobs | `node-cron` in-process | `ponytail:` single instance; pg-boss if scaled out |
 | Web | React 19, Vite, react-router, TanStack Query, `openapi-fetch` + `openapi-typescript`, `vite-plugin-pwa`, `@fontsource/josefin-sans` | **No Tailwind**: `style.css` is ported verbatim (DESIGN.md) |
 | Avatars | DiceBear `notionists` URL + initials fallback (same as PROTO data.js:329-334) | |
@@ -150,8 +151,6 @@ ScheduleChange(classId, termId, date, slotId?, kind[cancelled|moved|extra|event]
                subjectId?, title?, start?, end?, room?, movedToDate?, note?, authorId)
 BoardItem(termId?, classId, kind[notice|syllabus|exam|deadline|file], subjectId?, title, body?,
           units[]?, fileKey?, fileName?, date?, pinned, authorId)  -- notices/files: termId null = persist across terms
-DocumentImport(classId, termId, kind[timetable|syllabus|datesheet], fileKey, status[processing|ready|failed|applied],
-               draft Json?, error?, authorId)
 Post(authorId, kind[announcement|assignment], title, body, fileKey?, fileName?, dueAt?, repliesOn=false)
 PostTarget(postId, classId) · PostSeen(postId, userId, seenAt)
 Reminder(teacherId, title, date)
@@ -211,7 +210,7 @@ Exact endpoints live in each task file, and the generated OpenAPI is the final c
 
 **9.3 Schedule and clashes (D10, D11).** `schedule(classId, date)` = active-term slots where `weekday = dow(date)`, minus slots with a `cancelled`/`moved` change on that date, plus `extra`/`event` changes on that date, plus `moved` changes whose `movedToDate = date`. Each item: `{kind, subject?, title?, teacher?, start, end, room, changed?, clashWith[]}`. **Clash** = intervals overlap (`a.start < b.end && b.start < a.end`) within the class, or the same teacher across classes. On a write that creates a clash, notify each involved teacher ("Two classes overlap at 13:00 in CSE · 2nd year · A, who's taking it?") with links to cancel/postpone. Teacher Today = the union of `schedule()` across their subjects. Pure maths goes in `schedule/math.ts` with unit tests.
 
-**9.4 Document import (D8).** Upload → `DocumentImport{processing}` → background call to Claude with the file and a kind-specific zod schema (timetable: subjects with teacher names + slots; syllabus: subject → units; datesheet: exams with dates) → match teacher names to staff (case-insensitive, titles stripped, best match + confidence) → `ready` with draft. The client polls, shows an editable preview table, then `POST …/imports/:id/apply` writes the rows in one transaction, audited. Failure → `failed` + message; manual entry still works.
+**9.4 Import (D8).** `GET …/imports/prompts` → the CR copies the prompt for a kind into any chatbot with their file → pastes the JSON → `POST …/imports/preview` zod-validates it (timetable: subjects with teacher names + slots; syllabus: subject → units; datesheet: exams with dates), normalises times/weekdays and matches teacher names to staff (case-insensitive, titles stripped, best match + confidence) → an editable preview table → `POST …/imports/apply` writes the rows in one transaction, audited. Stateless: nothing is stored before apply. Bad JSON → 422 with readable errors; manual entry still works.
 
 **9.5 Attendance.** Roll: everyone is present by default; the save body is `{absentIds[]}` and it upserts every row. Code: `POST /attendance-sessions/:id/code` opens a 2-min window. Code = `HMAC(codeSecret, floor(t/20s)) mod 10000`, and the current or previous window is accepted. A student check-in records `deviceId`. **One device for two accounts → both `flagged`, never rejected.** The teacher's save is final. A past session is allowed for today or yesterday (paper days). Corrections → AuditLog before/after. The CR gets **403**.
 
@@ -229,7 +228,7 @@ Exact endpoints live in each task file, and the generated OpenAPI is the final c
 
 ## 11. Notifications and jobs
 - `notify(userId, type, payload)` writes the in-app inbox. Students may mute types except `class-change`.
-- Event → recipients follow SPEC §11, plus: `subject-allotted` (teacher, with "Not me"), `clash` (both teachers), `ticket-reply`, `import-ready` (CR).
+- Event → recipients follow SPEC §11, plus: `subject-allotted` (teacher, with "Not me"), `clash` (both teachers), `ticket-reply`.
 - `jobs.ts` (node-cron, institution tz): 07:00 daily exam/deadline 3-day and 1-day reminders; daily board-post "expires in 2 days" nudges; daily invite cleanup. Focus revert and expiry are computed on read, so they need no job.
 
 ---
@@ -249,9 +248,9 @@ Seed logins (demo password `campus123`): chief admin `academics@demo.edu`, teach
 
 ## 13. Production
 - **One Node process**: `npm ci && npm run build`, then `npm start` (= `prisma migrate deploy && node dist/index.js`), serving `/api/v1` and `web/dist`. No Dockerfile (D14); add one only if a host demands it.
-- **Switching from local = env vars only**: `DATABASE_URL` (Neon/Supabase/RDS), `S3_*` (S3/R2), `SMTP_*` (Resend/SES), `APP_URL`, `COOKIE_SECURE=true`, `ANTHROPIC_API_KEY`.
+- **Switching from local = env vars only**: `DATABASE_URL` (Neon/Supabase/RDS), `S3_*` (S3/R2), `SMTP_*` (Resend/SES), `APP_URL`, `COOKIE_SECURE=true`.
 - Any Node host (Render, Railway, Fly, a VPS with Node 24 + systemd). HTTPS terminated by the host. Daily DB backups by the provider.
-- Details: `docs/DEPLOY.md` (task OPS-04).
+- Details: `docs/DEPLOY-CHECKLIST.md` now (D16); the full `docs/DEPLOY.md` is task OPS-04, later.
 
 ---
 
@@ -261,6 +260,6 @@ Bearer auth (`POST /auth/login {email,password,client:"app"}` → `{token,user}`
 ---
 
 ## 15. Testing and deferred work
-**Required tests** (QA-01 gates them): the wall (teacher → 403 on every `/commons/*`; admin → 200 + audit row); CR → 403 on attendance; a student can't read another's attendance; attendance maths (ported cases); promotion; schedule maths + clashes; check-in window + device flag; 5/day caps; the Focus gate (cold blocked, post-linked allowed); "Not me"; import draft validation with the Anthropic client stubbed.
+**Required tests** (QA-01 gates them): the wall (teacher → 403 on every `/commons/*`; admin → 200 + audit row); CR → 403 on attendance; a student can't read another's attendance; attendance maths (ported cases); promotion; schedule maths + clashes; check-in window + device flag; 5/day caps; the Focus gate (cold blocked, post-linked allowed); "Not me"; import JSON validation + teacher matching.
 
 **Deferred** (not v1): GitHub commit sync, the LeetCode summary, web push (VAPID) + FCM, offline attendance queue (IndexedDB), iCal export, Hindi, branch-scoped admins (D13), alumni, escrow.

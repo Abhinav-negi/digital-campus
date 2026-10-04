@@ -7,7 +7,7 @@
 - Step 2: paste ID + email (sample button only in dev) → the dry-run preview.
 - Step 3: pick the CR → "Create & send invites" → `/t/class/:id/students`.
 
-**Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. Compare side by side with the prototype at 1280px and 390px before calling it done.
+**Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. No screenshots here: QA-03 does one visual pass at the end.
 
 ## Done when
 - [ ] Invite emails appear in the server log; the class shows in Classes with the CR set.

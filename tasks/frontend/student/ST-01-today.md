@@ -7,7 +7,7 @@
 - Attendance at a glance (bars + "Safe by N" text from the API); Coming up (14d); New from teachers (opening one marks it seen via ST-06); the From the Commons card with "Next · i of n" rotation.
 - **D9:** if `empty.timetable`, show `<CrWillAdd what="timetable">` in place of the hero and schedule (the CR sees "Add timetable" → ST-03).
 
-**Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. Compare side by side with the prototype at 1280px and 390px before calling it done.
+**Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. No screenshots here: QA-03 does one visual pass at the end.
 
 ## Done when
 - [ ] With seed data it matches the prototype; with an empty class it shows the placeholders.

@@ -1,15 +1,15 @@
 # Digital Campus: Task Index
 
 > **Status lives only here.** ⬜ todo · 🟨 in progress · ✅ done (verified) · ⛔ blocked (say why in Notes of the task file)
-> **Deps** must all be ✅ before a task starts. `FND` = all FND-* tasks.
+> **Deps** must all be ✅ before a task starts. `FND` = all FND-* tasks. A dep on a split task (`ST-03`) means all its parts (ST-03a/b/c).
 > Update this file at the end of every task and every session (ORCHESTRATOR.md §3).
 
 ## Now
 | | |
 |---|---|
-| **Latest handoff** | [handoff/S05-2026-10-03.md](handoff/S05-2026-10-03.md) |
-| **Progress** | 39 / 78 done |
-| **Ready to start** | CS-11/12 · CM-06/07/08 · CS-06 (dispatched in S05 but stopped before writing anything) · AD-07 · OPS-03 · OPS-05. Then AD-06, then Wave 3 |
+| **Latest handoff** | [handoff/S06-2026-10-04.md](handoff/S06-2026-10-04.md) |
+| **Progress** | 39 / 82 done (project-ready) · 4 deployment tasks parked |
+| **Ready to start** | CS-06 (new chatbot import) · CS-11/12 · CM-06/07/08 · AD-07. Then AD-06, then Wave 3 |
 | **Current wave** | Wave 2: Backend (Wave 1 ✅) |
 
 ## Waves (dispatch plan)
@@ -17,8 +17,9 @@
 |---|---|---|
 | 1 Foundation | Repo, infra, schema, auth, web shell | lane A: OPS-01 → OPS-02 → FND-01 → FND-02 → FND-04 → FND-03/05/06/07 → FND-08 · lane B (after OPS-01): FS-01 → FS-02 → FS-03 → FS-04 → FS-08 · then FS-05 → FS-06 → FS-07 |
 | 2 Backend | All API modules | lane CS (CS-01…12) · lane CM (CM-01…08) · lane AD (AD-01, 02, 04, 05, 08 first; AD-03/06/07 once their CS/CM deps land) |
-| 3 Frontend | Every screen | lane ST (ST-01…10) · lane TE (TE-01…08) · lane AF (AF-01…05, after TE-05 / ST-09 for reuse) |
-| 4 Ship | Gates and deploy | QA-01 → QA-04 · QA-02, QA-03 · OPS-03 → OPS-04 → QA-05 · OPS-05 · DOC-01 (any time) |
+| 3 Frontend | Every screen | lane ST (ST-01…10b) · lane TE (TE-01a…08) · lane AF (AF-01…05, after TE-05 / ST-09 for reuse). One task per subagent |
+| 4 Project QA | Gates for the college demo | QA-01 → QA-04 · QA-02, QA-03 |
+| Later | Deployment (D16) | OPS-03 → OPS-04 → QA-05 · OPS-05: only when the user asks |
 
 ---
 
@@ -32,9 +33,6 @@
 |---|---|---|---|
 | [OPS-01](tasks/devops/OPS-01-monorepo.md) | Monorepo + workspaces + scripts | — | ✅ |
 | [OPS-02](tasks/devops/OPS-02-local-services.md) | Local services without Docker (`db:start`) + .env | OPS-01 | ✅ |
-| [OPS-03](tasks/devops/OPS-03-prod-build.md) | Production build (API + PWA, one Node process) | FND-01, FS-01 | ⬜ |
-| [OPS-04](tasks/devops/OPS-04-deploy-guide.md) | Deploy guide | OPS-03 | ⬜ |
-| [OPS-05](tasks/devops/OPS-05-ci.md) | CI pipeline | FND-08 | ⬜ |
 
 ## Backend: Foundation
 | ID | Task | Deps | Status |
@@ -56,7 +54,7 @@
 | [CS-03](tasks/backend/class-space/CS-03-subjects-allotment.md) | Staff directory + subjects + allotment + "Not me" | CS-01 | ✅ |
 | [CS-04](tasks/backend/class-space/CS-04-timetable.md) | Weekly timetable | CS-03 | ✅ |
 | [CS-05](tasks/backend/class-space/CS-05-schedule-clashes.md) | Per-date changes, events, clashes | CS-04 | ✅ |
-| [CS-06](tasks/backend/class-space/CS-06-document-import.md) | PDF/photo import via the Claude API | CS-03, CS-04, CS-07 | ⬜ |
+| [CS-06](tasks/backend/class-space/CS-06-chatbot-import.md) | Import via any chatbot: prompt → pasted JSON → preview → apply | CS-03, CS-04, CS-07 | ⬜ |
 | [CS-07](tasks/backend/class-space/CS-07-board-items.md) | Board items + edit history | CS-01 | ✅ |
 | [CS-08](tasks/backend/class-space/CS-08-posts.md) | Teacher posts, seen, remind | CS-01 | ✅ |
 | [CS-09](tasks/backend/class-space/CS-09-attendance-roll.md) | Attendance roll, past, corrections, views | CS-03 | ✅ |
@@ -88,6 +86,15 @@
 | [AD-07](tasks/backend/admin/AD-07-featured-flagship.md) | Featured + flagship | CM-04, CM-05 | ⬜ |
 | [AD-08](tasks/backend/admin/AD-08-audit-overview.md) | Audit log + overview | AD-05 | ✅ |
 
+## Deployment (later, D16)
+*Parked: not dispatched until the user asks. The one-page list is [docs/DEPLOY-CHECKLIST.md](docs/DEPLOY-CHECKLIST.md).*
+| ID | Task | Deps | Status |
+|---|---|---|---|
+| [OPS-03](tasks/devops/OPS-03-prod-build.md) | Production build (API + PWA, one Node process) | FND-01, FS-01 | ⬜ |
+| [OPS-04](tasks/devops/OPS-04-deploy-guide.md) | Deploy guide | OPS-03 | ⬜ |
+| [OPS-05](tasks/devops/OPS-05-ci.md) | CI pipeline | FND-08 | ⬜ |
+| [QA-05](tasks/qa/QA-05-prod-smoke.md) | Production build smoke test | OPS-03, OPS-04 | ⬜ |
+
 ## Frontend: Shared
 | ID | Task | Deps | Status |
 |---|---|---|---|
@@ -105,23 +112,30 @@
 |---|---|---|---|
 | [ST-01](tasks/frontend/student/ST-01-today.md) | Today | FS-06, CS-11, CM-08 | ⬜ |
 | [ST-02](tasks/frontend/student/ST-02-class-board.md) | Class: Board (read, empty states, terms) | FS-06, CS-05, CS-07 | ⬜ |
-| [ST-03](tasks/frontend/student/ST-03-cr-edit.md) | CR edit: board, subjects + teacher picker, week grid | ST-02, CS-03, CS-04 | ⬜ |
+| [ST-03a](tasks/frontend/student/ST-03a-board-edit.md) | CR edit: toggle, board forms, history, tip sheet | ST-02, CS-07 | ⬜ |
+| [ST-03b](tasks/frontend/student/ST-03b-subjects.md) | CR edit: subjects + teacher picker | ST-02, CS-03 | ⬜ |
+| [ST-03c](tasks/frontend/student/ST-03c-week-editor.md) | CR edit: weekly timetable editor | ST-03b, CS-04 | ⬜ |
 | [ST-04](tasks/frontend/student/ST-04-week-ahead.md) | Week-ahead changes, events, clashes | ST-03, CS-05 | ⬜ |
-| [ST-05](tasks/frontend/student/ST-05-import-preview.md) | Import PDF/photo → preview → confirm | ST-03, CS-06 | ⬜ |
+| [ST-05](tasks/frontend/student/ST-05-import-preview.md) | Import: copy prompt → paste JSON → preview → confirm | ST-03, CS-06 | ⬜ |
 | [ST-06](tasks/frontend/student/ST-06-posts-attendance.md) | Posts, my attendance, check-in | ST-02, CS-08, CS-10 | ⬜ |
-| [ST-07](tasks/frontend/student/ST-07-commons-board.md) | Commons Board | FS-06, CM-02, CM-03, CM-06, CM-07 | ⬜ |
-| [ST-08](tasks/frontend/student/ST-08-build.md) | Build: flagship, projects, challenges | ST-07, CM-04, CM-05 | ⬜ |
+| [ST-07a](tasks/frontend/student/ST-07a-commons-feed.md) | Commons: header, feed, compose | FS-06, CM-02 | ⬜ |
+| [ST-07b](tasks/frontend/student/ST-07b-post-sheet.md) | Commons: post sheet actions + report | ST-07a, CM-03, CM-06, CM-07 | ⬜ |
+| [ST-08a](tasks/frontend/student/ST-08a-projects.md) | Build: flagship + projects | ST-07a, CM-04 | ⬜ |
+| [ST-08b](tasks/frontend/student/ST-08b-challenges.md) | Build: challenges | ST-08a, CM-05 | ⬜ |
 | [ST-09](tasks/frontend/student/ST-09-people.md) | People + person sheet + request | ST-07, CM-01, CM-06 | ⬜ |
-| [ST-10](tasks/frontend/student/ST-10-me.md) | Me: profile, messages, notifications, tickets, data | ST-09, CS-12, AD-05 | ⬜ |
+| [ST-10a](tasks/frontend/student/ST-10a-me-profile.md) | Me: profile + your data | ST-09 | ⬜ |
+| [ST-10b](tasks/frontend/student/ST-10b-me-inbox.md) | Me: messages, notifications, contact admin | ST-10a, CS-12, AD-05 | ⬜ |
 
 ## Frontend: Teacher
 | ID | Task | Deps | Status |
 |---|---|---|---|
-| [TE-01](tasks/frontend/teacher/TE-01-today.md) | Today: sessions, cancel/postpone, clashes, allotments | FS-06, CS-05, CS-11 | ⬜ |
+| [TE-01a](tasks/frontend/teacher/TE-01a-today.md) | Today: sessions + cancel/postpone | FS-06, CS-05, CS-11 | ⬜ |
+| [TE-01b](tasks/frontend/teacher/TE-01b-clash-allot.md) | Today: clash banner + allotment card | TE-01a, CS-12 | ⬜ |
 | [TE-02](tasks/frontend/teacher/TE-02-attendance-roll.md) | Attendance: tap the absent | TE-01, CS-09 | ⬜ |
 | [TE-03](tasks/frontend/teacher/TE-03-attendance-code.md) | Attendance: code mode | TE-02, CS-10 | ⬜ |
 | [TE-04](tasks/frontend/teacher/TE-04-classes-list.md) | Classes list | FS-06, CS-01, CS-08 | ⬜ |
-| [TE-05](tasks/frontend/teacher/TE-05-class-tabs.md) | Class: Board · Posts · Students · Attendance | TE-04, ST-03, CS-02 | ⬜ |
+| [TE-05a](tasks/frontend/teacher/TE-05a-class-view.md) | Class: shell, Board, Posts | TE-04, ST-03 | ⬜ |
+| [TE-05b](tasks/frontend/teacher/TE-05b-students-attendance.md) | Class: Students + Attendance tabs | TE-05a, CS-02 | ⬜ |
 | [TE-06](tasks/frontend/teacher/TE-06-class-settings.md) | Settings: min %, next semester, graduate, hand over | TE-05 | ⬜ |
 | [TE-07](tasks/frontend/teacher/TE-07-new-class.md) | New class wizard | TE-04, CS-02 | ⬜ |
 | [TE-08](tasks/frontend/teacher/TE-08-composer-upcoming.md) | Composer + Upcoming + reminders | TE-04, CS-08, CS-11 | ⬜ |
@@ -132,7 +146,8 @@
 | [AF-01](tasks/frontend/admin/AF-01-shell-inbox.md) | Admin shell + Inbox | FS-06, AD-05, AD-06, AD-08 | ⬜ |
 | [AF-02](tasks/frontend/admin/AF-02-people.md) | People: teachers, students, badge | AF-01, AD-01, AD-02, AD-03 | ⬜ |
 | [AF-03](tasks/frontend/admin/AF-03-classes.md) | Classes (reuses the teacher view) | AF-01, TE-05 | ⬜ |
-| [AF-04](tasks/frontend/admin/AF-04-commons.md) | Commons moderation, conversations, featured | AF-01, ST-09, AD-06, AD-07 | ⬜ |
+| [AF-04a](tasks/frontend/admin/AF-04a-moderation.md) | Commons moderation (Board · Build · People) | AF-01, ST-09, AD-06 | ⬜ |
+| [AF-04b](tasks/frontend/admin/AF-04b-conversations-featured.md) | Commons: conversations + featured | AF-04a, AD-07 | ⬜ |
 | [AF-05](tasks/frontend/admin/AF-05-school-audit.md) | School setup + Audit | AF-01, AD-04, AD-08 | ⬜ |
 
 ## QA
@@ -142,7 +157,6 @@
 | [QA-02](tasks/qa/QA-02-lab-demo.md) | Lab-demo walk-through | all ST, TE, AF | ⬜ |
 | [QA-03](tasks/qa/QA-03-visual-parity.md) | Visual parity with the prototype | all ST, TE, AF, FS-08 | ⬜ |
 | [QA-04](tasks/qa/QA-04-review.md) | Code + security review | QA-01 | ⬜ |
-| [QA-05](tasks/qa/QA-05-prod-smoke.md) | Production build smoke test | OPS-03, OPS-04 | ⬜ |
 
 ---
 

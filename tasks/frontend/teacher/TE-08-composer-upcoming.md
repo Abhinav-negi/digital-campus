@@ -6,7 +6,7 @@
 - The composer sheet (rail button, FAB, class header): Announcement | Assignment (due date), title, message, attachment (presign), **send to multiple classes** checkboxes, "Replies are off. Questions go to the class CR."
 - Upcoming: 30 days grouped by week (This week / Next week / In n weeks), date blocks, kind badges, Today badge; "Add private reminder".
 
-**Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. Compare side by side with the prototype at 1280px and 390px before calling it done.
+**Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. No screenshots here: QA-03 does one visual pass at the end.
 
 ## Done when
 - [ ] One post to 2 classes → "12 of 30 seen" appears as students open it (SPEC §15 step 4).

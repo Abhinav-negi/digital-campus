@@ -7,7 +7,7 @@
 - The person sheet: track record, headline, skills, links with the stat line (stats omitted for now: GitHub/LeetCode deferred), Working on, the **Ask** button (hidden in Focus → "In focus mode until …"), Block / Report.
 - The ask sheet → a request (the 5/day toast).
 
-**Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. Compare side by side with the prototype at 1280px and 390px before calling it done.
+**Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. No screenshots here: QA-03 does one visual pass at the end.
 
 ## Done when
 - [ ] A Focus profile shows no Ask button; a request appears in the recipient's Me.
