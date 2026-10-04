@@ -8,6 +8,7 @@ import { HttpError, pageQuery } from '../../lib/http.js';
 import { notify } from '../../lib/notify.js';
 import { registry, route } from '../../lib/openapi.js';
 import { personCard, personSelect, toCard, viewerOf } from './profiles.js';
+import { blockedIds } from './safety.js';
 
 // CM-02: the Board (SPEC §9.2, §9.5; PROTO student.html:249-304). No email is ever selected (personSelect has none).
 
@@ -229,11 +230,13 @@ router.get(
     const { kind, branchId, q, cursor, limit } = req.query as unknown as z.infer<typeof feedQuery>;
     const viewer = await viewerOf(req.user!.id);
     const v = { branchId: viewer.homeClass?.branchId ?? null, on: today() };
+    const blocked = await blockedIds(req.user!.id);
     // ponytail: the live set is small (5 posts/student/day, ≤30-day expiry), so we load it and order by the
     // institution's day in memory, like People. Past a few thousand live posts, persist a day column and page in SQL.
     const rows = await db.boardPost.findMany({
       where: {
         hiddenAt: null,
+        authorId: { notIn: blocked },
         expiresAt: { gte: v.on },
         ...(kind !== 'all' && { kind: kind === 'lf' ? { in: ['lost', 'found'] } : kind }),
         author: { institutionId: viewer.institutionId, ...(branchId && { homeClass: { is: { branchId } } }) },

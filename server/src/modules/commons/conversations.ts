@@ -9,9 +9,10 @@ import { notify } from '../../lib/notify.js';
 import { registry, route } from '../../lib/openapi.js';
 import { findPost, sameDay, studentOnly } from './board.js';
 import { effective, viewerOf } from './profiles.js';
+import { blockedEitherWay, blockedIds } from './safety.js';
 
 // CM-06: message requests + conversations (SPEC §9.7, §9.2; PROTO student.html:345-354, :466-473, :509-516).
-// Blocks are CM-07's: here the Block table is only read ("blocked either way").
+// Blocks are CM-07's (safety.ts): the "blocked either way" rule lives there.
 
 const DAILY_REQUESTS = 5;
 const IGNORED_DAYS = 7;
@@ -67,9 +68,6 @@ const item = (c: Row, me: string): z.infer<typeof conversationItem> => {
     lastMessage: last?.body ?? null,
   };
 };
-
-const blockedEitherWay = async (a: string, b: string) =>
-  (await db.block.count({ where: { OR: [{ userId: a, blockedId: b }, { userId: b, blockedId: a }] } })) > 0;
 
 /** An active, unbanned student of my institution (not me); 404 otherwise. */
 const findTarget = async (me: AuthUser, id: string) => {
@@ -167,8 +165,9 @@ router.get(
   }),
   async (req, res) => {
     const me = req.user!.id;
+    const blocked = await blockedIds(me);
     const rows = await db.conversation.findMany({
-      where: { OR: [{ fromId: me }, { toId: me }], NOT: { state: 'ignored', createdAt: { lt: addDays(new Date(), -IGNORED_DAYS) } } },
+      where: { OR: [{ fromId: me }, { toId: me }], fromId: { notIn: blocked }, toId: { notIn: blocked }, NOT: { state: 'ignored', createdAt: { lt: addDays(new Date(), -IGNORED_DAYS) } } },
       include,
       orderBy: { createdAt: 'desc' },
     });

@@ -7,6 +7,7 @@ import challenges from './challenges.js';
 import conversations from './conversations.js';
 import profiles from './profiles.js';
 import projects from './projects.js';
+import safety from './safety.js';
 
 // Stub (FND-01): every request 501s until the owning task replaces this file.
 const router = Router();
@@ -17,5 +18,6 @@ router.use(boardActions);
 router.use(projects);
 router.use(challenges);
 router.use(conversations);
+router.use(safety);
 router.use(notImplemented);
 export default router;

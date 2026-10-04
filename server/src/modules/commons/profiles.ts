@@ -5,6 +5,7 @@ import { addDays, today } from '../../lib/dates.js';
 import { db } from '../../lib/db.js';
 import { HttpError, page, pageQuery } from '../../lib/http.js';
 import { registry, route } from '../../lib/openapi.js';
+import { blockedEitherWay, blockedIds } from './safety.js';
 
 // CM-01: profiles, People, and the /me profile + export. Nothing here ever selects another user's email (SPEC §12).
 
@@ -113,7 +114,7 @@ const profileView = async (meId: string, userId: string): Promise<z.infer<typeof
       orderBy: { createdAt: 'desc' },
     }),
   ]);
-  if (!u || u.institutionId !== viewer.institutionId) throw new HttpError(404, 'NOT_FOUND', 'Profile not found');
+  if (!u || u.institutionId !== viewer.institutionId || (await blockedEitherWay(meId, userId))) throw new HttpError(404, 'NOT_FOUND', 'Profile not found');
   const card = toCard(u, viewer.homeClass?.branchId ?? null);
   const self = meId === userId;
   return {
@@ -152,6 +153,7 @@ router.get(
     const { q, branchId, year, availability: avail, helpsJuniors, cursor, limit } = req.query as unknown as z.infer<typeof peopleQuery>;
     const me = req.user!.id;
     const viewer = await viewerOf(me);
+    const blocked = await blockedIds(me);
     // ponytail: effective availability, skill substrings and the round-robin need the whole filtered set, so we load it
     // and order in memory. Ceiling: one school's students (~thousands of small rows). Past that, persist a sort key.
     const rows = await db.user.findMany({
@@ -160,7 +162,7 @@ router.get(
         role: 'student',
         status: 'active',
         bannedAt: null,
-        id: { not: me },
+        id: { not: me, notIn: blocked },
         profile: helpsJuniors === 'true' ? { is: { helpsJuniors: true } } : { isNot: null },
         ...((branchId || year) && {
           homeClass: { is: { branchId, ...(year && { terms: { some: { endedAt: null, yearOfStudy: year } } }) } },
