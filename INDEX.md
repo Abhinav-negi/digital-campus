@@ -9,7 +9,7 @@
 |---|---|
 | **Latest handoff** | [handoff/S05-2026-10-03.md](handoff/S05-2026-10-03.md) |
 | **Progress** | 39 / 78 done |
-| **Ready to start** | CS-11, CS-12, CS-06, CM-06, AD-07, OPS-03, OPS-05 |
+| **Ready to start** | In progress: CS-11/12 · CM-06/07/08 · CS-06. Next: AD-06, AD-07, OPS-03, OPS-05, then Wave 3 |
 | **Current wave** | Wave 2: Backend (Wave 1 ✅) |
 
 ## Waves (dispatch plan)
@@ -56,13 +56,13 @@
 | [CS-03](tasks/backend/class-space/CS-03-subjects-allotment.md) | Staff directory + subjects + allotment + "Not me" | CS-01 | ✅ |
 | [CS-04](tasks/backend/class-space/CS-04-timetable.md) | Weekly timetable | CS-03 | ✅ |
 | [CS-05](tasks/backend/class-space/CS-05-schedule-clashes.md) | Per-date changes, events, clashes | CS-04 | ✅ |
-| [CS-06](tasks/backend/class-space/CS-06-document-import.md) | PDF/photo import via the Claude API | CS-03, CS-04, CS-07 | ⬜ |
+| [CS-06](tasks/backend/class-space/CS-06-document-import.md) | PDF/photo import via the Claude API | CS-03, CS-04, CS-07 | 🟨 |
 | [CS-07](tasks/backend/class-space/CS-07-board-items.md) | Board items + edit history | CS-01 | ✅ |
 | [CS-08](tasks/backend/class-space/CS-08-posts.md) | Teacher posts, seen, remind | CS-01 | ✅ |
 | [CS-09](tasks/backend/class-space/CS-09-attendance-roll.md) | Attendance roll, past, corrections, views | CS-03 | ✅ |
 | [CS-10](tasks/backend/class-space/CS-10-attendance-code.md) | Attendance check-in code | CS-09 | ✅ |
-| [CS-11](tasks/backend/class-space/CS-11-today-upcoming.md) | Today, Upcoming, reminders | CS-05, CS-07, CS-08, CS-09 | ⬜ |
-| [CS-12](tasks/backend/class-space/CS-12-notifications-jobs.md) | Notifications inbox + jobs | CS-01 | ⬜ |
+| [CS-11](tasks/backend/class-space/CS-11-today-upcoming.md) | Today, Upcoming, reminders | CS-05, CS-07, CS-08, CS-09 | 🟨 |
+| [CS-12](tasks/backend/class-space/CS-12-notifications-jobs.md) | Notifications inbox + jobs | CS-01 | 🟨 |
 
 ## Backend: Commons
 | ID | Task | Deps | Status |
@@ -72,9 +72,9 @@
 | [CM-03](tasks/backend/commons/CM-03-board-actions-thanks.md) | Answers, interest/assign, claims, thanks | CM-02 | ✅ |
 | [CM-04](tasks/backend/commons/CM-04-projects.md) | Projects, join requests, updates | CM-01 | ✅ |
 | [CM-05](tasks/backend/commons/CM-05-challenges.md) | Challenges, submissions, likes | CM-01 | ✅ |
-| [CM-06](tasks/backend/commons/CM-06-conversations.md) | Message requests + conversations | CM-02 | ⬜ |
-| [CM-07](tasks/backend/commons/CM-07-blocks-reports.md) | Block + report + auto-hide | CM-02, CM-04 | ⬜ |
-| [CM-08](tasks/backend/commons/CM-08-commons-card.md) | "From the Commons" card | CM-03, CM-04 | ⬜ |
+| [CM-06](tasks/backend/commons/CM-06-conversations.md) | Message requests + conversations | CM-02 | 🟨 |
+| [CM-07](tasks/backend/commons/CM-07-blocks-reports.md) | Block + report + auto-hide | CM-02, CM-04 | 🟨 |
+| [CM-08](tasks/backend/commons/CM-08-commons-card.md) | "From the Commons" card | CM-03, CM-04 | 🟨 |
 
 ## Backend: Admin
 | ID | Task | Deps | Status |
