@@ -7,9 +7,9 @@
 ## Now
 | | |
 |---|---|
-| **Latest handoff** | [handoff/S06-2026-10-04.md](handoff/S06-2026-10-04.md) |
-| **Progress** | 39 / 82 done (project-ready) · 4 deployment tasks parked |
-| **Ready to start** | CS-06 (new chatbot import) · CS-11/12 · CM-06/07/08 · AD-07. Then AD-06, then Wave 3 |
+| **Latest handoff** | [handoff/S07-2026-10-04.md](handoff/S07-2026-10-04.md) |
+| **Progress** | 44 / 82 done (project-ready) · 4 deployment tasks parked |
+| **Ready to start** | CM-08 · AD-07 · AD-06 (backend finish) · Wave 3: ST-02 · TE-04 · ST-07a · TE-01a |
 | **Current wave** | Wave 2: Backend (Wave 1 ✅) |
 
 ## Waves (dispatch plan)

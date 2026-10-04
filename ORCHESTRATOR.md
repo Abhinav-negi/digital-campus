@@ -89,6 +89,7 @@ npm run typecheck && npm test
 npm run gen:api            # after any backend task that changed routes
 npm run build
 ```
+**Two lanes, two test DBs (S07):** server tests reset the DB per file, so parallel lanes would clobber each other. Lane A uses the default `campus_test`; lane B runs `TEST_DATABASE_URL=postgresql://campus:campus@localhost:5432/campus_test_b npm test -w server` (already created; after a new migration run `migrate deploy` against it too). `npm run db:start` failing with "port in use" means Postgres is already up.
 
 ## 6. Ownership rules
 - **Only you** edit: `server/prisma/schema.prisma` (frozen after FND-02; change it only for an agent's reported need, as a new migration), `server/src/app.ts` (router registry), root `package.json`, `INDEX.md`, `handoff/*`, `ARCHITECTURE.md` (append decisions as D14…), `ORCHESTRATOR.md`.

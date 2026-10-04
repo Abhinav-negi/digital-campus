@@ -14,3 +14,4 @@
 - [ ] A message request round-trips; a ticket round-trips with the admin.
 
 ## Notes
+- From CS-12 (S07): notification `link`s are guessed web paths in `linkFor` (server/src/modules/me/notifications.ts); align them with the real routes here. CM-06 notifies per message (type `message`, mutable).

@@ -12,3 +12,4 @@
 - [ ] Every action in the PROTO sheet works against the API.
 
 ## Notes
+- From CM-06/07 (S07): `POST /commons/board-posts/:id/message` accepts gig/market/lost/found (board.ts's `message` action only lists market/lost; trust the endpoint). Report reason "Academic dishonesty" only on gigs (422 otherwise).
