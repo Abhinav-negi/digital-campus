@@ -20,7 +20,7 @@ const MAX_DAYS = 14;
 const iso = (d: Date) => d.toISOString().slice(0, 10);
 const person = z.object({ id: z.string(), name: z.string() });
 
-const scheduleItem = z
+export const scheduleItem = z
   .object({
     /** Slot id, or the change id for an extra, an event or a moved class. */
     id: z.string(),
@@ -62,7 +62,7 @@ type Loaded = Item<ChangeRow>;
  * Every day in from..to for this class and for every class its teachers also teach in (so a teacher in two places
  * clashes, D11). Active terms only. `items` per day span all those classes; filter by classId to show one.
  */
-const load = async (tx: Prisma.TransactionClient, classId: string, from: Date, to: Date) => {
+export const load = async (tx: Prisma.TransactionClient, classId: string, from: Date, to: Date) => {
   const active = { term: { endedAt: null } };
   const mine = await tx.subject.findMany({ where: { classId, ...active, teacherId: { not: null } }, select: { teacherId: true } });
   const others = await tx.subject.findMany({ where: { ...active, teacherId: { in: mine.map((s) => s.teacherId!) } }, select: { classId: true }, distinct: ['classId'] });
@@ -87,7 +87,7 @@ type World = Awaited<ReturnType<typeof load>>;
 
 const nameOf = (w: World, i: Loaded) => (i.slotId ? w.slots.get(i.slotId)?.subject.name : i.change?.subject?.name) ?? i.title ?? '';
 
-const present = (w: World, items: Loaded[], i: Loaded) => {
+export const present = (w: World, items: Loaded[], i: Loaded) => {
   const subject = i.slotId ? w.slots.get(i.slotId)!.subject : (i.change?.subject ?? null);
   const c = i.change;
   return {

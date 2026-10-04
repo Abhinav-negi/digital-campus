@@ -59,8 +59,8 @@
 | [CS-08](tasks/backend/class-space/CS-08-posts.md) | Teacher posts, seen, remind | CS-01 | ✅ |
 | [CS-09](tasks/backend/class-space/CS-09-attendance-roll.md) | Attendance roll, past, corrections, views | CS-03 | ✅ |
 | [CS-10](tasks/backend/class-space/CS-10-attendance-code.md) | Attendance check-in code | CS-09 | ✅ |
-| [CS-11](tasks/backend/class-space/CS-11-today-upcoming.md) | Today, Upcoming, reminders | CS-05, CS-07, CS-08, CS-09 | 🟨 |
-| [CS-12](tasks/backend/class-space/CS-12-notifications-jobs.md) | Notifications inbox + jobs | CS-01 | ⬜ |
+| [CS-11](tasks/backend/class-space/CS-11-today-upcoming.md) | Today, Upcoming, reminders | CS-05, CS-07, CS-08, CS-09 | ✅ |
+| [CS-12](tasks/backend/class-space/CS-12-notifications-jobs.md) | Notifications inbox + jobs | CS-01 | 🟨 |
 
 ## Backend: Commons
 | ID | Task | Deps | Status |
@@ -70,7 +70,7 @@
 | [CM-03](tasks/backend/commons/CM-03-board-actions-thanks.md) | Answers, interest/assign, claims, thanks | CM-02 | ✅ |
 | [CM-04](tasks/backend/commons/CM-04-projects.md) | Projects, join requests, updates | CM-01 | ✅ |
 | [CM-05](tasks/backend/commons/CM-05-challenges.md) | Challenges, submissions, likes | CM-01 | ✅ |
-| [CM-06](tasks/backend/commons/CM-06-conversations.md) | Message requests + conversations | CM-02 | ⬜ |
+| [CM-06](tasks/backend/commons/CM-06-conversations.md) | Message requests + conversations | CM-02 | 🟨 |
 | [CM-07](tasks/backend/commons/CM-07-blocks-reports.md) | Block + report + auto-hide | CM-02, CM-04 | ⬜ |
 | [CM-08](tasks/backend/commons/CM-08-commons-card.md) | "From the Commons" card | CM-03, CM-04 | ⬜ |
 

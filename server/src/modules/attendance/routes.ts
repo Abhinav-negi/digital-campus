@@ -297,6 +297,33 @@ checkin.post(
   },
 );
 
+/** A student's standing per subject of their active term (also used by /me/today). */
+export const myAttendance = async (me: AuthUser) => {
+  const subjects = await db.subject.findMany({
+    where: { term: { endedAt: null }, class: { members: { some: { userId: me.id, role: { in: ['student', 'cr'] } } } } },
+    select: { id: true, name: true, code: true, class: { select: { id: true, name: true, minAttendancePct: true } } },
+    orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+  });
+  const rows = await db.attendance.findMany({
+    where: { studentId: me.id, session: { subjectId: { in: subjects.map((s) => s.id) }, savedAt: { not: null } } },
+    select: { present: true, session: { select: { subjectId: true, date: true } } },
+    orderBy: [{ session: { date: 'asc' } }, { session: { createdAt: 'asc' } }],
+  });
+  return subjects.map(({ class: { minAttendancePct: min, ...cls }, ...subject }) => {
+    const own = rows.filter((r) => r.session.subjectId === subject.id);
+    const present = own.filter((r) => r.present).length;
+    return {
+      subject,
+      class: cls,
+      min,
+      present,
+      total: own.length,
+      ...attendanceSummary(present, own.length, min),
+      history: own.slice(-12).map((r) => ({ date: ymd(r.session.date), present: r.present })),
+    };
+  });
+};
+
 // --- /me/attendance (students: their own only) ---
 const mine = Router();
 
@@ -320,31 +347,7 @@ mine.get(
   async (req, res) => {
     const me = req.user!;
     if (me.role !== 'student') throw new HttpError(403, 'FORBIDDEN', 'Only students have attendance');
-    const subjects = await db.subject.findMany({
-      where: { term: { endedAt: null }, class: { members: { some: { userId: me.id, role: { in: ['student', 'cr'] } } } } },
-      select: { id: true, name: true, code: true, class: { select: { id: true, name: true, minAttendancePct: true } } },
-      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
-    });
-    const rows = await db.attendance.findMany({
-      where: { studentId: me.id, session: { subjectId: { in: subjects.map((s) => s.id) }, savedAt: { not: null } } },
-      select: { present: true, session: { select: { subjectId: true, date: true } } },
-      orderBy: [{ session: { date: 'asc' } }, { session: { createdAt: 'asc' } }],
-    });
-    res.json({
-      items: subjects.map(({ class: { minAttendancePct: min, ...cls }, ...subject }) => {
-        const own = rows.filter((r) => r.session.subjectId === subject.id);
-        const present = own.filter((r) => r.present).length;
-        return {
-          subject,
-          class: cls,
-          min,
-          present,
-          total: own.length,
-          ...attendanceSummary(present, own.length, min),
-          history: own.slice(-12).map((r) => ({ date: ymd(r.session.date), present: r.present })),
-        };
-      }),
-    });
+    res.json({ items: await myAttendance(me) });
   },
 );
 
