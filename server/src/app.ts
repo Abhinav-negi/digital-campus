@@ -31,7 +31,7 @@ const modules: [string | string[], Router][] = [
   ['/files', files],
   ['/staff', staff],
   [['/posts', '/classes/:id/posts'], posts],
-  [['/attendance-sessions', '/checkin', '/me/attendance'], attendance],
+  [['/attendance-sessions', '/checkin', '/me/attendance', '/classes/:id/attendance'], attendance],
   ['/classes', classes],
   ['/me', me],
   ['/commons', commons],

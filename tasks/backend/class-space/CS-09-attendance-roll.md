@@ -15,3 +15,6 @@
 - [ ] API tests: the CR → 403; a student sees only their own; a correction creates an audit row with before/after.
 
 ## Notes
+- Done S05. `attendanceSummary` (math.ts) ports PROTO data.js:285-302 verbatim; Riya DS = "Safe by 4 classes". `POST /attendance-sessions` is idempotent (per-subject advisory lock); non-admins today/yesterday only (403 TOO_OLD). `PUT` upserts the roll; re-saves and admin saves audit `attendance.correct`; `attendance-low` fires only on crossing below the minimum.
+- The roster = active students + anyone with Attendance rows (deleted students keep history). Totals count saved sessions only. `GET /classes/:id/attendance` lives in the attendance router; the orchestrator mounted it in app.ts.
+- Orchestrator: `minAttendancePct` capped at 99 (100 makes the maths infinite).

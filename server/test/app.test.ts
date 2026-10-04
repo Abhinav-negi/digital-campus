@@ -55,21 +55,8 @@ test('validate: zod failure → 422 VALIDATION, success → parsed values', asyn
   assert.deepEqual((await request(mini).get('/q?n=5').expect(200)).body, { n: 5 });
 });
 
-test('every ARCH §8 module path is mounted (501)', async () => {
-  const paths = [
-    '/attendance-sessions',
-    '/checkin',
-    '/me/attendance',
-  ];
-  for (const path of paths) {
-    const res = await request(app).get(`/api/v1${path}`);
-    assert.equal(res.status, 501, path);
-    assert.equal(res.body.error.code, 'NOT_IMPLEMENTED', path);
-  }
-});
-
 test('guarded paths without a session → 401', async () => {
-  for (const [method, path] of [['get', '/auth/me'], ['post', '/files/presign'], ['get', '/commons/people'], ['get', '/classes'], ['get', '/classes/c1/members'], ['get', '/classes/c1/posts'], ['get', '/posts/mine'], ['get', '/staff'], ['get', '/me/today'], ['get', '/admin/overview'], ['get', '/tickets/mine']] as const) {
+  for (const [method, path] of [['get', '/auth/me'], ['post', '/files/presign'], ['get', '/commons/people'], ['get', '/classes'], ['get', '/classes/c1/members'], ['get', '/classes/c1/posts'], ['get', '/posts/mine'], ['get', '/staff'], ['get', '/me/today'], ['get', '/admin/overview'], ['get', '/tickets/mine'], ['post', '/attendance-sessions'], ['post', '/checkin'], ['get', '/me/attendance']] as const) {
     const res = await request(app)[method](`/api/v1${path}`);
     assert.equal(res.status, 401, path);
   }

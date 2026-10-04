@@ -40,7 +40,7 @@ const term = z
   .meta({ id: 'Term' });
 
 const idParams = z.object({ id: z.string().min(1) });
-const pct = z.number().int().min(1).max(100);
+const pct = z.number().int().min(1).max(99); // 100% makes "attend the next N" infinite (CS-09 maths)
 const section = z.string().trim().max(8);
 
 const router = Router();
