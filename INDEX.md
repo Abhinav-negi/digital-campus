@@ -9,7 +9,7 @@
 |---|---|
 | **Latest handoff** | [handoff/S05-2026-10-03.md](handoff/S05-2026-10-03.md) |
 | **Progress** | 33 / 78 done |
-| **Ready to start** | In progress: CS-07/08 · AD-03/08. Ready next: CM-06, AD-07, CS-09, CS-12, CM-06, OPS-03, OPS-05 |
+| **Ready to start** | In progress: CS-07/08 · AD-03/08 · CS-09/10. Ready next: CM-06, AD-07, CS-12, CM-06, OPS-03, OPS-05 |
 | **Current wave** | Wave 2: Backend (Wave 1 ✅) |
 
 ## Waves (dispatch plan)
@@ -59,8 +59,8 @@
 | [CS-06](tasks/backend/class-space/CS-06-document-import.md) | PDF/photo import via the Claude API | CS-03, CS-04, CS-07 | ⬜ |
 | [CS-07](tasks/backend/class-space/CS-07-board-items.md) | Board items + edit history | CS-01 | 🟨 |
 | [CS-08](tasks/backend/class-space/CS-08-posts.md) | Teacher posts, seen, remind | CS-01 | 🟨 |
-| [CS-09](tasks/backend/class-space/CS-09-attendance-roll.md) | Attendance roll, past, corrections, views | CS-03 | ⬜ |
-| [CS-10](tasks/backend/class-space/CS-10-attendance-code.md) | Attendance check-in code | CS-09 | ⬜ |
+| [CS-09](tasks/backend/class-space/CS-09-attendance-roll.md) | Attendance roll, past, corrections, views | CS-03 | 🟨 |
+| [CS-10](tasks/backend/class-space/CS-10-attendance-code.md) | Attendance check-in code | CS-09 | 🟨 |
 | [CS-11](tasks/backend/class-space/CS-11-today-upcoming.md) | Today, Upcoming, reminders | CS-05, CS-07, CS-08, CS-09 | ⬜ |
 | [CS-12](tasks/backend/class-space/CS-12-notifications-jobs.md) | Notifications inbox + jobs | CS-01 | ⬜ |
 
