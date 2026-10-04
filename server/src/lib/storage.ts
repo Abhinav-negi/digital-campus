@@ -51,3 +51,7 @@ export const presignGet = async (key: string) => (local ? localUrl('GET', key) :
 
 export const deleteObject = async (key: string) => (local ? rm(localPath(key), { force: true }) : s3());
 
+
+/** True when `key` is one of `userId`'s own uploads from POST /files/presign (blocks attaching someone else's file, and `..`). */
+export const ownKey = (userId: string, key: string) =>
+  key.startsWith(`uploads/${userId}/`) && /^[\w-]+\.\w+$/.test(key.slice(`uploads/${userId}/`.length));

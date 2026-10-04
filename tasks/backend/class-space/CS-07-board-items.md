@@ -13,3 +13,4 @@
 - [ ] Tests: the CR creates, edits and deletes with an audit row each; a student → 403; a teacher who is a member can read but not edit unless class teacher.
 
 ## Notes
+- Done S05. Board GET = 5 sections (notices/files carry across terms); writes classAccess board → writable → audited `board.<kind>.*`; history only returns BoardItem `board.*` rows of this class (security fix). Posts: staff to classes they teach, students get `seen`, staff `stats`, remind hits only the unseen. `ownKey` moved to lib/storage.ts.

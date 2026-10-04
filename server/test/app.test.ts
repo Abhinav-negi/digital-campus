@@ -57,8 +57,6 @@ test('validate: zod failure → 422 VALIDATION, success → parsed values', asyn
 
 test('every ARCH §8 module path is mounted (501)', async () => {
   const paths = [
-    '/posts',
-    '/classes/c1/posts',
     '/attendance-sessions',
     '/checkin',
     '/me/attendance',
@@ -71,7 +69,7 @@ test('every ARCH §8 module path is mounted (501)', async () => {
 });
 
 test('guarded paths without a session → 401', async () => {
-  for (const [method, path] of [['get', '/auth/me'], ['post', '/files/presign'], ['get', '/commons/people'], ['get', '/classes'], ['get', '/classes/c1/members'], ['get', '/staff'], ['get', '/me/today'], ['get', '/admin/overview'], ['get', '/tickets/mine']] as const) {
+  for (const [method, path] of [['get', '/auth/me'], ['post', '/files/presign'], ['get', '/commons/people'], ['get', '/classes'], ['get', '/classes/c1/members'], ['get', '/classes/c1/posts'], ['get', '/posts/mine'], ['get', '/staff'], ['get', '/me/today'], ['get', '/admin/overview'], ['get', '/tickets/mine']] as const) {
     const res = await request(app)[method](`/api/v1${path}`);
     assert.equal(res.status, 401, path);
   }

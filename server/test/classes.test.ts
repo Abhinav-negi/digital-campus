@@ -155,5 +155,5 @@ test('class teacher hands over to another teacher', async () => {
 });
 
 test('unbuilt sub-paths still 501', async () => {
-  await (await agent('teacher')).get('/api/v1/classes/c3/board').expect(501);
+  await (await agent('teacher')).get('/api/v1/classes/c3/imports').expect(501);
 });

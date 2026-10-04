@@ -6,6 +6,7 @@ import { db } from '../../lib/db.js';
 import { HttpError, notImplemented, page, pageQuery, paginate } from '../../lib/http.js';
 import { notify } from '../../lib/notify.js';
 import { registry, route } from '../../lib/openapi.js';
+import board from './board.js';
 import members from './members.js';
 import schedule from './schedule.js';
 import subjects from './subjects.js';
@@ -279,5 +280,6 @@ router.use('/:id', members);
 router.use('/:id', subjects);
 router.use('/:id', timetable);
 router.use('/:id', schedule);
+router.use('/:id', board);
 router.use(notImplemented); // unbuilt sub-paths 501 until their task lands
 export default router;
