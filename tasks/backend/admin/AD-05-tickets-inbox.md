@@ -11,3 +11,5 @@
 - [ ] Tests: a student can't read another's ticket; an admin reply notifies + changes state; the inbox merges both types.
 
 ## Notes
+- Done S05. Tickets for students and staff; others' tickets → 404 (no existence leak). An admin reply → `answered` + `ticket-reply` notification + audit, in one transaction; an owner reply reopens; a closed ticket → 409 TICKET_CLOSED. `PATCH /admin/tickets/:id` takes `closed|open` (an admin can reopen).
+- Inbox: the newest 100 of each kind merged in memory (`ponytail:`, no cursor), `counts` per state for tab badges; a state only one kind has filters out the other kind. AD-06 extends it with report actions.
