@@ -11,3 +11,4 @@
 - [ ] Tests: replacing the week is atomic; a student → 403 on writes; an overlapping slot is accepted and reported in `clashWith`.
 
 ## Notes
+- Done S05. `PUT …/timetable` replaces the week atomically (one bad row → 422, nothing changes; one `timetable.replace` audit). Overlaps are accepted and returned in `clashWith` (slot ids, same weekday, same class). PUT drops old slot ids and their per-date changes (`ponytail:`).

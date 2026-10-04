@@ -7,7 +7,9 @@ import { HttpError, notImplemented, page, pageQuery, paginate } from '../../lib/
 import { notify } from '../../lib/notify.js';
 import { registry, route } from '../../lib/openapi.js';
 import members from './members.js';
+import schedule from './schedule.js';
 import subjects from './subjects.js';
+import timetable from './timetable.js';
 import { activeTerm, classAudience, className, classSummary, listClasses, semesterFor, writable, yearOf } from './service.js';
 
 // CS-01: classes + terms. Later CS tasks add sub-routers for /classes/:id/… (see the bottom of the file).
@@ -275,5 +277,7 @@ router.post(
 // router.use('/:id', members);
 router.use('/:id', members);
 router.use('/:id', subjects);
+router.use('/:id', timetable);
+router.use('/:id', schedule);
 router.use(notImplemented); // unbuilt sub-paths 501 until their task lands
 export default router;
