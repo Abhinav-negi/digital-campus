@@ -13,3 +13,5 @@
 - [ ] With seed data it matches the prototype; with an empty class it shows the placeholders.
 
 ## Notes
+- S08 ✅ Hooks are in `student/queries.ts` (`useToday`, `useCommonsCard`). The Commons card links to `/s/commons` and ignores `refId` until ST-07 routes exist. Unread posts link to `/s/class/posts` without marking them seen (ST-06).
+- The "(CR)" tag is a guess (author ≠ slot teacher). CS-13 adds `author.isCr` to replace it.
