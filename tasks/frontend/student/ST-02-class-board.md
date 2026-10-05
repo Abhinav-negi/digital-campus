@@ -14,3 +14,5 @@
 - [ ] Parity with the prototype board; the past-term switcher shows old data read-only.
 
 ## Notes
+- S08 ✅ Class = the first `me.classes` entry with role ≠ teacher. Current week comes from `/schedule` (shows changes), past terms from `/timetable`. Saturday shows only if it has slots.
+- `fileUrl` is used directly (presign is upload-only). The chips read Today/Tomorrow/In N days (approximates PROTO `DC.rel`). Posts/My attendance are `Empty` placeholders for ST-06. Not checked visually yet (QA-03).
