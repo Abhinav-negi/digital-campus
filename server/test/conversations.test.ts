@@ -68,9 +68,9 @@ test('request → respond → messages; the sender never learns of an ignore; in
   assert.deepEqual(rest.items.map((m: { body: string }) => m.body), ['Sure']);
   const list = (await riya.get(`${url}/conversations`).expect(200)).body;
   assert.equal(list.conversations.find((x: { id: string }) => x.id === req.id).lastMessage, 'Sure');
-  // The admin reads any thread (D2) but cannot write.
+  // Admins don't read here: only the audited /admin/conversations/:id/messages (D2, AD-06). They can't write either.
   const admin = await agent('admin');
-  assert.equal((await admin.get(`${url}/conversations/${req.id}/messages`).expect(200)).body.items.length, 2);
+  await admin.get(`${url}/conversations/${req.id}/messages`).expect(403);
   await admin.post(`${url}/conversations/${req.id}/messages`).send({ body: 'hi' }).expect(403);
   await admin.post(`${url}/conversations/${req.id}/respond`).send({ state: 'ignored' }).expect(403);
 

@@ -82,7 +82,7 @@ const findTarget = async (me: AuthUser, id: string) => {
 };
 
 /** A conversation I may see: a participant, or an admin when only reading (D2). 404 if missing, 403 for anyone else. */
-const findConversation = async (id: string, me: AuthUser, read = false) => {
+export const findConversation = async (id: string, me: AuthUser, read = false) => {
   const c = await db.conversation.findUnique({ where: { id }, include });
   if (!c) throw new HttpError(404, 'NOT_FOUND', 'Conversation not found');
   if (!(read && me.isAdmin) && c.fromId !== me.id && c.toId !== me.id) throw new HttpError(403, 'FORBIDDEN', 'Not your conversation');
@@ -218,7 +218,7 @@ router.get(
     responses: { 200: messagePage, 403: null, 404: null },
   }),
   async (req, res) => {
-    const c = await findConversation((req.params as Id).id, req.user!, true);
+    const c = await findConversation((req.params as Id).id, req.user!); // admins read via the audited /admin/conversations route (D2, AD-06)
     if (c.state !== 'accepted') throw new HttpError(403, 'FORBIDDEN', 'This conversation is not open');
     const { cursor, limit } = req.query as unknown as z.infer<typeof pageQuery>;
     const rows = await db.message.findMany({

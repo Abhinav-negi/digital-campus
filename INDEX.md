@@ -72,7 +72,7 @@
 | [CM-05](tasks/backend/commons/CM-05-challenges.md) | Challenges, submissions, likes | CM-01 | ✅ |
 | [CM-06](tasks/backend/commons/CM-06-conversations.md) | Message requests + conversations | CM-02 | ✅ |
 | [CM-07](tasks/backend/commons/CM-07-blocks-reports.md) | Block + report + auto-hide | CM-02, CM-04 | ✅ |
-| [CM-08](tasks/backend/commons/CM-08-commons-card.md) | "From the Commons" card | CM-03, CM-04 | ⬜ |
+| [CM-08](tasks/backend/commons/CM-08-commons-card.md) | "From the Commons" card | CM-03, CM-04 | ✅ |
 
 ## Backend: Admin
 | ID | Task | Deps | Status |
@@ -82,8 +82,8 @@
 | [AD-03](tasks/backend/admin/AD-03-student-details.md) | Edit student details, move batch | AD-01, CS-02 | ✅ |
 | [AD-04](tasks/backend/admin/AD-04-school.md) | Institution + branches | FND | ✅ |
 | [AD-05](tasks/backend/admin/AD-05-tickets-inbox.md) | Tickets + admin inbox | FND | ✅ |
-| [AD-06](tasks/backend/admin/AD-06-moderation.md) | Moderation, bans, conversation access | CM-06, CM-07 | ⬜ |
-| [AD-07](tasks/backend/admin/AD-07-featured-flagship.md) | Featured + flagship | CM-04, CM-05 | ⬜ |
+| [AD-06](tasks/backend/admin/AD-06-moderation.md) | Moderation, bans, conversation access | CM-06, CM-07 | ✅ |
+| [AD-07](tasks/backend/admin/AD-07-featured-flagship.md) | Featured + flagship | CM-04, CM-05 | ✅ |
 | [AD-08](tasks/backend/admin/AD-08-audit-overview.md) | Audit log + overview | AD-05 | ✅ |
 
 ## Deployment (later, D16)
@@ -106,12 +106,13 @@
 | [FS-06](tasks/frontend/shared/FS-06-auth-pages.md) | Login, forgot/reset | FS-04, FS-05, FND-04 | ✅ |
 | [FS-07](tasks/frontend/shared/FS-07-invite-onboarding.md) | Invite → password → 3 questions | FS-06, FND-05, CM-01 | ✅ |
 | [FS-08](tasks/frontend/shared/FS-08-landing.md) | Landing page | FS-02 | ✅ |
+| [FS-09](tasks/frontend/shared/FS-09-area-layouts.md) | Student + teacher area layouts (route tables) | FS-04 | ✅ |
 
 ## Frontend: Student
 | ID | Task | Deps | Status |
 |---|---|---|---|
 | [ST-01](tasks/frontend/student/ST-01-today.md) | Today | FS-06, CS-11, CM-08 | ⬜ |
-| [ST-02](tasks/frontend/student/ST-02-class-board.md) | Class: Board (read, empty states, terms) | FS-06, CS-05, CS-07 | ⬜ |
+| [ST-02](tasks/frontend/student/ST-02-class-board.md) | Class: Board (read, empty states, terms) | FS-06, CS-05, CS-07 | ✅ |
 | [ST-03a](tasks/frontend/student/ST-03a-board-edit.md) | CR edit: toggle, board forms, history, tip sheet | ST-02, CS-07 | ⬜ |
 | [ST-03b](tasks/frontend/student/ST-03b-subjects.md) | CR edit: subjects + teacher picker | ST-02, CS-03 | ⬜ |
 | [ST-03c](tasks/frontend/student/ST-03c-week-editor.md) | CR edit: weekly timetable editor | ST-03b, CS-04 | ⬜ |

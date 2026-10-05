@@ -11,3 +11,5 @@
 - [ ] Tests: a fourth feature → 409; setting the flagship moves the flag.
 
 ## Notes
+- S08 ✅ `pg_advisory_xact_lock(7007)` serialises the cap check and the flagship swap. Hidden items are left out of the list/count and return 404.
+- Featuring or unfeaturing the current flagship → 409 `FLAGSHIP`. Setting the flagship doesn't touch `featured`. The seed fills the cap (pr0 flagship, pr1, pr3).

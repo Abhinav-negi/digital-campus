@@ -10,3 +10,5 @@
 - [ ] Tests: the seed student Riya gets the same card types the prototype shows.
 
 ## Notes
+- S08 ✅ `GET /commons/card` → `{items:[…]}` in order answer · join-requests · ask · project. Seed Riya gets no `ask` card (bp4/bp5 already have interests, same as the prototype logic).
+- "Unanswered" = no answers and no interests (prototype `bpCount`). The project fallback skips projects I'm already in. Blocks and `hiddenAt` are filtered.

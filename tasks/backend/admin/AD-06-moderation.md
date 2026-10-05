@@ -14,3 +14,6 @@
 ## Notes
 - From CM-07 (S07): auto-hidden targets keep their reports `open`; resolving here must set report state and clear `hiddenAt` on dismiss. Auto-hide audits with the 3rd reporter as actor + `after.system: true` (no system user exists).
 - From CM-06: `findConversation(id, me, read)` in commons/conversations.ts lets admins read; your audited read route should reuse it.
+- S08 ✅ The `commons()` guard already enforced `bannedAt` (no guard change). Resolving a report closes every open report on that target. PATCH whitelists text fields per type.
+- Orchestrator closed the unaudited admin read: `GET /commons/conversations/:id/messages` no longer lets admins in; the only admin read is `/admin/conversations/:id/messages`, which audits every page.
+- Open: ban `until` is audited but **not enforced** (no `User.bannedUntil` column). Needs the user's OK for a migration.
