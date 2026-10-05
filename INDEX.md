@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S08-2026-10-05.md](handoff/S08-2026-10-05.md) |
-| **Progress** | 53 / 84 done (project-ready) · 4 deployment tasks parked |
+| **Progress** | **63%** · 53 / 84 done (project-ready) · 4 deployment tasks parked |
 | **Ready to start** | ST-07b · TE-01b · ST-03a · ST-03b · ST-06 · ST-08a · TE-07 · TE-08 · AF-01 · CS-13 |
 | **Current wave** | Wave 3: Frontend (Waves 1–2 ✅) |
 

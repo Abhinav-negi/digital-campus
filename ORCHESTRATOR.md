@@ -120,7 +120,7 @@ Create `handoff/S<nn>-<YYYY-MM-DD>.md` (next number) with this shape, **under 40
 ## Next up
 - The lanes to dispatch next, in order
 ```
-Then update INDEX "Now" (latest handoff link, progress, ready list, current wave) and commit: `git commit -m "handoff S<nn>"`.
+Then update INDEX "Now" (latest handoff link, progress as `NN% · done / total`, ready list, current wave) and commit: `git commit -m "handoff S<nn>"`.
 
 ## 9. Conventions
 - Task IDs: `DOC OPS FND CS CM AD FS ST TE AF QA` + a 2-digit number. New tasks take the next number in their region. A split task keeps its number plus a letter (ST-03a/b/c); a dep on "ST-03" means all of its parts.
