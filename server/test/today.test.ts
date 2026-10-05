@@ -6,11 +6,11 @@ import { agent, resetDb } from './helpers.js';
 
 before(async () => {
   resetDb();
-  // A known day whatever today's weekday: replace c1/c2's timetable, changes, board, posts.
+  // A known day whatever today's weekday: replace the whole timetable, changes, board, posts.
   const d = today();
   await db.$transaction([
     db.scheduleChange.deleteMany(),
-    db.timetableSlot.deleteMany({ where: { classId: { in: ['c1', 'c2'] } } }),
+    db.timetableSlot.deleteMany(), // all classes: t2 also teaches elsewhere (tt25 on Mondays)
     db.boardItem.deleteMany(),
     db.post.deleteMany(),
     db.reminder.deleteMany(),
