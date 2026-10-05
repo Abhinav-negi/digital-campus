@@ -12,3 +12,4 @@
 - [ ] Parity with the prototype cards.
 
 ## Notes
+- S08 ✅ Archived classes are hidden. "Last post" comes from page 1 of `/posts/mine`. Subjects, the invited count and average attendance are missing from the API, so CS-13 fills them.

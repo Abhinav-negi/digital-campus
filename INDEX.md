@@ -111,7 +111,7 @@
 ## Frontend: Student
 | ID | Task | Deps | Status |
 |---|---|---|---|
-| [ST-01](tasks/frontend/student/ST-01-today.md) | Today | FS-06, CS-11, CM-08 | ⬜ |
+| [ST-01](tasks/frontend/student/ST-01-today.md) | Today | FS-06, CS-11, CM-08 | ✅ |
 | [ST-02](tasks/frontend/student/ST-02-class-board.md) | Class: Board (read, empty states, terms) | FS-06, CS-05, CS-07 | ✅ |
 | [ST-03a](tasks/frontend/student/ST-03a-board-edit.md) | CR edit: toggle, board forms, history, tip sheet | ST-02, CS-07 | ⬜ |
 | [ST-03b](tasks/frontend/student/ST-03b-subjects.md) | CR edit: subjects + teacher picker | ST-02, CS-03 | ⬜ |
@@ -134,7 +134,7 @@
 | [TE-01b](tasks/frontend/teacher/TE-01b-clash-allot.md) | Today: clash banner + allotment card | TE-01a, CS-12 | ⬜ |
 | [TE-02](tasks/frontend/teacher/TE-02-attendance-roll.md) | Attendance: tap the absent | TE-01, CS-09 | ⬜ |
 | [TE-03](tasks/frontend/teacher/TE-03-attendance-code.md) | Attendance: code mode | TE-02, CS-10 | ⬜ |
-| [TE-04](tasks/frontend/teacher/TE-04-classes-list.md) | Classes list | FS-06, CS-01, CS-08 | ⬜ |
+| [TE-04](tasks/frontend/teacher/TE-04-classes-list.md) | Classes list | FS-06, CS-01, CS-08 | ✅ |
 | [TE-05a](tasks/frontend/teacher/TE-05a-class-view.md) | Class: shell, Board, Posts | TE-04, ST-03 | ⬜ |
 | [TE-05b](tasks/frontend/teacher/TE-05b-students-attendance.md) | Class: Students + Attendance tabs | TE-05a, CS-02 | ⬜ |
 | [TE-06](tasks/frontend/teacher/TE-06-class-settings.md) | Settings: min %, next semester, graduate, hand over | TE-05 | ⬜ |
@@ -165,3 +165,4 @@
 *Findings and follow-ups discovered while building go here as new rows (next free ID in their region). Create the task file too.*
 | ID | Task | Deps | Status | Origin |
 |---|---|---|---|---|
+| [CS-13](tasks/backend/class-space/CS-13-card-fields.md) | ClassCard subjects/invited/attendance + change author isCr | CS-01, CS-11 | ⬜ | TE-04, ST-01 (S08) |
