@@ -13,3 +13,4 @@
 - [ ] Tap 3 absent + save → the student's % changes (the SPEC §15 demo step 5).
 
 ## Notes
+- From TE-01a (S08): Today navigates to **`/t/attend/:sessionId`** after `POST /attendance-sessions`. Add that line to `web/src/routes/teacher/routes.ts` (FS-09 rule).

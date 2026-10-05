@@ -14,3 +14,5 @@
 - [ ] Postponing a session moves it on Today and on the students' Today.
 
 ## Notes
+- S08 ✅ Cancel/postpone go through `POST /classes/:id/changes` (server moved-session logic is covered in schedule.test). "Take attendance" calls `POST /attendance-sessions` and then goes to `/t/attend/:id`.
+- The "by CR …" badge is a guess (author ≠ session teacher) until CS-13 adds `author.isCr`. The past-session sheet offers Yesterday/Today only (the API limit for non-admins). No automated Today test.
