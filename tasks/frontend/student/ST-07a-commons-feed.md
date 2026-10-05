@@ -13,3 +13,6 @@
 - [ ] Posting each kind works and shows in the feed; the 5/day cap shows its toast.
 
 ## Notes
+- S08 ✅ Feed uses `useInfiniteQuery` + debounced search, branch and kind filters. A 429 shows "You have used your 5 posts for today". Not run end to end yet.
+- `Board` takes an `onOpen(id)` prop that `CommonsPage` doesn't pass yet: ST-07b wires the post sheet there. Build/People tabs are `Empty` placeholders for ST-08a/ST-09.
+- Orchestrator removed a hard-coded institution name from the subtitle. The `.k-*` card tints in student.css are still hex (QA-03).
