@@ -1,0 +1,11 @@
+import type { RouteObject } from 'react-router';
+
+// FS-09: /s/* children. Each ST task replaces its own line's `lazy` (one line per task, nothing else).
+const soon = () => import('../Soon');
+export const studentRoutes: RouteObject[] = [
+  { index: true, lazy: soon }, // ST-01 Today
+  { path: 'class/*', lazy: soon }, // ST-02 ClassPage (owns its tabs below this)
+  { path: 'commons/*', lazy: soon }, // ST-07a CommonsPage
+  { path: 'me/*', lazy: soon }, // ST-10a Me
+  { path: '*', lazy: soon },
+];

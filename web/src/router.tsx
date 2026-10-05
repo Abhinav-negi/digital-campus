@@ -1,6 +1,8 @@
 import { QueryClient } from '@tanstack/react-query';
 import { createBrowserRouter, redirect, type RouteObject } from 'react-router';
 import { meQuery, type Me } from './api/hooks';
+import { studentRoutes } from './routes/student/routes';
+import { teacherRoutes } from './routes/teacher/routes';
 
 export const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, retry: 1, refetchOnWindowFocus: true } },
@@ -21,7 +23,7 @@ const guard = (area: Area) => async () => {
   return me;
 };
 
-// Placeholder pages; area tasks replace each `lazy` with `() => import('./routes/<area>')`.
+// Placeholder page for /a until AF-01 brings AdminLayout (same shape as routes/student: layout + routes.ts children).
 const page = (title: string) => async () => ({
   Component: () => (
     <main className="main">
@@ -37,8 +39,8 @@ const routes: RouteObject[] = [
   { path: '/forgot', lazy: () => import('./routes/auth/forgot') },
   { path: '/reset/:token', lazy: () => import('./routes/auth/reset') },
   { path: '/invite/:token', lazy: () => import('./routes/onboarding') },
-  { path: '/s/*', loader: guard('s'), lazy: page('Student') },
-  { path: '/t/*', loader: guard('t'), lazy: page('Teacher') },
+  { path: '/s', loader: guard('s'), lazy: () => import('./routes/student'), children: studentRoutes },
+  { path: '/t', loader: guard('t'), lazy: () => import('./routes/teacher'), children: teacherRoutes },
   { path: '/a/*', loader: guard('a'), lazy: page('Admin') },
   { path: '*', loader: () => redirect('/') },
 ];
