@@ -203,6 +203,7 @@ model User {
   passwordHash  String?
   status        UserStatus @default(invited)
   bannedAt      DateTime?
+  bannedUntil   DateTime? // AD-06: a ban with an end date; cleared by authenticate() and the hourly liftExpiredBans job
   homeClassId   String?
   studentIdNo   String?
   dept          String?

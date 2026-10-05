@@ -18,6 +18,7 @@ const userSelect = {
   isChief: true,
   homeClassId: true,
   bannedAt: true,
+  bannedUntil: true,
   status: true,
 } as const;
 
@@ -112,7 +113,12 @@ export const authenticate = async (req: Request, res: Response): Promise<AuthUse
     await db.loginSession.update({ where: { id: session.id }, data: { expiresAt: new Date(Date.now() + sessionMs()) } });
     if (found.viaCookie) setCookie(res, found.token);
   }
-  const { status: _status, ...user } = session.user;
+  // A ban with an end date lifts itself on the banned student's next request (the hourly job catches the rest).
+  if (session.user.bannedUntil && session.user.bannedUntil.getTime() <= Date.now()) {
+    await db.user.update({ where: { id: session.user.id }, data: { bannedAt: null, bannedUntil: null } });
+    Object.assign(session.user, { bannedAt: null, bannedUntil: null });
+  }
+  const { status: _status, bannedUntil: _until, ...user } = session.user;
   req.user = user;
   return user;
 };

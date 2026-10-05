@@ -78,6 +78,10 @@ export const attendanceDigest = async (now: Date) => {
   return sent;
 };
 
+/** Hourly — bans whose end date has passed (AD-06). authenticate() also lifts them on the student's next request. */
+export const liftExpiredBans = async (now: Date) =>
+  (await db.user.updateMany({ where: { bannedUntil: { lte: now } }, data: { bannedAt: null, bannedUntil: null } })).count;
+
 export function start() {
   if (config.NODE_ENV === 'test') return;
   const at = (expr: string, job: (now: Date) => Promise<unknown>) =>
@@ -86,4 +90,5 @@ export function start() {
   at('5 7 * * *', boardExpiryNudges);
   at('0 3 * * *', cleanInvites);
   at('10 7 * * *', attendanceDigest);
+  at('15 * * * *', liftExpiredBans);
 }

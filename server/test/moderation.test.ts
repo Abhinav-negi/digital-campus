@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
+import { liftExpiredBans } from '../src/jobs.js';
 import { db } from '../src/lib/db.js';
 import { agent, resetDb } from './helpers.js';
 
@@ -109,4 +110,19 @@ test('reading a conversation writes an audit row; listing filters; admin cannot 
   assert.equal(log.actorId, a.user.id);
   await a.get(`${api}/admin/conversations/nope/messages`).expect(404);
   await a.post(`${api}/commons/conversations/${c.id}/messages`).send({ body: 'hi' }).expect(403); // read-only
+});
+
+test('a ban with an end date lifts itself: on the next request, and via the hourly job', async () => {
+  const a = await agent('admin');
+  const riya = await agent('student');
+  await a.post(`${api}/admin/users/s1/ban`).send({ reason: 'Cool off', until: '2030-01-01T00:00:00.000Z' }).expect(200);
+  assert.equal((await db.user.findUniqueOrThrow({ where: { id: 's1' } })).bannedUntil?.toISOString(), '2030-01-01T00:00:00.000Z');
+  await riya.get(`${api}/commons/board-posts`).expect(403);
+  await db.user.update({ where: { id: 's1' }, data: { bannedUntil: new Date(Date.now() - 1000) } }); // the end date passes
+  await riya.get(`${api}/commons/board-posts`).expect(200);
+  assert.equal((await db.user.findUniqueOrThrow({ where: { id: 's1' } })).bannedAt, null);
+
+  await db.user.update({ where: { id: 's2' }, data: { bannedAt: new Date(), bannedUntil: new Date(Date.now() - 1000) } });
+  assert.equal(await liftExpiredBans(new Date()), 1);
+  assert.equal((await db.user.findUniqueOrThrow({ where: { id: 's2' } })).bannedAt, null);
 });

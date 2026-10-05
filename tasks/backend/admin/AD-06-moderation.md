@@ -16,4 +16,4 @@
 - From CM-06: `findConversation(id, me, read)` in commons/conversations.ts lets admins read; your audited read route should reuse it.
 - S08 ✅ The `commons()` guard already enforced `bannedAt` (no guard change). Resolving a report closes every open report on that target. PATCH whitelists text fields per type.
 - Orchestrator closed the unaudited admin read: `GET /commons/conversations/:id/messages` no longer lets admins in; the only admin read is `/admin/conversations/:id/messages`, which audits every page.
-- Open: ban `until` is audited but **not enforced** (no `User.bannedUntil` column). Needs the user's OK for a migration.
+- S08 (user OK): `User.bannedUntil` migration. `authenticate()` lifts an expired ban on the next request, and the hourly `liftExpiredBans` job (jobs.ts, :15) catches the rest, so lists that filter `bannedAt: null` catch up within an hour.

@@ -183,10 +183,9 @@ router.post(
     const { id } = req.params as z.infer<typeof idParams>;
     const { reason, until } = req.body as z.infer<typeof banBody>;
     const u = await findStudent(req.user!.id, id);
-    // ponytail: the schema has only bannedAt, so `until` is recorded in the audit row but not enforced; auto-expiry needs a User.bannedUntil column.
     const bannedAt = u.bannedAt ?? new Date();
     await db.$transaction(async (tx) => {
-      await tx.user.update({ where: { id }, data: { bannedAt } });
+      await tx.user.update({ where: { id }, data: { bannedAt, bannedUntil: until ? new Date(until) : null } });
       await audit(req.user!, { action: 'user.ban', targetType: 'User', targetId: id, before: { bannedAt: u.bannedAt?.toISOString() ?? null }, after: { bannedAt: bannedAt.toISOString(), reason, until: until ?? null } }, tx);
     });
     res.json({ id, bannedAt: bannedAt.toISOString() });
@@ -200,7 +199,7 @@ router.delete(
     const { id } = req.params as z.infer<typeof idParams>;
     const u = await findStudent(req.user!.id, id);
     await db.$transaction(async (tx) => {
-      await tx.user.update({ where: { id }, data: { bannedAt: null } });
+      await tx.user.update({ where: { id }, data: { bannedAt: null, bannedUntil: null } });
       await audit(req.user!, { action: 'user.unban', targetType: 'User', targetId: id, before: { bannedAt: u.bannedAt?.toISOString() ?? null }, after: { bannedAt: null } }, tx);
     });
     res.status(204).end();
