@@ -7,9 +7,9 @@
 ## Now
 | | |
 |---|---|
-| **Latest handoff** | [handoff/S08-2026-10-05.md](handoff/S08-2026-10-05.md) |
-| **Progress** | **63%** · 53 / 84 done (project-ready) · 4 deployment tasks parked |
-| **Ready to start** | ST-07b · TE-01b · ST-03a · ST-03b · ST-06 · ST-08a · TE-07 · TE-08 · AF-01 · CS-13 |
+| **Latest handoff** | [handoff/S09-2026-10-06.md](handoff/S09-2026-10-06.md) |
+| **Progress** | **68%** · 57 / 84 done (project-ready) · 4 deployment tasks parked |
+| **Ready to start** | ST-03b · TE-08 · ST-06 · TE-02 · ST-09 · AF-01 · ST-08a · CS-13 |
 | **Current wave** | Wave 3: Frontend (Waves 1–2 ✅) |
 
 ## Waves (dispatch plan)
@@ -113,14 +113,14 @@
 |---|---|---|---|
 | [ST-01](tasks/frontend/student/ST-01-today.md) | Today | FS-06, CS-11, CM-08 | ✅ |
 | [ST-02](tasks/frontend/student/ST-02-class-board.md) | Class: Board (read, empty states, terms) | FS-06, CS-05, CS-07 | ✅ |
-| [ST-03a](tasks/frontend/student/ST-03a-board-edit.md) | CR edit: toggle, board forms, history, tip sheet | ST-02, CS-07 | ⬜ |
+| [ST-03a](tasks/frontend/student/ST-03a-board-edit.md) | CR edit: toggle, board forms, history, tip sheet | ST-02, CS-07 | ✅ |
 | [ST-03b](tasks/frontend/student/ST-03b-subjects.md) | CR edit: subjects + teacher picker | ST-02, CS-03 | ⬜ |
 | [ST-03c](tasks/frontend/student/ST-03c-week-editor.md) | CR edit: weekly timetable editor | ST-03b, CS-04 | ⬜ |
 | [ST-04](tasks/frontend/student/ST-04-week-ahead.md) | Week-ahead changes, events, clashes | ST-03, CS-05 | ⬜ |
 | [ST-05](tasks/frontend/student/ST-05-import-preview.md) | Import: copy prompt → paste JSON → preview → confirm | ST-03, CS-06 | ⬜ |
 | [ST-06](tasks/frontend/student/ST-06-posts-attendance.md) | Posts, my attendance, check-in | ST-02, CS-08, CS-10 | ⬜ |
 | [ST-07a](tasks/frontend/student/ST-07a-commons-feed.md) | Commons: header, feed, compose | FS-06, CM-02 | ✅ |
-| [ST-07b](tasks/frontend/student/ST-07b-post-sheet.md) | Commons: post sheet actions + report | ST-07a, CM-03, CM-06, CM-07 | ⬜ |
+| [ST-07b](tasks/frontend/student/ST-07b-post-sheet.md) | Commons: post sheet actions + report | ST-07a, CM-03, CM-06, CM-07 | ✅ |
 | [ST-08a](tasks/frontend/student/ST-08a-projects.md) | Build: flagship + projects | ST-07a, CM-04 | ⬜ |
 | [ST-08b](tasks/frontend/student/ST-08b-challenges.md) | Build: challenges | ST-08a, CM-05 | ⬜ |
 | [ST-09](tasks/frontend/student/ST-09-people.md) | People + person sheet + request | ST-07, CM-01, CM-06 | ⬜ |
@@ -131,14 +131,14 @@
 | ID | Task | Deps | Status |
 |---|---|---|---|
 | [TE-01a](tasks/frontend/teacher/TE-01a-today.md) | Today: sessions + cancel/postpone | FS-06, CS-05, CS-11 | ✅ |
-| [TE-01b](tasks/frontend/teacher/TE-01b-clash-allot.md) | Today: clash banner + allotment card | TE-01a, CS-12 | ⬜ |
+| [TE-01b](tasks/frontend/teacher/TE-01b-clash-allot.md) | Today: clash banner + allotment card | TE-01a, CS-12 | ✅ |
 | [TE-02](tasks/frontend/teacher/TE-02-attendance-roll.md) | Attendance: tap the absent | TE-01, CS-09 | ⬜ |
 | [TE-03](tasks/frontend/teacher/TE-03-attendance-code.md) | Attendance: code mode | TE-02, CS-10 | ⬜ |
 | [TE-04](tasks/frontend/teacher/TE-04-classes-list.md) | Classes list | FS-06, CS-01, CS-08 | ✅ |
 | [TE-05a](tasks/frontend/teacher/TE-05a-class-view.md) | Class: shell, Board, Posts | TE-04, ST-03 | ⬜ |
 | [TE-05b](tasks/frontend/teacher/TE-05b-students-attendance.md) | Class: Students + Attendance tabs | TE-05a, CS-02 | ⬜ |
 | [TE-06](tasks/frontend/teacher/TE-06-class-settings.md) | Settings: min %, next semester, graduate, hand over | TE-05 | ⬜ |
-| [TE-07](tasks/frontend/teacher/TE-07-new-class.md) | New class wizard | TE-04, CS-02 | ⬜ |
+| [TE-07](tasks/frontend/teacher/TE-07-new-class.md) | New class wizard | TE-04, CS-02 | ✅ |
 | [TE-08](tasks/frontend/teacher/TE-08-composer-upcoming.md) | Composer + Upcoming + reminders | TE-04, CS-08, CS-11 | ⬜ |
 
 ## Frontend: Admin
