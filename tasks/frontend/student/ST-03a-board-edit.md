@@ -15,3 +15,7 @@
 - [ ] The CR adds and removes a notice and an exam; both show in the history card.
 
 ## Notes
+- Built edit/{EditToggle,BoardForms,History,TipSheet}.tsx; ClassPage owns `editing` + first-time tip (localStorage `dc.cr-tip`), Board takes `editing` and shows add/remove on Notices, Exams, Deadlines, Files (timetable/syllabus editing = ST-03b/c).
+- BoardForms exports `AddBoardSheet`, `useRemoveItem`, and `AddToBoardSheet({classId, post:{id,title,kind?,dueAt?}, onClose})` (POST /board/from-post) for ST-06.
+- TipSheet buttons all just call `onPick(kind)`; ClassPage's handler turns editing on and closes. ST-03b/c/ST-05 must route there.
+- Verified with curl on :4103 (CR s1, class c1): add+delete notice and exam, history shows create+delete for both. Not browser-tested (QA-03). No new unit test (no pure logic worth it). typecheck + web tests pass.

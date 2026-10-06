@@ -1,10 +1,11 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api, unwrap } from '../../../api/client';
 import type { components } from '../../../api/schema';
 import { Badge, Chip } from '../../../ui/Badge';
 import { Icon } from '../../../ui/Icon';
 import { CrWillAdd } from '../../../ui/Empty';
+import { AddBoardSheet, AddButton, useRemoveItem, type AddKind } from './edit/BoardForms';
 
 type Item = components['schemas']['BoardItem'];
 export type Cell = { key: string; subject: string; start: string; end: string; room: string | null; off?: boolean; tag?: 'Cancelled' | 'Moved' };
@@ -26,8 +27,8 @@ export function trimSat(days: Day[]): Day[] {
   return days[5]?.cells.length ? days : days.slice(0, 5);
 }
 
-const Sec = ({ title, children }: { title: string; children: ReactNode }) => (
-  <div className="section"><div className="row between"><h3>{title}</h3></div>{children}</div>
+const Sec = ({ title, children, add }: { title: string; children: ReactNode; add?: ReactNode }) => (
+  <div className="section"><div className="row between"><h3>{title}</h3>{add}</div>{children}</div>
 );
 
 function useWeek(classId: string, termId: string | undefined, current: boolean) {
@@ -55,13 +56,14 @@ function useWeek(classId: string, termId: string | undefined, current: boolean) 
   });
 }
 
-const dated = (items: Item[]) => (
+const dated = (items: Item[], del?: (id: string) => ReactNode) => (
   <div className="card"><div className="list">
     {[...items].sort((a, b) => (a.date ?? '').localeCompare(b.date ?? '')).map((b) => (
       <div className="row" key={b.id}>
         <div className="grow"><div>{b.title}</div>
           <div className="small muted">{b.date ? fmt(b.date) : ''}{b.subject ? ` · ${b.subject.name}` : ''}{b.body ? ` · ${b.body}` : ''}</div></div>
         {b.date && daysTo(b.date) < 0 ? <Chip>past</Chip> : b.date ? <Chip tone={daysTo(b.date) <= 2 ? 'due' : undefined}>{daysTo(b.date) === 0 ? 'Today' : daysTo(b.date) === 1 ? 'Tomorrow' : `In ${daysTo(b.date)} days`}</Chip> : null}
+        {del?.(b.id)}
       </div>
     ))}
   </div></div>
@@ -73,7 +75,11 @@ const FileChip = ({ it }: { it: Item }) => {
 };
 
 /** Read-only board for one class and term. `current` = the latest term (live week, with changes); older terms show the plain timetable. */
-export function Board({ classId, termId, current }: { classId: string; termId?: string; current: boolean }) {
+export function Board({ classId, termId, current, editing }: { classId: string; termId?: string; current: boolean; editing?: boolean }) {
+  const [adding, setAdding] = useState<AddKind>();
+  const remove = useRemoveItem(classId);
+  const del = editing ? remove : undefined;
+  const add = (kind: AddKind, label: string) => (editing ? <AddButton label={label} onClick={() => setAdding(kind)} /> : undefined);
   const board = useQuery({
     queryKey: ['classes', classId, 'board', termId],
     queryFn: () => unwrap(api.GET('/classes/{id}/board', { params: { path: { id: classId }, query: { termId } } })),
@@ -89,10 +95,10 @@ export function Board({ classId, termId, current }: { classId: string; termId?: 
   return (
     <div className="stack-lg">
       <div>
-        <Sec title="Notices">
+        <Sec title="Notices" add={add('notice', 'Notice')}>
           {notices.length ? <div className="stack">{notices.map((n) => (
             <div key={n.id} className={n.pinned ? 'card tint' : 'card'}>
-              <h4>{n.pinned && <Icon name="star" size={16} />} {n.title}</h4>
+              <div className="row between"><h4>{n.pinned && <Icon name="star" size={16} />} {n.title}</h4>{del?.(n.id)}</div>
               <p className="small muted">{n.body}</p>
             </div>))}</div> : empty('notices')}
         </Sec>
@@ -111,8 +117,8 @@ export function Board({ classId, termId, current }: { classId: string; termId?: 
             </div>))}</div>
         )}
       </Sec>
-      <Sec title="Exams">{b.exams.length ? dated(b.exams) : empty('exam dates')}</Sec>
-      <Sec title="Deadlines">{b.deadlines.length ? dated(b.deadlines) : empty('deadlines')}</Sec>
+      <Sec title="Exams" add={add('exam', 'Exam')}>{b.exams.length ? dated(b.exams, del) : empty('exam dates')}</Sec>
+      <Sec title="Deadlines" add={add('deadline', 'Deadline')}>{b.deadlines.length ? dated(b.deadlines, del) : empty('deadlines')}</Sec>
       <Sec title="Syllabus">
         {b.syllabus.length ? <div className="grid grid-2">{b.syllabus.map((s) => (
           <div className="card" key={s.id}>
@@ -121,14 +127,16 @@ export function Board({ classId, termId, current }: { classId: string; termId?: 
             {s.fileName && <FileChip it={s} />}
           </div>))}</div> : empty('syllabus')}
       </Sec>
-      <Sec title="Files">
+      <Sec title="Files" add={add('file', 'File')}>
         {b.files.length ? <div className="card"><div className="list">{b.files.map((f) => (
           <div className="row" key={f.id}>
             <span className="ico"><Icon name="file" /></span>
             <div className="grow">{f.title}<div className="small muted">{f.fileName}</div></div>
             {f.fileUrl && <a className="btn ghost sm" href={f.fileUrl} target="_blank" rel="noreferrer">Open</a>}
+            {del?.(f.id)}
           </div>))}</div></div> : empty('files')}
       </Sec>
+      {adding && <AddBoardSheet classId={classId} kind={adding} onClose={() => setAdding(undefined)} />}
     </div>
   );
 }

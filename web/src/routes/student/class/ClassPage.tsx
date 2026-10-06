@@ -6,6 +6,9 @@ import { useMe } from '../../../api/hooks';
 import { Avatar } from '../../../ui/Avatar';
 import { Empty } from '../../../ui/Empty';
 import { Board } from './Board';
+import { EditToggle } from './edit/EditToggle';
+import { History } from './edit/History';
+import { TipSheet } from './edit/TipSheet';
 
 const TABS = [['', 'Board'], ['posts', 'Posts'], ['attendance', 'My attendance']] as const;
 
@@ -15,12 +18,16 @@ export function Component() {
   const mine = me?.classes.find((c) => c.role !== 'teacher'); // a student has one home class
   const id = mine?.id ?? '';
   const [picked, setPicked] = useState<string>();
+  const [editing, setEditing] = useState(false);
+  const [tip, setTip] = useState(() => { try { return !localStorage.getItem('dc.cr-tip'); } catch { return false; } });
+  const closeTip = () => { setTip(false); try { localStorage.setItem('dc.cr-tip', '1'); } catch { /* private mode */ } };
   const cls = useQuery({ queryKey: ['classes', id], queryFn: () => unwrap(api.GET('/classes/{id}', { params: { path: { id } } })), enabled: !!id });
   const terms = useQuery({ queryKey: ['classes', id, 'terms'], queryFn: () => unwrap(api.GET('/classes/{id}/terms', { params: { path: { id } } })), enabled: !!id });
 
   if (!me) return null;
   if (!mine) return <Empty text="You are not in a class yet." />;
   const c = cls.data;
+  const isCr = mine.role === 'cr';
   const list = terms.data?.items ?? [];
   const latest = list[0]?.id;
   const termId = picked ?? latest;
@@ -45,11 +52,14 @@ export function Component() {
           </select>
         )}
       </div>
+      {isCr && tab === '' && <div style={{ marginTop: 'var(--s4)' }}><EditToggle editing={editing} onChange={setEditing} /></div>}
       <div style={{ marginTop: 'var(--s4)' }}>
-        {tab === '' && (terms.data ? <Board classId={id} termId={termId} current={termId === latest} /> : null)}
+        {tab === '' && (terms.data ? <Board classId={id} termId={termId} current={termId === latest} editing={isCr && editing} /> : null)}
+        {tab === '' && isCr && <History classId={id} />}
         {tab === 'posts' && <Empty text="Posts are coming soon." />}
         {tab === 'attendance' && <Empty text="Your attendance is coming soon." />}
       </div>
+      {isCr && tip && <TipSheet onClose={closeTip} onPick={() => { setEditing(true); closeTip(); }} />}
     </>
   );
 }
