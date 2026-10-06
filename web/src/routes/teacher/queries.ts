@@ -55,3 +55,13 @@ export function useAllotmentReply() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['me'] }); qc.invalidateQueries({ queryKey: ['classes'] }); },
   });
 }
+
+// TE-07 new class wizard. GET /branches; POST /classes; POST /classes/:id/invites with dryRun for the preview.
+export const useBranches = () => useQuery({ queryKey: ['branches'], queryFn: async () => (await unwrap(api.GET('/branches'))).items });
+export const useCreateClass = () => useMutation({
+  mutationFn: (body: { branchId: string; admissionYear: number; section: string; minAttendancePct: number }) => unwrap(api.POST('/classes', { body })),
+});
+export const useInvitePreview = () => useMutation({
+  mutationFn: ({ id, rows }: { id: string; rows: { studentIdNo: string; email: string }[] }) =>
+    unwrap(api.POST('/classes/{id}/invites', { params: { path: { id } }, body: { rows, dryRun: true } })),
+});

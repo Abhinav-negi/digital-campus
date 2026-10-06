@@ -58,10 +58,9 @@ test('roster: students see names only, staff see IDs and emails', async () => {
   await (await agent('outsider')).get('/api/v1/classes/c2/members').expect(403);
 });
 
-test('CR: 1–2 active students; old and new CRs are notified', async () => {
+test('CR: 1–2 active or invited students; old and new CRs are notified', async () => {
   const t1 = await agent('teacher');
   await (await agent('cr')).put(`${url}/cr`).send({ userIds: ['s2'] }).expect(403);
-  await t1.put(`${url}/cr`).send({ userIds: ['s30'] }).expect(422); // invited
   await t1.put(`${url}/cr`).send({ userIds: ['s31'] }).expect(422); // another class
   await t1.put(`${url}/cr`).send({ userIds: ['s1', 's2', 's3'] }).expect(422);
 
@@ -75,6 +74,11 @@ test('CR: 1–2 active students; old and new CRs are notified', async () => {
   const n1 = await db.notification.findFirstOrThrow({ where: { userId: 's1', type: 'class-cr' } });
   assert.match((n1.payload as { text: string }).text, /no longer the CR/);
   assert.equal(await db.auditLog.count({ where: { action: 'class.cr', classId: 'c1' } }), 2);
+
+  // D17: an invited student may be CR (the new-class wizard picks one before anyone has joined); disabled may not.
+  await t1.put(`${url}/cr`).send({ userIds: ['s30'] }).expect(200);
+  await db.user.update({ where: { id: 's29' }, data: { status: 'disabled' } });
+  await t1.put(`${url}/cr`).send({ userIds: ['s29'] }).expect(422);
 });
 
 test('remove: the student loses class access but keeps the account and profile', async () => {

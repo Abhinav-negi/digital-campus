@@ -164,7 +164,7 @@ router.put(
   route(registry, {
     method: 'put',
     path: '/classes/:id/cr',
-    summary: 'Set the CR(s): 1–2 active students of this class; the old and new CRs are notified',
+    summary: 'Set the CR(s): 1–2 active or invited students of this class; the old and new CRs are notified',
     guard: 'classAccess',
     request: { params: idParams, body: z.object({ userIds: z.array(z.string().min(1)).min(1).max(2) }) },
     responses: { 200: rosterBody },
@@ -177,8 +177,8 @@ router.put(
         where: { id },
         select: { name: true, members: { where: { role: { in: ['student', 'cr'] } }, select: { userId: true, role: true, user: { select: { status: true } } } } },
       });
-      const ok = cls.members.filter((m) => ids.includes(m.userId) && m.user.status === 'active');
-      if (ok.length !== ids.length) throw new HttpError(422, 'VALIDATION', 'A CR must be an active student of this class');
+      const ok = cls.members.filter((m) => ids.includes(m.userId) && m.user.status !== 'disabled'); // D17: an invited student may be CR (picked in the new-class wizard)
+      if (ok.length !== ids.length) throw new HttpError(422, 'VALIDATION', 'A CR must be a student of this class with an active or pending account');
       const old = cls.members.filter((m) => m.role === 'cr').map((m) => m.userId);
       await tx.classMember.updateMany({ where: { classId: id, role: 'cr', userId: { notIn: ids } }, data: { role: 'student' } });
       await tx.classMember.updateMany({ where: { classId: id, userId: { in: ids } }, data: { role: 'cr' } });

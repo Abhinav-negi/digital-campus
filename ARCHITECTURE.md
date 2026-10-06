@@ -35,6 +35,7 @@ Architecture in one line: **one TypeScript monorepo → one container (REST API 
 | D14 | **No Docker anywhere** (S04). Dev Postgres 17 = `npm run db:start` (`embedded-postgres`, no sudo). `SMTP_HOST` empty → emails are printed to the server log. `S3_ENDPOINT` empty → files live on local disk (`.data/uploads`) behind the same presign API. Prod is a plain Node process (`npm run build && npm start`); every host above runs Node natively. Prod still switches by env vars only. |
 | D16 | **Project-ready first, ship-ready later (S06).** Build and verify everything on localhost (local Postgres, local disk files, real email via Gmail SMTP). Deployment-only work (prod build, deploy guide, CI, S3 driver, prod smoke) is parked in INDEX "Deployment (later)" and listed in `docs/DEPLOY-CHECKLIST.md`. Code still switches by env vars only, so nothing is removed. |
 | D15 | **One institution per deployment in v1.** `institutionId` stays on top-level rows (ARCH §7), but admin queries are not scoped by it. Turning on multi-institution means scoping every admin and staff lookup by `institutionId` first (QA-04 checks this). |
+| D17 | **An invited student may be CR (S09, user decision).** The new-class wizard picks the CR before anyone has accepted an invite. `PUT /classes/:id/cr` accepts active or invited members (disabled refused); the role sits on `ClassMember`, so it takes effect when they accept. |
 
 ---
 

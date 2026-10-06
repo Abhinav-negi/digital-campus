@@ -5790,7 +5790,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Set the CR(s): 1–2 active students of this class; the old and new CRs are notified */
+        /** Set the CR(s): 1–2 active or invited students of this class; the old and new CRs are notified */
         put: {
             parameters: {
                 query?: never;
