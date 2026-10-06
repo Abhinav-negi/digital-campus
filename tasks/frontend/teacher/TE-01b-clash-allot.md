@@ -13,3 +13,9 @@
 - [ ] A seed clash shows the banner for both teachers; cancelling one clears it on refresh; Not me removes the class.
 
 ## Notes
+
+- Done 2026-10-06. Files: ClashBanner.tsx, AllotmentCard.tsx (AllotmentCards), hooks useAllotments/useAllotmentReply in queries.ts, mounts in Today.tsx.
+- Banner uses `clashWith[0]` (no teacher name in API: text omits "by {teacher}"). Cancel/Postpone are SessionActions' single "⋯" button, not two buttons (that file isn't owned here).
+- Allotment card shows unread `subject-allotted` notifications (CS-12); Got it = POST /me/notifications/read; Not me = POST /classes/:id/subjects/:sid/decline (classId/subjectId from payload) then mark read.
+- Seed clash is dated at seed time: reseed (`npm run db:seed -w server`) on a new day or /me/today shows none. Login is rate-limited (429) and needs an Origin header for POSTs.
+- Verified with curl on :4101: clash for Meera + Sana, Sana cancel clears both, decline -> 204 and class gone. DB reseeded after.

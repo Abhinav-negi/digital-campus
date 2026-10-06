@@ -36,3 +36,22 @@ export const useMySubjects = (userId: string) => useQuery({
     return per.flat();
   },
 });
+
+// Unread "you were added as a subject teacher" notifications (CS-12), for the Today allotment cards.
+export const useAllotments = () => useQuery({
+  queryKey: ['me', 'notifications', 'allotted'],
+  queryFn: async () => (await unwrap(api.GET('/me/notifications', { params: { query: { limit: 50 } } }))).items
+    .filter((n) => n.type === 'subject-allotted' && !n.read),
+});
+
+// "Got it" marks the notification read; "Not me" (CS-03) unassigns me first, then marks it read.
+export function useAllotmentReply() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, decline }: { id: string; decline?: { classId: string; subjectId: string } }) => {
+      if (decline) await unwrap(api.POST('/classes/{id}/subjects/{sid}/decline', { params: { path: { id: decline.classId, sid: decline.subjectId } } }));
+      await unwrap(api.POST('/me/notifications/read', { body: { ids: [id] } }));
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['me'] }); qc.invalidateQueries({ queryKey: ['classes'] }); },
+  });
+}

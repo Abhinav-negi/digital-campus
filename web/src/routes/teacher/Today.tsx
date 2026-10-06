@@ -4,6 +4,8 @@ import { useMe } from '../../api/hooks';
 import { Badge } from '../../ui/Badge';
 import { Empty } from '../../ui/Empty';
 import { toast } from '../../ui/Toast';
+import { AllotmentCards } from './AllotmentCard';
+import { ClashBanner } from './ClashBanner';
 import { PastSession } from './PastSession';
 import { SessionActions } from './SessionActions';
 import { openAttendance, useStaffToday, type TodaySession } from './queries';
@@ -39,6 +41,7 @@ export function Component() {
         <h1>{h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'}, {me.user.name}</h1>
         <p className="muted">{items.length ? `${items.length} ${items.length === 1 ? 'session' : 'sessions'} today${done ? ` · ${done} done` : ''}.` : 'No sessions today.'}</p></div>
         <button type="button" className="btn" onClick={() => setPast(true)}>Fill a past session</button></div>
+      <AllotmentCards />
       <div className="stack">{items.length ? items.map((s) => {
         const cancelled = s.change?.kind === 'cancelled';
         const mine = s.canEdit && s.teacher?.id === me.user.id;
@@ -53,7 +56,8 @@ export function Component() {
                 <div className="row wrap" style={{ marginTop: 'var(--s1)', gap: 'var(--s1)' }}>
                   <Badge kind="danger">{cancelled ? 'Cancelled' : `Moved to ${start}–${end}`}{by && ` ${by}`}</Badge>
                   <span className="tiny muted">{s.change.note}</span></div>
-              )}</div>
+              )}
+              <ClashBanner s={s} date={t.date} mine={mine} /></div>
             <div className="act row" style={{ gap: 'var(--s1)' }}>
               {s.attendanceDone
                 ? <><Badge kind="open" plain>Done ✓</Badge><button type="button" className="btn sm ghost" onClick={() => take(s)}>Edit</button></>

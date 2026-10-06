@@ -7,7 +7,9 @@
 - `/me/today` cancelled/moved changes: add `author.isCr: boolean` so ST-01 can drop its "(CR)" guess.
 - `npm run gen:api`; then fill the three "–"/omitted spots in `web/src/routes/teacher/classes/ClassesList.tsx` (its `ponytail:` comment) and the CR tag in `web/src/routes/student/Today.tsx`.
 
+- `/me/today` `clashWith[]` entries gain `teacher: { id, name } | null` (TE-01b banner reads "by {teacher}"; add it there once this lands).
+
 ## Done when
-- [ ] Tests: seed teacher t2's class card shows their subjects, invited count and an attendance %; a CR-made cancellation has `isCr: true`.
+- [ ] Tests: seed teacher t2's class card shows their subjects, invited count and an attendance %; a CR-made cancellation has `isCr: true`; the seed clash's `clashWith[0].teacher` names the other teacher.
 
 ## Notes
