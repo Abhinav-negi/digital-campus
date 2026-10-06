@@ -13,3 +13,5 @@
 
 ## Notes
 - From CM-06/07 (S07): `POST /commons/board-posts/:id/message` accepts gig/market/lost/found (board.ts's `message` action only lists market/lost; trust the endpoint). Report reason "Academic dishonesty" only on gigs (422 otherwise).
+- ST-07b done: PostSheet fetches GET /commons/board-posts/:id and gates every button on its `actions` array; ReportSheet posts /commons/reports (targetType 'board'). Status change is PATCH. Gig "Mark done + Thank" = POST /done (server thanks assignee). Message navigates to `/s/me/messages/<conversationId>` (404 until ST-10b). No unit test (UI only, no DOM test setup). typecheck + web tests pass.
+- Orchestrator (S09): verified by typecheck + web tests + gating matches server `actions` (board.ts:161). Not clicked through in a browser: QA-02 covers it.
