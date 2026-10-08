@@ -13,3 +13,9 @@
 - [ ] A Focus profile shows no Ask button; a request appears in the recipient's Me.
 
 ## Notes
+- Done: `commons/people/People.tsx` (list + filters + person sheet + ask + report + block), wired in CommonsPage's People tab. Ordering/round-robin is server-side; the UI just pages with "Show more".
+- The sheet reads `availability`/`focusUntil`/`canAsk`/`conversation` from GET /commons/profiles/{id}: self, Focus (no Ask, "In focus mode until …"), an existing conversation (status chip), else Ask.
+- Ask posts /commons/conversations; the 5/day cap and IN_FOCUS errors toast the server message via FormSheet. Block = POST /commons/blocks; Report = POST /commons/reports targetType 'profile'.
+- ReportSheet is board-post-only (hardcoded targetType 'board', post wording), so People has its own small reason list (Spam / Unsafe or prohibited / Harassment / Other). Follow-up: generalise ReportSheet to a targetType prop.
+- "Working on" shows project chips, not links (no project sheet yet; CM-04 Build tab). `.lnk` and `.clamp` classes don't exist in styles, so links use `.row`; the headline isn't clamped. Year filter is fixed at 1-4.
+- S10 orchestrator: live curl verified (Focus s15 canAsk false + IN_FOCUS; s1→s10 request shows in s10's incoming). Replaced People's own report sheet by generalising commons/ReportSheet (title/targetType/targetId/reasons); PostSheet updated.

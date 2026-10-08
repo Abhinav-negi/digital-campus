@@ -4,6 +4,7 @@ import { Empty } from '../../../ui/Empty';
 import { Icon } from '../../../ui/Icon';
 import { Board } from './Board';
 import { Compose } from './Compose';
+import { People } from './people/People';
 import { PostSheet } from './PostSheet';
 
 const TABS = [['', 'Board'], ['build', 'Build'], ['people', 'People']] as const;
@@ -27,7 +28,7 @@ export function Component() {
       <div style={{ marginTop: 'var(--s4)' }}>
         {tab === '' && <Board onOpen={setOpenId} />}
         {tab === 'build' && <Empty text="Build is coming soon." />}
-        {tab === 'people' && <Empty text="People is coming soon." />}
+        {tab === 'people' && <People />}
       </div>
       {post('fab')}
       {openId && <PostSheet id={openId} onClose={() => setOpenId(undefined)} />}

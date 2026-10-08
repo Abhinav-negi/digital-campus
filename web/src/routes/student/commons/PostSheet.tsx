@@ -58,7 +58,7 @@ export function PostSheet({ id, onClose }: { id: string; onClose: () => void }) 
 
   const p = q.data;
   if (!p) return <Sheet title="Post" onClose={onClose}><p className="muted">{q.error ? q.error.message : 'Loading…'}</p></Sheet>;
-  if (reporting) return <ReportSheet postId={id} kind={p.kind} onClose={() => setReporting(false)} />;
+  if (reporting) return <ReportSheet title="Report this post" targetType="board" targetId={id} reasons={['Spam', 'Unsafe or prohibited', ...(p.kind === 'gig' ? ['Academic dishonesty' as const] : []), 'Other']} onClose={() => setReporting(false)} />;
 
   const can = (a: Detail['actions'][number]) => p.actions.includes(a);
   const [kl, ki] = KIND[p.kind];
