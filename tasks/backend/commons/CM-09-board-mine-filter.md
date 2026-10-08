@@ -11,3 +11,5 @@
 
 ## Notes
 - Origin: ST-10a (S10). Without it, Me misses older/expired posts.
+- Added mine=true (feed query, 'true'|'false'); skips expiry filter, authorId=me. Test in board-posts.test.ts. Me page uses it.
+- S11 orchestrator: full suite 171/171 after gen:api; MePage uses mine=true.

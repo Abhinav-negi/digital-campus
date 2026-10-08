@@ -1842,6 +1842,7 @@ export interface paths {
                     kind?: "all" | "ask" | "gig" | "market" | "lf";
                     branchId?: string;
                     q?: string;
+                    mine?: "true" | "false";
                 };
                 header?: never;
                 path?: never;

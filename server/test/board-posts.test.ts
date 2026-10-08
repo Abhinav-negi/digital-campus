@@ -150,3 +150,14 @@ test('smart routing: a matching Ask notifies skilled students and helps-juniors 
   await fresher.post(url).send({ kind: 'gig', title: 'React tutor', body: '2 sessions', price: 200, deadline: today().toISOString().slice(0, 10), tags: ['React'] }).expect(201);
   assert.equal(await db.notification.count({ where: { type: 'board-match', userId: 's1' } }), 1);
 });
+
+test('mine=true: my expired post is there, nobody else\'s is', async () => {
+  const riya = await agent('student');
+  const mine = await db.boardPost.findFirstOrThrow({ where: { authorId: 's1' } });
+  await db.boardPost.update({ where: { id: mine.id }, data: { expiresAt: addDays(today(), -5) } });
+  const live: Card[] = (await riya.get(`${url}?limit=100`).expect(200)).body.items;
+  assert.ok(!live.some((p) => p.id === mine.id));
+  const items: (Card & { author: { id: string } })[] = (await riya.get(`${url}?mine=true&limit=100`).expect(200)).body.items;
+  assert.ok(items.some((p) => p.id === mine.id));
+  assert.ok(items.every((p) => p.author.id === 's1'));
+});

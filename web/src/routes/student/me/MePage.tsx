@@ -18,11 +18,10 @@ export function Component() {
   const me = useMe().data?.user;
   const id = me?.id ?? '';
   const prof = useQuery({ queryKey: ['commons', 'profile', id], enabled: !!id, queryFn: () => unwrap(api.GET('/commons/profiles/{userId}', { params: { path: { userId: id } } })) });
-  // ponytail: no author filter on the API, so scan the first 50 live posts; add ?mine when it matters.
-  const board = useQuery({ queryKey: ['commons', 'board', 'mine'], enabled: !!id, queryFn: () => unwrap(api.GET('/commons/board-posts', { params: { query: { limit: 50 } } })) });
+  const board = useQuery({ queryKey: ['commons', 'board', 'mine'], enabled: !!id, queryFn: () => unwrap(api.GET('/commons/board-posts', { params: { query: { mine: 'true', limit: 50 } } })) });
   const p = prof.data;
   if (!p) return <p className="muted">{prof.error ? prof.error.message : 'Loading…'}</p>;
-  const posts = board.data?.items.filter((x) => x.author.id === id) ?? [];
+  const posts = board.data?.items ?? [];
 
   return (
     <>

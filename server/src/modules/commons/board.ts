@@ -214,6 +214,8 @@ const feedQuery = pageQuery.extend({
   kind: z.enum(['all', 'ask', 'gig', 'market', 'lf']).default('all'),
   branchId: z.string().min(1).optional(),
   q: z.string().trim().max(100).optional(),
+  /** 'true' = only my posts, expired and closed included (hidden ones still drop out). */
+  mine: z.enum(['true', 'false']).optional(),
 });
 
 router.get(
@@ -227,7 +229,7 @@ router.get(
     responses: { 200: z.object({ items: z.array(boardPostCard), nextCursor: z.string().nullable() }) },
   }),
   async (req, res) => {
-    const { kind, branchId, q, cursor, limit } = req.query as unknown as z.infer<typeof feedQuery>;
+    const { kind, branchId, q, mine, cursor, limit } = req.query as unknown as z.infer<typeof feedQuery>;
     const viewer = await viewerOf(req.user!.id);
     const v = { branchId: viewer.homeClass?.branchId ?? null, on: today() };
     const blocked = await blockedIds(req.user!.id);
@@ -236,8 +238,8 @@ router.get(
     const rows = await db.boardPost.findMany({
       where: {
         hiddenAt: null,
-        authorId: { notIn: blocked },
-        expiresAt: { gte: v.on },
+        authorId: mine === 'true' ? req.user!.id : { notIn: blocked },
+        ...(mine !== 'true' && { expiresAt: { gte: v.on } }),
         ...(kind !== 'all' && { kind: kind === 'lf' ? { in: ['lost', 'found'] } : kind }),
         author: { institutionId: viewer.institutionId, ...(branchId && { homeClass: { is: { branchId } } }) },
       },
