@@ -12,3 +12,9 @@
 - [ ] A student ticket appears; the reply reaches the student's Me.
 
 ## Notes
+- Done AF-01. AdminLayout (AppShell admin, 6 nav items, no old banner), `routes.ts` table (index → Inbox; AF-02..05 lines → Soon), `/a` in router.tsx mirrors /s and /t.
+- Inbox: overview stat row (open tickets/reports, pending invites, classes without timetable), type tabs + state tabs (server `?type=&state=`), ticket row → TicketSheet (reply, Close/Reopen), report row → Hide/Warn/Delete(confirm)/Dismiss.
+- The report "preview" shows only targetType, targetId and reason: no read-one-target endpoint exists for admins yet (AF-04a/AD-06 `PATCH /admin/commons/...` has no GET).
+- Admin reads the thread via shared `GET /tickets/{id}` (works for admins); reply via `POST /tickets/{id}/replies`.
+- Left the now-unused `page()` helper in router.tsx (outside the allowed line); delete it in a later pass.
+- S11 orchestrator: live curl verified (ticket in inbox → admin reply → student sees it; close; dismiss report). Removed the unused /a placeholder page() from router.tsx. Report target preview is type/id/reason only (no read-one-target endpoint) → revisit in AF-04a.

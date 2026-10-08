@@ -1,6 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import { createBrowserRouter, redirect, type RouteObject } from 'react-router';
 import { meQuery, type Me } from './api/hooks';
+import { adminRoutes } from './routes/admin/routes';
 import { studentRoutes } from './routes/student/routes';
 import { teacherRoutes } from './routes/teacher/routes';
 
@@ -23,15 +24,6 @@ const guard = (area: Area) => async () => {
   return me;
 };
 
-// Placeholder page for /a until AF-01 brings AdminLayout (same shape as routes/student: layout + routes.ts children).
-const page = (title: string) => async () => ({
-  Component: () => (
-    <main className="main">
-      <h1>{title}</h1>
-    </main>
-  ),
-});
-
 const routes: RouteObject[] = [
   { path: '/', lazy: () => import('./routes/landing') },
   // Already logged in → your home, not the form.
@@ -41,7 +33,7 @@ const routes: RouteObject[] = [
   { path: '/invite/:token', lazy: () => import('./routes/onboarding') },
   { path: '/s', loader: guard('s'), lazy: () => import('./routes/student'), children: studentRoutes },
   { path: '/t', loader: guard('t'), lazy: () => import('./routes/teacher'), children: teacherRoutes },
-  { path: '/a/*', loader: guard('a'), lazy: page('Admin') },
+  { path: '/a', loader: guard('a'), lazy: () => import('./routes/admin/AdminLayout'), children: adminRoutes },
   { path: '*', loader: () => redirect('/') },
 ];
 // Component test page (FS-02/FS-03), dev only.
