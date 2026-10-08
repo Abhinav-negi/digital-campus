@@ -5,6 +5,9 @@ import { Avatar } from '../../../ui/Avatar';
 import { Chip } from '../../../ui/Badge';
 import { Empty } from '../../../ui/Empty';
 import { BoardCard } from '../commons/BoardCard';
+import { Messages } from './Messages';
+import { Notifications } from './Notifications';
+import { Tickets } from './Tickets';
 import { ProfileForm } from './ProfileForm';
 import { YourData } from './YourData';
 
@@ -30,7 +33,9 @@ export function Component() {
       <ProfileForm key={p.id + p.availability + p.focusUntil} p={p} />
       <Sec title="My projects">{p.projects.length ? <div className="fl">{p.projects.map((x) => <Chip key={x.id} tone="vio">{x.title}</Chip>)}</div> : <Empty text="You are not on a project yet." />}</Sec>
       <Sec title="My board posts">{posts.length ? <div className="grid grid-2">{posts.map((x) => <BoardCard key={x.id} p={x} />)}</div> : <Empty text="You have not posted on the Board yet." />}</Sec>
-      {/* ST-10b: Messages + Notifications sections go here. */}
+      <Sec title="Messages"><Messages /></Sec>
+      <Sec title="Notifications"><Notifications /></Sec>
+      <Sec title="Need help?"><Tickets /></Sec>
       <Sec title="Your data"><YourData /></Sec>
     </>
   );

@@ -15,3 +15,8 @@
 
 ## Notes
 - From CS-12 (S07): notification `link`s are guessed web paths in `linkFor` (server/src/modules/me/notifications.ts); align them with the real routes here. CM-06 notifies per message (type `message`, mutable).
+- Done: Messages/ThreadSheet/Notifications/Tickets mounted in MePage (Messages, Notifications, "Need help?"). Deep link `/s/me/messages/:id` opens the thread sheet (MePage `me/*` splat); closing returns to `/s/me`.
+- Thread polls via `usePoll` 5s, first 100 messages only (`ponytail:`). My tickets lists `/tickets/mine` (no replies), tapping loads `/tickets/{id}` with admin replies and a reply box.
+- Notifications: row tap marks it read then navigates to `n.link`; the bell is not wired. `linkFor` is wrong for the real routes, see the report (needs: conversationId -> `/s/me/messages/:id`, no student ticket page, `/s/commons/...` has no projects/challenges/board/:id routes yet).
+- Verified against live API (curl): request, accept, a message each way, ticket open, admin reply, my tickets reply, ticket-reply notification.
+- S10 orchestrator: live curl verified (request→accept→messages both ways; ticket→admin reply→student sees it). Notification rows made <button>s (keyboard). linkFor fixes tracked as CS-16.
