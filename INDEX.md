@@ -8,8 +8,8 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S10-2026-10-08.md](handoff/S10-2026-10-08.md) |
-| **Progress** | **80%** · 71 / 89 done (project-ready) · 4 deployment tasks parked |
-| **Ready to start** | ST-03c · CM-09 · CS-16 · AF-02 · AF-05 · ST-08c |
+| **Progress** | **81%** · 72 / 89 done (project-ready) · 4 deployment tasks parked |
+| **Ready to start** | ST-03c · CM-09 · CS-16 · AF-02 · AF-05 |
 | **Current wave** | Wave 3: Frontend (Waves 1–2 ✅) |
 
 ## Waves (dispatch plan)
@@ -115,7 +115,7 @@
 | [ST-02](tasks/frontend/student/ST-02-class-board.md) | Class: Board (read, empty states, terms) | FS-06, CS-05, CS-07 | ✅ |
 | [ST-03a](tasks/frontend/student/ST-03a-board-edit.md) | CR edit: toggle, board forms, history, tip sheet | ST-02, CS-07 | ✅ |
 | [ST-03b](tasks/frontend/student/ST-03b-subjects.md) | CR edit: subjects + teacher picker | ST-02, CS-03 | ✅ |
-| [ST-03c](tasks/frontend/student/ST-03c-week-editor.md) | CR edit: weekly timetable editor | ST-03b, CS-04 | ⬜ |
+| [ST-03c](tasks/frontend/student/ST-03c-week-editor.md) | CR edit: weekly timetable editor | ST-03b, CS-04 | 🟨 |
 | [ST-04](tasks/frontend/student/ST-04-week-ahead.md) | Week-ahead changes, events, clashes | ST-03, CS-05 | ⬜ |
 | [ST-05](tasks/frontend/student/ST-05-import-preview.md) | Import: copy prompt → paste JSON → preview → confirm | ST-03, CS-06 | ⬜ |
 | [ST-06](tasks/frontend/student/ST-06-posts-attendance.md) | Posts, my attendance, check-in | ST-02, CS-08, CS-10 | ✅ |
@@ -149,7 +149,7 @@
 | [AF-03](tasks/frontend/admin/AF-03-classes.md) | Classes (reuses the teacher view) | AF-01, TE-05 | ⬜ |
 | [AF-04a](tasks/frontend/admin/AF-04a-moderation.md) | Commons moderation (Board · Build · People) | AF-01, ST-09, AD-06 | ⬜ |
 | [AF-04b](tasks/frontend/admin/AF-04b-conversations-featured.md) | Commons: conversations + featured | AF-04a, AD-07 | ⬜ |
-| [AF-05](tasks/frontend/admin/AF-05-school-audit.md) | School setup + Audit | AF-01, AD-04, AD-08 | ⬜ |
+| [AF-05](tasks/frontend/admin/AF-05-school-audit.md) | School setup + Audit | AF-01, AD-04, AD-08 | 🟨 |
 
 ## QA
 | ID | Task | Deps | Status |
@@ -168,6 +168,6 @@
 | [CS-13](tasks/backend/class-space/CS-13-card-fields.md) | ClassCard subjects/invited/attendance + change author isCr | CS-01, CS-11 | ✅ | TE-04, ST-01 (S08) |
 | [CS-14](tasks/backend/class-space/CS-14-attendance-session-get.md) | GET one attendance session (reload-safe attendance page) | CS-09, TE-02 | ✅ | TE-02 (S10) |
 | [CS-15](tasks/backend/class-space/CS-15-checkin-open-flag.md) | `/me/today` codeOpen flag; CheckIn card only while a code is open | CS-13, ST-06 | ✅ | ST-06 (S10) |
-| [CM-09](tasks/backend/commons/CM-09-board-mine-filter.md) | Board posts `mine` filter for Me | CM-02, ST-10a | ⬜ | ST-10a (S10) |
-| [CS-16](tasks/backend/class-space/CS-16-notification-links.md) | Notification `link`s → real web routes | CS-12, ST-10b | ⬜ | ST-10b (S10) |
-| [ST-08c](tasks/frontend/student/ST-08c-pick-winners.md) | Owner picks challenge winners | ST-08b, CM-05 | ⬜ | ST-08b (S11) |
+| [CM-09](tasks/backend/commons/CM-09-board-mine-filter.md) | Board posts `mine` filter for Me | CM-02, ST-10a | 🟨 | ST-10a (S10) |
+| [CS-16](tasks/backend/class-space/CS-16-notification-links.md) | Notification `link`s → real web routes | CS-12, ST-10b | 🟨 | ST-10b (S10) |
+| [ST-08c](tasks/frontend/student/ST-08c-pick-winners.md) | Owner picks challenge winners | ST-08b, CM-05 | ✅ | ST-08b (S11) |

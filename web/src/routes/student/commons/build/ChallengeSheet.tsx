@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, unwrap } from '../../../../api/client';
 import { Avatar } from '../../../../ui/Avatar';
@@ -18,10 +19,13 @@ export function ChallengeSheet({ id, onClose }: { id: string; onClose: () => voi
   });
   const like = (sid: string) => act.mutate(() => unwrap(api.POST('/commons/submissions/{id}/like', { params: { path: { id: sid } } })));
 
+  const [sel, setSel] = useState<string[] | null>(null);
   const c = q.data;
   if (!c) return <Sheet title="Challenge" onClose={onClose}><p className="muted">{q.error ? q.error.message : 'Loading…'}</p></Sheet>;
   const end = rel(c.endsAt.slice(0, 10));
   const subs = c.submissions.filter((s) => s != null);
+  const picked = sel ?? c.winners.map((w) => w.id);
+  const toggle = (uid: string) => setSel(picked.includes(uid) ? picked.filter((x) => x !== uid) : [...picked, uid]);
 
   return (
     <Sheet title={c.title} onClose={onClose}>
@@ -36,10 +40,14 @@ export function ChallengeSheet({ id, onClose }: { id: string; onClose: () => voi
             <div className="grow"><b>{s.user.name}</b>
               <div className="small">{/^https?:\/\//.test(s.url) ? <a href={s.url} target="_blank" rel="noopener noreferrer">{s.url}</a> : s.url}</div>
               {s.note && <div className="small muted">{s.note}</div>}</div>
+            {c.canPickWinners && <button type="button" className={`btn sm ${picked.includes(s.user.id) ? 'primary' : ''}`} aria-pressed={picked.includes(s.user.id)} onClick={() => toggle(s.user.id)}>
+              {picked.includes(s.user.id) ? 'Winner' : 'Pick'}</button>}
             <button type="button" className={`btn sm ${s.likedByMe ? 'primary' : ''}`} disabled={!c.live || act.isPending} onClick={() => like(s.id)}>
               <Icon name="star" size={16} /> {s.likes}</button>
           </div>))}</div>
           : <p className="small muted">No submissions yet. Be the first.</p>}
+        {c.canPickWinners && <button type="button" className="btn primary" disabled={act.isPending || !picked.length}
+          onClick={() => act.mutate(() => unwrap(api.PUT('/commons/challenges/{id}/winners', { params: { path: { id } }, body: { userIds: picked } })).then(() => setSel(null)))}>Save winners</button>}
         {c.canSubmit ? (
           <form className="stack" onSubmit={(e) => {
             e.preventDefault();
