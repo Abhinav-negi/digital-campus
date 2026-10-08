@@ -9,7 +9,7 @@
 |---|---|
 | **Latest handoff** | [handoff/S10-2026-10-08.md](handoff/S10-2026-10-08.md) |
 | **Progress** | **85%** · 76 / 89 done (project-ready) · 4 deployment tasks parked |
-| **Ready to start** | ST-03c · AF-02 |
+| **Ready to start** | ST-04 · ST-05 · TE-05a · AF-02 · AF-04a · QA-01 |
 | **Current wave** | Wave 3: Frontend (Waves 1–2 ✅) |
 
 ## Waves (dispatch plan)
