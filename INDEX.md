@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S10-2026-10-08.md](handoff/S10-2026-10-08.md) |
-| **Progress** | **81%** · 72 / 89 done (project-ready) · 4 deployment tasks parked |
+| **Progress** | **85%** · 76 / 89 done (project-ready) · 4 deployment tasks parked |
 | **Ready to start** | ST-03c · AF-02 |
 | **Current wave** | Wave 3: Frontend (Waves 1–2 ✅) |
 
