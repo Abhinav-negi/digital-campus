@@ -6,6 +6,9 @@ import { useMe } from '../../../api/hooks';
 import { Avatar } from '../../../ui/Avatar';
 import { Empty } from '../../../ui/Empty';
 import { Board } from './Board';
+import { Posts } from './Posts';
+import { MyAttendance } from './MyAttendance';
+import { CheckIn } from './CheckIn';
 import { EditToggle } from './edit/EditToggle';
 import { Subjects } from './edit/Subjects';
 import { History } from './edit/History';
@@ -58,8 +61,8 @@ export function Component() {
         {tab === '' && (terms.data ? <Board classId={id} termId={termId} current={termId === latest} editing={isCr && editing} /> : null)}
         {tab === '' && isCr && editing && termId === latest && <Subjects classId={id} />}
         {tab === '' && isCr && <History classId={id} />}
-        {tab === 'posts' && <Empty text="Posts are coming soon." />}
-        {tab === 'attendance' && <Empty text="Your attendance is coming soon." />}
+        {tab === 'posts' && <Posts classId={id} isCr={isCr} />}
+        {tab === 'attendance' && <div className="stack"><CheckIn /><MyAttendance classId={id} isCr={isCr} /></div>}
       </div>
       {isCr && tip && <TipSheet onClose={closeTip} onPick={() => { setEditing(true); closeTip(); }} />}
     </>

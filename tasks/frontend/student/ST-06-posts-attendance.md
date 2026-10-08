@@ -13,3 +13,10 @@
 - [ ] Opening a post updates the teacher's seen count; check-in during a live code session marks present.
 
 ## Notes
+- Done. Posts/PostSheet/MyAttendance/CheckIn in `routes/student/class/`; ClassPage swaps the two placeholders (attendance tab = CheckIn + MyAttendance); Today renders `<CheckIn />` first in the stack.
+- Deviation: no API tells a student a code session is open (`codeOpen` is teacher-only), so the "Enter class code" card is always shown; wrong/expired shows the server message inline. Follow-up if wanted: a `codeOpen` flag on `/me/today`.
+- Opening a post calls `POST /posts/:id/seen` from a `useEffect` in PostSheet (only if `seen` is false), then invalidates `['classes',id,'posts']` and `['me','today']`. The post list rows are `<button class="card click">`.
+- `/me/attendance` is filtered to the student's home class; dots come from `history` (last 12, already trimmed by the API).
+- CR "Add to board" swaps the sheet content to the existing `AddToBoardSheet` (BoardForms) rather than stacking two sheets.
+- Verified live (port 3101): seen 1→2 on teacher `/posts/mine`; wrong code 422 BAD_CODE; correct code returns sessionId and teacher poll shows `checkedIn:["s3"]`.
+- S10 orchestrator: accepted; check-in card always visible until CS-15 adds a codeOpen flag.

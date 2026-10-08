@@ -6,6 +6,7 @@ import { Badge, Chip } from '../../ui/Badge';
 import { Bar } from '../../ui/Bar';
 import { CrWillAdd, Empty } from '../../ui/Empty';
 import { Icon } from '../../ui/Icon';
+import { CheckIn } from './class/CheckIn';
 import { useCommonsCard, useToday, type StudentToday } from './queries';
 
 type Slot = StudentToday['items'][number];
@@ -65,6 +66,7 @@ export function Component() {
             <div className="small">{s.change?.note} <span className="muted">· posted by {s.change?.author.name}{s.change?.author.id !== s.teacher?.id && ' (CR)'}</span></div>
           </div>
         ))}
+        <CheckIn />
         {t.empty.timetable ? <CrWillAdd what="timetable" isCr={isCr} onAdd={() => nav('/s/class')} /> : (
           <>
             <div className="card hero">

@@ -8,8 +8,8 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S09-2026-10-06.md](handoff/S09-2026-10-06.md) |
-| **Progress** | **71%** · 60 / 85 done (project-ready) · 4 deployment tasks parked |
-| **Ready to start** | ST-03c · ST-06 · TE-03 · CS-14 · ST-09 · AF-01 · ST-08a · CS-13 |
+| **Progress** | **71%** · 61 / 86 done (project-ready) · 4 deployment tasks parked |
+| **Ready to start** | ST-03c · TE-03 · CS-14 · ST-09 · AF-01 · ST-08a · CS-13 |
 | **Current wave** | Wave 3: Frontend (Waves 1–2 ✅) |
 
 ## Waves (dispatch plan)
@@ -118,7 +118,7 @@
 | [ST-03c](tasks/frontend/student/ST-03c-week-editor.md) | CR edit: weekly timetable editor | ST-03b, CS-04 | ⬜ |
 | [ST-04](tasks/frontend/student/ST-04-week-ahead.md) | Week-ahead changes, events, clashes | ST-03, CS-05 | ⬜ |
 | [ST-05](tasks/frontend/student/ST-05-import-preview.md) | Import: copy prompt → paste JSON → preview → confirm | ST-03, CS-06 | ⬜ |
-| [ST-06](tasks/frontend/student/ST-06-posts-attendance.md) | Posts, my attendance, check-in | ST-02, CS-08, CS-10 | 🟨 |
+| [ST-06](tasks/frontend/student/ST-06-posts-attendance.md) | Posts, my attendance, check-in | ST-02, CS-08, CS-10 | ✅ |
 | [ST-07a](tasks/frontend/student/ST-07a-commons-feed.md) | Commons: header, feed, compose | FS-06, CM-02 | ✅ |
 | [ST-07b](tasks/frontend/student/ST-07b-post-sheet.md) | Commons: post sheet actions + report | ST-07a, CM-03, CM-06, CM-07 | ✅ |
 | [ST-08a](tasks/frontend/student/ST-08a-projects.md) | Build: flagship + projects | ST-07a, CM-04 | ⬜ |
@@ -165,5 +165,6 @@
 *Findings and follow-ups discovered while building go here as new rows (next free ID in their region). Create the task file too.*
 | ID | Task | Deps | Status | Origin |
 |---|---|---|---|---|
-| [CS-13](tasks/backend/class-space/CS-13-card-fields.md) | ClassCard subjects/invited/attendance + change author isCr | CS-01, CS-11 | ⬜ | TE-04, ST-01 (S08) |
+| [CS-13](tasks/backend/class-space/CS-13-card-fields.md) | ClassCard subjects/invited/attendance + change author isCr | CS-01, CS-11 | 🟨 | TE-04, ST-01 (S08) |
 | [CS-14](tasks/backend/class-space/CS-14-attendance-session-get.md) | GET one attendance session (reload-safe attendance page) | CS-09, TE-02 | ⬜ | TE-02 (S10) |
+| [CS-15](tasks/backend/class-space/CS-15-checkin-open-flag.md) | `/me/today` codeOpen flag; CheckIn card only while a code is open | CS-13, ST-06 | ⬜ | ST-06 (S10) |
