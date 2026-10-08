@@ -15,3 +15,7 @@
 - [ ] Pasting a sample timetable JSON ends with the slots visible on Board and Today.
 
 ## Notes
+- Import.tsx (mounted in ClassPage after WeekAhead): kind chips, prompt + Copy, paste/.json -> preview -> editable tables -> apply. Edited rows drop their `issue` locally; the server re-checks on apply (422 toast). Confirm is disabled while timetable slots / datesheet bad dates / syllabus rows still have issues (unmatched teacher and unknown datesheet subject do not block, as in CS-06).
+- Toast says "N teachers notified" from the draft's distinct teacherIds; apply only returns counts {subjects,slots} or {items}. Tests: import.test.ts (summaryLine). typecheck/test/build pass.
+- Live (API :3141, CR 26ecea001@students.demo.edu, class c3): prompts OK; preview with an unmatched teacher + bad-time row returned the issue flags; apply with issues -> 422; fixed apply -> counts {subjects:2,slots:2}; schedule shows the slot Mon 09:00. Not browser-clicked (no screenshots; QA-03).
+- Left test data in c3: subjects "ZZ Import Maths", "ZZ Import Physics" and a replaced weekly timetable (2 slots).

@@ -117,7 +117,7 @@
 | [ST-03b](tasks/frontend/student/ST-03b-subjects.md) | CR edit: subjects + teacher picker | ST-02, CS-03 | ✅ |
 | [ST-03c](tasks/frontend/student/ST-03c-week-editor.md) | CR edit: weekly timetable editor | ST-03b, CS-04 | ✅ |
 | [ST-04](tasks/frontend/student/ST-04-week-ahead.md) | Week-ahead changes, events, clashes | ST-03, CS-05 | ✅ |
-| [ST-05](tasks/frontend/student/ST-05-import-preview.md) | Import: copy prompt → paste JSON → preview → confirm | ST-03, CS-06 | ⬜ |
+| [ST-05](tasks/frontend/student/ST-05-import-preview.md) | Import: copy prompt → paste JSON → preview → confirm | ST-03, CS-06 | ✅ |
 | [ST-06](tasks/frontend/student/ST-06-posts-attendance.md) | Posts, my attendance, check-in | ST-02, CS-08, CS-10 | ✅ |
 | [ST-07a](tasks/frontend/student/ST-07a-commons-feed.md) | Commons: header, feed, compose | FS-06, CM-02 | ✅ |
 | [ST-07b](tasks/frontend/student/ST-07b-post-sheet.md) | Commons: post sheet actions + report | ST-07a, CM-03, CM-06, CM-07 | ✅ |
@@ -135,7 +135,7 @@
 | [TE-02](tasks/frontend/teacher/TE-02-attendance-roll.md) | Attendance: tap the absent | TE-01, CS-09 | ✅ |
 | [TE-03](tasks/frontend/teacher/TE-03-attendance-code.md) | Attendance: code mode | TE-02, CS-10 | ✅ |
 | [TE-04](tasks/frontend/teacher/TE-04-classes-list.md) | Classes list | FS-06, CS-01, CS-08 | ✅ |
-| [TE-05a](tasks/frontend/teacher/TE-05a-class-view.md) | Class: shell, Board, Posts | TE-04, ST-03 | ⬜ |
+| [TE-05a](tasks/frontend/teacher/TE-05a-class-view.md) | Class: shell, Board, Posts | TE-04, ST-03 | 🟨 |
 | [TE-05b](tasks/frontend/teacher/TE-05b-students-attendance.md) | Class: Students + Attendance tabs | TE-05a, CS-02 | ⬜ |
 | [TE-06](tasks/frontend/teacher/TE-06-class-settings.md) | Settings: min %, next semester, graduate, hand over | TE-05 | ⬜ |
 | [TE-07](tasks/frontend/teacher/TE-07-new-class.md) | New class wizard | TE-04, CS-02 | ✅ |
@@ -145,7 +145,7 @@
 | ID | Task | Deps | Status |
 |---|---|---|---|
 | [AF-01](tasks/frontend/admin/AF-01-shell-inbox.md) | Admin shell + Inbox | FS-06, AD-05, AD-06, AD-08 | ✅ |
-| [AF-02](tasks/frontend/admin/AF-02-people.md) | People: teachers, students, badge | AF-01, AD-01, AD-02, AD-03 | ⬜ |
+| [AF-02](tasks/frontend/admin/AF-02-people.md) | People: teachers, students, badge | AF-01, AD-01, AD-02, AD-03 | 🟨 |
 | [AF-03](tasks/frontend/admin/AF-03-classes.md) | Classes (reuses the teacher view) | AF-01, TE-05 | ⬜ |
 | [AF-04a](tasks/frontend/admin/AF-04a-moderation.md) | Commons moderation (Board · Build · People) | AF-01, ST-09, AD-06 | ⬜ |
 | [AF-04b](tasks/frontend/admin/AF-04b-conversations-featured.md) | Commons: conversations + featured | AF-04a, AD-07 | ⬜ |
