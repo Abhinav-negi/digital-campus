@@ -23,21 +23,22 @@ export function useSessionChange(classId: string) {
   });
 }
 
-// POST /attendance-sessions is idempotent: opens or fetches the session for subject/date/slot.
-// The API has no GET /attendance-sessions/:id, so the opened session is stashed for the attendance page (TE-02).
+// POST /attendance-sessions is idempotent: opens or fetches the session; the page then loads it by id (GET) so reloads work.
 export type AttendanceSession = components['schemas']['AttendanceSession'];
-export const openedSessions = new Map<string, AttendanceSession>();
+const sessionKey = (id: string) => ['attendance-session', id];
+export const useAttendanceSession = (id: string) => useQuery({
+  queryKey: sessionKey(id), retry: false, gcTime: 0, // gcTime 0: always fresh on open
+  queryFn: () => unwrap(api.GET('/attendance-sessions/{id}', { params: { path: { id } } })),
+});
 export const openAttendance = async (b: { subjectId: string; date: string; slotId?: string }) => {
-  const s = await unwrap(api.POST('/attendance-sessions', { body: b }));
-  openedSessions.set(s.id, s);
-  return s;
+  return unwrap(api.POST('/attendance-sessions', { body: b }));
 };
 
 export function useSaveAttendance(id: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (absentIds: string[]) => unwrap(api.PUT('/attendance-sessions/{id}', { params: { path: { id } }, body: { absentIds } })),
-    onSuccess: (s) => { openedSessions.set(s.id, s); qc.invalidateQueries({ queryKey: ['me'] }); qc.invalidateQueries({ queryKey: ['classes'] }); },
+    onSuccess: (s) => { qc.setQueryData(sessionKey(s.id), s); qc.invalidateQueries({ queryKey: ['me'] }); qc.invalidateQueries({ queryKey: ['classes'] }); },
   });
 }
 

@@ -150,6 +150,23 @@ sessions.post(
   },
 );
 
+sessions.get(
+  '/:id',
+  route(registry, {
+    method: 'get',
+    path: '/attendance-sessions/:id',
+    summary: 'One session with its roster and absentIds (same guard as PUT)',
+    guard: 'teach',
+    request: { params: idParams },
+    responses: { 200: sessionView, 403: null, 404: null, 409: null },
+  }),
+  async (req, res) => {
+    const id = String(req.params.id);
+    await loadSession(id, req.user!);
+    res.json(await view(id));
+  },
+);
+
 sessions.put(
   '/:id',
   route(registry, {

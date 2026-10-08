@@ -123,3 +123,17 @@ test('GET /classes/:id/attendance: lowest first, belowCount; history outlives me
   await classView((await agent('teacher')).token, 'c1', 'sub2').expect(200); // class teacher
   await classView(arjun.token, 'c1', 'sub6').expect(404); // c2's subject
 });
+
+test('GET /attendance-sessions/:id: the subject teacher gets the roster; a teacher without the subject gets 403; unknown id 404', async () => {
+  const meera = await agent('teacher');
+  const { id } = (await meera.post(URL).send({ subjectId: 'sub2', date: TODAY }).expect(200)).body;
+  const got = (await meera.get(`${URL}/${id}`).expect(200)).body;
+  assert.equal(got.id, id);
+  assert.equal(got.subject.id, 'sub2');
+  assert.ok(got.roster.length > 0);
+  assert.deepEqual(got.absentIds, []);
+  await (await agent('subjectTeacher')).get(`${URL}/${id}`).expect(200); // Arjun teaches sub2
+  await (await agent('outsider')).get(`${URL}/${id}`).expect(403);
+  await (await agent('cr')).get(`${URL}/${id}`).expect(403);
+  await meera.get(`${URL}/nope`).expect(404);
+});

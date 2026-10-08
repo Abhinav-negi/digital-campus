@@ -1,18 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router';
 import { toast } from '../../../ui/Toast';
-import { openedSessions, useCode, useSaveAttendance, useStaffToday } from '../queries';
+import { useAttendanceSession, useCode, useSaveAttendance, useStaffToday, type AttendanceSession } from '../queries';
 import { CodeMode } from './CodeMode';
 import { Roster } from './Roster';
 
 // PROTO teacher.html:204-254. Roll tab + Code tab (TE-03).
 export function Component() {
   const { sessionId = '' } = useParams();
-  const sess = openedSessions.get(sessionId);
+  const q = useAttendanceSession(sessionId);
+  if (q.isError) return <Navigate to="/t" replace />; // 403/404: not yours or gone
+  return q.data ? <Page sessionId={sessionId} sess={q.data} /> : null;
+}
+
+function Page({ sessionId, sess }: { sessionId: string; sess: AttendanceSession }) {
   const go = useNavigate();
   const save = useSaveAttendance(sessionId);
-  const slot = useStaffToday().data?.sessions.find((s) => sess?.slotId && s.slotId === sess.slotId);
-  const [absent, setAbsent] = useState(() => new Set(sess?.absentIds ?? []));
+  const slot = useStaffToday().data?.sessions.find((s) => sess.slotId && s.slotId === sess.slotId);
+  const [absent, setAbsent] = useState(() => new Set(sess.absentIds));
 
   // Code mode: absent = not checked in yet, unless the teacher tapped the tile (fixed: id -> absent).
   const [code, setCode] = useState(false);
@@ -23,9 +28,6 @@ export function Component() {
     document.body.classList.add('attending');
     return () => document.body.classList.remove('attending');
   }, []);
-
-  // Opened without going through Today / Past session (e.g. a reload): the API can't re-fetch a session by id.
-  if (!sess) return <Navigate to="/t" replace />;
 
   const n = sess.roster.length;
   const open = code && !!live?.code;

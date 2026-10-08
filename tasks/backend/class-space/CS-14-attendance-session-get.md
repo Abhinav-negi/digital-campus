@@ -11,3 +11,8 @@
 
 ## Notes
 - Origin: TE-02 (S10). The page only gets a session id; without this GET it read a module-level stash, so reload/deep links redirect to `/t`.
+- Done: `GET /attendance-sessions/:id` uses `loadSession` (same guard as PUT, incl. today/yesterday limit for non-admins) + the shared `view` presenter. Test added at the end of `server/test/attendance.test.ts`.
+- Web: `useAttendanceSession(id)` (key `['attendance-session', id]`, `gcTime: 0` so each open is fresh) replaces `openedSessions`; `AttendancePage` splits into a loader (`Component`) and `Page`, which gets `absent` initial state from loaded data. Error (403/404) redirects to `/t`.
+- `openAttendance` no longer seeds a cache (the queryClient lives in router.tsx, not ours): the page does one extra GET after POST. `useSaveAttendance` seeds the query with the PUT result.
+- Not tried in a browser; verified by typecheck + server/web tests only.
+- S11 orchestrator: re-ran server 169/169, web 11/11, typecheck clean; openedSessions stash fully removed.
