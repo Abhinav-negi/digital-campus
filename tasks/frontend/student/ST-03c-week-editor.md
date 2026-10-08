@@ -13,3 +13,9 @@
 - [ ] From an empty class: subjects (ST-03b) → timetable → an exam (ST-03a), and the slots show on Board and Today.
 
 ## Notes
+- Done. `WeekEditor.tsx` edits a local draft of the week (loaded from `GET /timetable`); one "Save timetable" does `PUT /classes/:id/timetable` (whole week, replaces).
+- Clash badge is computed on the draft (`clashes()`, same maths as ARCH 9.3); overlaps never block. Slot form is a Sheet (subject, day, start, end, room); start >= end is refused in the form.
+- Wired in `ClassPage.tsx` beside `<Subjects>` (CR edit mode, latest term); TipSheet "Timetable" turns on edit mode and scrolls to `#week-editor`.
+- Save invalidates `['classes', id]` and `['me']`, so Board and Today refresh. Unsaved draft is lost if edit mode is toggled off (ponytail: no dirty guard).
+- Test: `weekEditor.test.ts` (clash maths). Live API check done on c-cse1 (subject, overlapping PUT, exam, schedule, /me/today).
+- S11 orchestrator: live curl verified on c-cse1 (subject → overlapping slots with clashWith → exam → board/schedule/today). Leaves a 00:00–23:00 test slot on c-cse1 (reseed clears).
