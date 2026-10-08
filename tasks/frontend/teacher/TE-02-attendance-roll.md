@@ -14,3 +14,8 @@
 
 ## Notes
 - From TE-01a (S08): Today navigates to **`/t/attend/:sessionId`** after `POST /attendance-sessions`. Add that line to `web/src/routes/teacher/routes.ts` (FS-09 rule).
+- Done. Route `attend/:sessionId` added. The API has **no GET /attendance-sessions/:id**, so the page reads the session POST returned. `openAttendance` (queries.ts) now stashes it in `openedSessions`; a reload with no stash redirects to `/t`. Fix later: add the GET, then drop the stash.
+- Code tab is a disabled placeholder (TE-03). No "Same device"/waiting states; `flaggedIds` ignored until TE-03.
+- Eyebrow shows time and room only when the slot is in `/me/today` and the session is unsaved; otherwise "Past session · date" or "Correction · date". Roster has no avatarSeed (not in RosterEntry), so Avatar seeds by name.
+- Verified live on c2/sub6: 3 absent saved, Aditya went 92% to 85%; correction (unmark him) restored 92%. That test session is left in the dev DB.
+- S10 orchestrator: live curl verified (s31 92% → 85% after 3 absent; correction restores). Reload limit tracked as CS-14.

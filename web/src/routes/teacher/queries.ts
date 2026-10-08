@@ -23,8 +23,22 @@ export function useSessionChange(classId: string) {
 }
 
 // POST /attendance-sessions is idempotent: opens or fetches the session for subject/date/slot.
-export const openAttendance = (b: { subjectId: string; date: string; slotId?: string }) =>
-  unwrap(api.POST('/attendance-sessions', { body: b }));
+// The API has no GET /attendance-sessions/:id, so the opened session is stashed for the attendance page (TE-02).
+export type AttendanceSession = components['schemas']['AttendanceSession'];
+export const openedSessions = new Map<string, AttendanceSession>();
+export const openAttendance = async (b: { subjectId: string; date: string; slotId?: string }) => {
+  const s = await unwrap(api.POST('/attendance-sessions', { body: b }));
+  openedSessions.set(s.id, s);
+  return s;
+};
+
+export function useSaveAttendance(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (absentIds: string[]) => unwrap(api.PUT('/attendance-sessions/{id}', { params: { path: { id } }, body: { absentIds } })),
+    onSuccess: (s) => { openedSessions.set(s.id, s); qc.invalidateQueries({ queryKey: ['me'] }); qc.invalidateQueries({ queryKey: ['classes'] }); },
+  });
+}
 
 // Subjects the signed-in teacher teaches, across their classes, for the past-session picker.
 export const useMySubjects = (userId: string) => useQuery({

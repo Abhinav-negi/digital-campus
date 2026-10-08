@@ -4,6 +4,7 @@ import type { RouteObject } from 'react-router';
 const soon = () => import('../Soon');
 export const teacherRoutes: RouteObject[] = [
   { index: true, lazy: () => import('./Today') }, // TE-01a Today
+  { path: 'attend/:sessionId', lazy: () => import('./attendance/AttendancePage') }, // TE-02 attendance
   { path: 'classes', lazy: () => import('./classes/ClassesList') }, // TE-04 ClassesList
   { path: 'classes/new', lazy: () => import('./classes/NewClass') }, // TE-07 new class wizard
   { path: 'classes/:id/*', lazy: soon }, // TE-05a class view
