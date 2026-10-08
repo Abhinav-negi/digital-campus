@@ -7,6 +7,7 @@ import { Avatar } from '../../../ui/Avatar';
 import { Empty } from '../../../ui/Empty';
 import { Board } from './Board';
 import { EditToggle } from './edit/EditToggle';
+import { Subjects } from './edit/Subjects';
 import { History } from './edit/History';
 import { TipSheet } from './edit/TipSheet';
 
@@ -55,6 +56,7 @@ export function Component() {
       {isCr && tab === '' && <div style={{ marginTop: 'var(--s4)' }}><EditToggle editing={editing} onChange={setEditing} /></div>}
       <div style={{ marginTop: 'var(--s4)' }}>
         {tab === '' && (terms.data ? <Board classId={id} termId={termId} current={termId === latest} editing={isCr && editing} /> : null)}
+        {tab === '' && isCr && editing && termId === latest && <Subjects classId={id} />}
         {tab === '' && isCr && <History classId={id} />}
         {tab === 'posts' && <Empty text="Posts are coming soon." />}
         {tab === 'attendance' && <Empty text="Your attendance is coming soon." />}

@@ -114,7 +114,7 @@
 | [ST-01](tasks/frontend/student/ST-01-today.md) | Today | FS-06, CS-11, CM-08 | ✅ |
 | [ST-02](tasks/frontend/student/ST-02-class-board.md) | Class: Board (read, empty states, terms) | FS-06, CS-05, CS-07 | ✅ |
 | [ST-03a](tasks/frontend/student/ST-03a-board-edit.md) | CR edit: toggle, board forms, history, tip sheet | ST-02, CS-07 | ✅ |
-| [ST-03b](tasks/frontend/student/ST-03b-subjects.md) | CR edit: subjects + teacher picker | ST-02, CS-03 | ⬜ |
+| [ST-03b](tasks/frontend/student/ST-03b-subjects.md) | CR edit: subjects + teacher picker | ST-02, CS-03 | ✅ |
 | [ST-03c](tasks/frontend/student/ST-03c-week-editor.md) | CR edit: weekly timetable editor | ST-03b, CS-04 | ⬜ |
 | [ST-04](tasks/frontend/student/ST-04-week-ahead.md) | Week-ahead changes, events, clashes | ST-03, CS-05 | ⬜ |
 | [ST-05](tasks/frontend/student/ST-05-import-preview.md) | Import: copy prompt → paste JSON → preview → confirm | ST-03, CS-06 | ⬜ |
@@ -139,7 +139,7 @@
 | [TE-05b](tasks/frontend/teacher/TE-05b-students-attendance.md) | Class: Students + Attendance tabs | TE-05a, CS-02 | ⬜ |
 | [TE-06](tasks/frontend/teacher/TE-06-class-settings.md) | Settings: min %, next semester, graduate, hand over | TE-05 | ⬜ |
 | [TE-07](tasks/frontend/teacher/TE-07-new-class.md) | New class wizard | TE-04, CS-02 | ✅ |
-| [TE-08](tasks/frontend/teacher/TE-08-composer-upcoming.md) | Composer + Upcoming + reminders | TE-04, CS-08, CS-11 | ⬜ |
+| [TE-08](tasks/frontend/teacher/TE-08-composer-upcoming.md) | Composer + Upcoming + reminders | TE-04, CS-08, CS-11 | 🟨 |
 
 ## Frontend: Admin
 | ID | Task | Deps | Status |

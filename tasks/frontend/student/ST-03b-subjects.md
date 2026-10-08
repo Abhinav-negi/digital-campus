@@ -12,3 +12,9 @@
 - [ ] The CR adds a subject with a teacher → that teacher sees the class on their dashboard.
 
 ## Notes
+- `edit/Subjects.tsx` (list + add/edit sheet + remove) is shown in ClassPage only when the CR is editing the latest term (past-term edits 409).
+- No PROTO markup exists for a subjects manager (student.html has none), so it reuses `.section`, `.card.row`, `.icon-btn`, `.chip` from existing styles.
+- Teacher picker = search box -> `GET /staff?q=&limit=8` chips; no debounce (ponytail: add if /staff gets chatty). A teacher is required on save (API needs teacherId); "No teacher yet" shows when `teacher` is null (declined/removed).
+- Remove surfaces the server's 409 HAS_ATTENDANCE message as a toast; there is no confirm dialog.
+- Not run against the live API; only typecheck + unit tests. TipSheet's 'timetable'/'syllabus' picks still just enter edit mode.
+- S10 orchestrator: Done-when verified by curl as the c3 CR (POST subject with t1 → Meera's GET /classes gains c3); test subject deleted.
