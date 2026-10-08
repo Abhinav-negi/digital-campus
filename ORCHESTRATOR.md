@@ -90,6 +90,7 @@ npm run gen:api            # after any backend task that changed routes
 npm run build
 ```
 **Two lanes, two test DBs (S07):** server tests reset the DB per file, so parallel lanes would clobber each other. Lane A uses the default `campus_test`; lane B runs `TEST_DATABASE_URL=postgresql://campus:campus@localhost:5432/campus_test_b npm test -w server` (already created; after a new migration run `migrate deploy` against it too). `npm run db:start` failing with "port in use" means Postgres is already up.
+**Live checks (S10):** run a dev API with `cd server && PORT=31xx node --env-file=../.env.example --import tsx src/index.ts` (one port per lane); base path `/api/v1`; mutating calls need `-H Origin:http://localhost:5173`; seed password `campus123`; look up seed users with `@prisma/client` from `server/` (no `psql` installed). Stop servers **by PID**: `pkill -f <pattern>` matches the calling shell and kills it. The contract lives in `server/src/lib/openapi.ts` → `web/src/api/schema.d.ts` (there is no `openapi.json` file to `git add`). Web tests use `node:test`; vitest is not installed.
 
 ## 6. Ownership rules
 - **Only you** edit: `server/prisma/schema.prisma` (frozen after FND-02; change it only for an agent's reported need, as a new migration), `server/src/app.ts` (router registry), root `package.json`, `INDEX.md`, `handoff/*`, `ARCHITECTURE.md` (append decisions as D14…), `ORCHESTRATOR.md`.
