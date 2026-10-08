@@ -145,9 +145,9 @@
 | ID | Task | Deps | Status |
 |---|---|---|---|
 | [AF-01](tasks/frontend/admin/AF-01-shell-inbox.md) | Admin shell + Inbox | FS-06, AD-05, AD-06, AD-08 | ✅ |
-| [AF-02](tasks/frontend/admin/AF-02-people.md) | People: teachers, students, badge | AF-01, AD-01, AD-02, AD-03 | 🟨 |
+| [AF-02](tasks/frontend/admin/AF-02-people.md) | People: teachers, students, badge | AF-01, AD-01, AD-02, AD-03 | ✅ |
 | [AF-03](tasks/frontend/admin/AF-03-classes.md) | Classes (reuses the teacher view) | AF-01, TE-05 | ⬜ |
-| [AF-04a](tasks/frontend/admin/AF-04a-moderation.md) | Commons moderation (Board · Build · People) | AF-01, ST-09, AD-06 | ⬜ |
+| [AF-04a](tasks/frontend/admin/AF-04a-moderation.md) | Commons moderation (Board · Build · People) | AF-01, ST-09, AD-06 | 🟨 |
 | [AF-04b](tasks/frontend/admin/AF-04b-conversations-featured.md) | Commons: conversations + featured | AF-04a, AD-07 | ⬜ |
 | [AF-05](tasks/frontend/admin/AF-05-school-audit.md) | School setup + Audit | AF-01, AD-04, AD-08 | ✅ |
 
@@ -171,3 +171,4 @@
 | [CM-09](tasks/backend/commons/CM-09-board-mine-filter.md) | Board posts `mine` filter for Me | CM-02, ST-10a | ✅ | ST-10a (S10) |
 | [CS-16](tasks/backend/class-space/CS-16-notification-links.md) | Notification `link`s → real web routes | CS-12, ST-10b | ✅ | ST-10b (S10) |
 | [ST-08c](tasks/frontend/student/ST-08c-pick-winners.md) | Owner picks challenge winners | ST-08b, CM-05 | ✅ | ST-08b (S11) |
+| [AD-09](tasks/backend/admin/AD-09-user-ban-state.md) | Ban state on AdminUser (state-aware Ban/Unban) | AD-06, AF-02 | ⬜ | AF-02 (S12) |

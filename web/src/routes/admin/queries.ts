@@ -72,3 +72,34 @@ export const useAudit = (f: AuditFilters) => useInfiniteQuery({
   queryFn: ({ pageParam }) => unwrap(api.GET('/admin/audit', { params: { query: { ...f, cursor: pageParam } } })),
   getNextPageParam: (p) => p.nextCursor ?? undefined,
 });
+
+// AF-02 people. AD-01 users/invites/account control, AD-02 admin badge, AD-03 student edit/move, AD-05 Commons ban.
+export type AdminUser = components['schemas']['AdminUser'];
+export type PeopleFilters = { q?: string; role?: 'student' | 'staff'; branchId?: string; status?: 'invited' | 'active' | 'disabled' };
+export const useUsers = (f: PeopleFilters) => useInfiniteQuery({
+  queryKey: ['admin', 'users', f],
+  initialPageParam: undefined as string | undefined,
+  queryFn: ({ pageParam }) => unwrap(api.GET('/admin/users', { params: { query: { ...f, cursor: pageParam, limit: 50 } } })),
+  getNextPageParam: (p) => p.nextCursor ?? undefined,
+});
+// Move-to-batch picker: admin sees every class with ?all=1 (archived ones are rejected by the move, so they are filtered out).
+export const useAllClasses = (enabled: boolean) => useQuery({
+  queryKey: ['classes', 'all'], enabled,
+  queryFn: async () => (await unwrap(api.GET('/classes', { params: { query: { all: '1', limit: 100 } } }))).items.filter((c) => !c.archivedAt),
+});
+export function usePeopleMutations() {
+  const qc = useQueryClient();
+  const done = () => qc.invalidateQueries({ queryKey: ['admin'] });
+  const p = (id: string) => ({ params: { path: { id } } });
+  return {
+    invite: useMutation({ mutationFn: (body: { name: string; email: string; dept: string }) => unwrap(api.POST('/admin/staff-invites', { body })), onSuccess: done }),
+    status: useMutation({ mutationFn: ({ id, status }: { id: string; status: 'active' | 'disabled' }) => unwrap(api.PATCH('/admin/users/{id}/status', { ...p(id), body: { status } })), onSuccess: done }),
+    reset: useMutation({ mutationFn: (id: string) => unwrap(api.POST('/admin/users/{id}/reset-password', p(id))) }),
+    admin: useMutation({ mutationFn: ({ id, isAdmin }: { id: string; isAdmin: boolean }) => unwrap(api.PUT('/admin/users/{id}/admin', { ...p(id), body: { isAdmin } })), onSuccess: done }),
+    edit: useMutation({ mutationFn: ({ id, ...body }: { id: string; name?: string; studentIdNo?: string; email?: string }) => unwrap(api.PATCH('/admin/students/{id}', { ...p(id), body })), onSuccess: done }),
+    move: useMutation({ mutationFn: ({ id, classId }: { id: string; classId: string }) => unwrap(api.POST('/admin/students/{id}/move', { ...p(id), body: { classId } })), onSuccess: done }),
+    ban: useMutation({ mutationFn: ({ id, reason }: { id: string; reason: string }) => unwrap(api.POST('/admin/users/{id}/ban', { ...p(id), body: { reason } })) }),
+    unban: useMutation({ mutationFn: (id: string) => unwrap(api.DELETE('/admin/users/{id}/ban', p(id))) }),
+    remove: useMutation({ mutationFn: (id: string) => unwrap(api.DELETE('/admin/users/{id}', p(id))), onSuccess: done }),
+  };
+}
