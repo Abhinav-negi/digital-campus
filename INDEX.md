@@ -8,8 +8,8 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S09-2026-10-06.md](handoff/S09-2026-10-06.md) |
-| **Progress** | **68%** · 57 / 84 done (project-ready) · 4 deployment tasks parked |
-| **Ready to start** | ST-03b · TE-08 · ST-06 · TE-02 · ST-09 · AF-01 · ST-08a · CS-13 |
+| **Progress** | **70%** · 59 / 84 done (project-ready) · 4 deployment tasks parked |
+| **Ready to start** | ST-03c · ST-06 · TE-02 · ST-09 · AF-01 · ST-08a · CS-13 |
 | **Current wave** | Wave 3: Frontend (Waves 1–2 ✅) |
 
 ## Waves (dispatch plan)
@@ -139,7 +139,7 @@
 | [TE-05b](tasks/frontend/teacher/TE-05b-students-attendance.md) | Class: Students + Attendance tabs | TE-05a, CS-02 | ⬜ |
 | [TE-06](tasks/frontend/teacher/TE-06-class-settings.md) | Settings: min %, next semester, graduate, hand over | TE-05 | ⬜ |
 | [TE-07](tasks/frontend/teacher/TE-07-new-class.md) | New class wizard | TE-04, CS-02 | ✅ |
-| [TE-08](tasks/frontend/teacher/TE-08-composer-upcoming.md) | Composer + Upcoming + reminders | TE-04, CS-08, CS-11 | 🟨 |
+| [TE-08](tasks/frontend/teacher/TE-08-composer-upcoming.md) | Composer + Upcoming + reminders | TE-04, CS-08, CS-11 | ✅ |
 
 ## Frontend: Admin
 | ID | Task | Deps | Status |

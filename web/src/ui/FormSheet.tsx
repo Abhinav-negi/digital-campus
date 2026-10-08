@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Sheet } from './Sheet';
 import { toast } from './Toast';
+import { api, unwrap } from '../api/client';
 
 // Typed port of PROTO student.html:131-143 formSheet.
 type Base = { name: string; label: string };
@@ -14,14 +15,8 @@ export type Field =
 export type FileRef = { key: string; name: string };
 export type FormValues = Record<string, string | number | boolean | FileRef | null>;
 
-// ponytail: plain fetch; move onto the FS-05 api client (X-Device-Id, error mapping) once it exists.
-async function upload(file: File): Promise<FileRef> {
-  const r = await fetch('/api/v1/files/presign', {
-    method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: file.name, type: file.type }),
-  });
-  if (!r.ok) throw new Error("Couldn't upload the file. Try again.");
-  const { uploadUrl, key } = (await r.json()) as { uploadUrl: string; key: string };
+export async function upload(file: File): Promise<FileRef> {
+  const { uploadUrl, key } = await unwrap(api.POST('/files/presign', { body: { name: file.name, contentType: file.type as 'application/pdf', size: file.size } }));
   const put = await fetch(uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
   if (!put.ok) throw new Error("Couldn't upload the file. Try again.");
   return { key, name: file.name };

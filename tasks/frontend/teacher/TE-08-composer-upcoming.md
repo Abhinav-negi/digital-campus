@@ -12,3 +12,9 @@
 - [ ] One post to 2 classes → "12 of 30 seen" appears as students open it (SPEC §15 step 4).
 
 ## Notes
+- `Composer({classId?, onClose})` is exported for TE-05a's class header (pre-ticks that class); the rail button + FAB open it via the teacher layout (`index.tsx` got `fab` + a `composing` state).
+- Not using `ui/FormSheet`: its `upload()` posts `{name,type}` to presign but the API wants `{name,contentType,size}` (shared bug, left alone). Attachment upload lives in `queries.ts` `uploadAttachment`.
+- Class picker lists classes where `myRole` is classTeacher/teacher (API 403s otherwise). "Today" badge uses `warn` (Badge has no `gold`).
+- "n of N seen" is shown by the class view / Classes list from `stats`; this task only creates the post. Not verified against a live server (typecheck + web tests only).
+
+- S10 orchestrator: fixed the shared root cause in ui/FormSheet upload() (sent {name,type}, API wants {name,contentType,size} → 422; broke BoardForms/Compose file fields too); uploadAttachment now reuses it. Verified by curl: post to c1+c2 → stats 0/46 → student seen → 1/46; presign+PUT 200. Leaves a 'S10 verify' post in the dev DB (reseed clears).

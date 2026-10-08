@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, unwrap } from '../../api/client';
 import type { components } from '../../api/schema';
+import { upload } from '../../ui/FormSheet';
 
 export type StaffToday = components['schemas']['StaffToday'];
 export type TodaySession = components['schemas']['TodaySession'];
@@ -65,3 +66,40 @@ export const useInvitePreview = () => useMutation({
   mutationFn: ({ id, rows }: { id: string; rows: { studentIdNo: string; email: string }[] }) =>
     unwrap(api.POST('/classes/{id}/invites', { params: { path: { id } }, body: { rows, dryRun: true } })),
 });
+
+// TE-08 composer + Upcoming. POST /posts fans out to every target class; presign → PUT is the attachment flow.
+export const useTeachingClasses = () => useQuery({
+  queryKey: ['classes'],
+  queryFn: () => unwrap(api.GET('/classes')),
+  select: (d) => d.items.filter((c) => !c.archivedAt && c.myRole !== 'student' && c.myRole !== 'cr' && c.myRole !== null),
+});
+
+export async function uploadAttachment(f: File) {
+  const { key, name } = await upload(f);
+  return { fileKey: key, fileName: name };
+}
+
+export function useCreatePost() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (b: { kind: 'announcement' | 'assignment'; title: string; body: string; classIds: string[]; dueAt?: string; file?: File | null }) =>
+      (async () => {
+        const { file, ...rest } = b;
+        return unwrap(api.POST('/posts', { body: { ...rest, ...(file && (await uploadAttachment(file))) } }));
+      })(),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['posts'] }); qc.invalidateQueries({ queryKey: ['classes'] }); qc.invalidateQueries({ queryKey: ['me'] }); },
+  });
+}
+
+export const useUpcoming = () => useQuery({
+  queryKey: ['me', 'upcoming', 30],
+  queryFn: async () => (await unwrap(api.GET('/me/upcoming', { params: { query: { days: 30 } } }))).items,
+});
+
+export const useAddReminder = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { title: string; date: string }) => unwrap(api.POST('/me/reminders', { body })),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['me'] }),
+  });
+};
