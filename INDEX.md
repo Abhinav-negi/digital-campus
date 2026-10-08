@@ -116,7 +116,7 @@
 | [ST-03a](tasks/frontend/student/ST-03a-board-edit.md) | CR edit: toggle, board forms, history, tip sheet | ST-02, CS-07 | ✅ |
 | [ST-03b](tasks/frontend/student/ST-03b-subjects.md) | CR edit: subjects + teacher picker | ST-02, CS-03 | ✅ |
 | [ST-03c](tasks/frontend/student/ST-03c-week-editor.md) | CR edit: weekly timetable editor | ST-03b, CS-04 | ✅ |
-| [ST-04](tasks/frontend/student/ST-04-week-ahead.md) | Week-ahead changes, events, clashes | ST-03, CS-05 | ⬜ |
+| [ST-04](tasks/frontend/student/ST-04-week-ahead.md) | Week-ahead changes, events, clashes | ST-03, CS-05 | ✅ |
 | [ST-05](tasks/frontend/student/ST-05-import-preview.md) | Import: copy prompt → paste JSON → preview → confirm | ST-03, CS-06 | ⬜ |
 | [ST-06](tasks/frontend/student/ST-06-posts-attendance.md) | Posts, my attendance, check-in | ST-02, CS-08, CS-10 | ✅ |
 | [ST-07a](tasks/frontend/student/ST-07a-commons-feed.md) | Commons: header, feed, compose | FS-06, CM-02 | ✅ |

@@ -12,6 +12,7 @@ import { CheckIn } from './CheckIn';
 import { EditToggle } from './edit/EditToggle';
 import { Subjects } from './edit/Subjects';
 import { WeekEditor } from './edit/WeekEditor';
+import { WeekAhead } from './edit/WeekAhead';
 import { History } from './edit/History';
 import { TipSheet } from './edit/TipSheet';
 
@@ -60,7 +61,7 @@ export function Component() {
       {isCr && tab === '' && <div style={{ marginTop: 'var(--s4)' }}><EditToggle editing={editing} onChange={setEditing} /></div>}
       <div style={{ marginTop: 'var(--s4)' }}>
         {tab === '' && (terms.data ? <Board classId={id} termId={termId} current={termId === latest} editing={isCr && editing} /> : null)}
-        {tab === '' && isCr && editing && termId === latest && <><Subjects classId={id} /><WeekEditor classId={id} /></>}
+        {tab === '' && isCr && editing && termId === latest && <><Subjects classId={id} /><WeekEditor classId={id} /><WeekAhead classId={id} /></>}
         {tab === '' && isCr && <History classId={id} />}
         {tab === 'posts' && <Posts classId={id} isCr={isCr} />}
         {tab === 'attendance' && <div className="stack"><CheckIn /><MyAttendance classId={id} isCr={isCr} /></div>}
