@@ -8,8 +8,8 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S09-2026-10-06.md](handoff/S09-2026-10-06.md) |
-| **Progress** | **75%** · 66 / 88 done (project-ready) · 4 deployment tasks parked |
-| **Ready to start** | ST-03c · TE-03 · CS-14 · CS-15 · CM-09 · CS-16 · AF-01 · ST-08b |
+| **Progress** | **76%** · 67 / 88 done (project-ready) · 4 deployment tasks parked |
+| **Ready to start** | ST-03c · TE-03 · CS-14 · CM-09 · CS-16 · AF-01 · ST-08b |
 | **Current wave** | Wave 3: Frontend (Waves 1–2 ✅) |
 
 ## Waves (dispatch plan)
@@ -167,6 +167,6 @@
 |---|---|---|---|---|
 | [CS-13](tasks/backend/class-space/CS-13-card-fields.md) | ClassCard subjects/invited/attendance + change author isCr | CS-01, CS-11 | ✅ | TE-04, ST-01 (S08) |
 | [CS-14](tasks/backend/class-space/CS-14-attendance-session-get.md) | GET one attendance session (reload-safe attendance page) | CS-09, TE-02 | ⬜ | TE-02 (S10) |
-| [CS-15](tasks/backend/class-space/CS-15-checkin-open-flag.md) | `/me/today` codeOpen flag; CheckIn card only while a code is open | CS-13, ST-06 | 🟨 | ST-06 (S10) |
+| [CS-15](tasks/backend/class-space/CS-15-checkin-open-flag.md) | `/me/today` codeOpen flag; CheckIn card only while a code is open | CS-13, ST-06 | ✅ | ST-06 (S10) |
 | [CM-09](tasks/backend/commons/CM-09-board-mine-filter.md) | Board posts `mine` filter for Me | CM-02, ST-10a | ⬜ | ST-10a (S10) |
 | [CS-16](tasks/backend/class-space/CS-16-notification-links.md) | Notification `link`s → real web routes | CS-12, ST-10b | ⬜ | ST-10b (S10) |

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
 import { addDays, dow, today } from '../src/lib/dates.js';
 import { db } from '../src/lib/db.js';
+import { codeAt } from '../src/modules/attendance/code.js';
 import { agent, resetDb } from './helpers.js';
 
 before(async () => {
@@ -108,4 +109,18 @@ test('empty placeholders: a class with no timetable', async () => {
   await db.timetableSlot.deleteMany({ where: { classId: 'c1' } });
   const body = (await (await agent('student')).get('/api/v1/me/today').expect(200)).body;
   assert.deepEqual(body.empty, { timetable: true, subjects: false });
+});
+
+test('CS-15: codeOpen is null, set once a teacher opens a code, null again after the student checks in', async () => {
+  const stu = await agent('student');
+  const open = async () => (await stu.get('/api/v1/me/today').expect(200)).body.codeOpen;
+  assert.equal(await open(), null);
+  const meera = await agent('teacher');
+  const s = (await meera.post('/api/v1/attendance-sessions').send({ subjectId: 'sub1', date: today().toISOString().slice(0, 10) }).expect(200)).body;
+  assert.equal(await open(), null); // a roll session with no code
+  await meera.post(`/api/v1/attendance-sessions/${s.id}/code`).expect(200);
+  assert.deepEqual(await open(), { sessionId: s.id, subject: { id: 'sub1', name: (await db.subject.findUniqueOrThrow({ where: { id: 'sub1' } })).name } });
+  const { codeSecret } = await db.attendanceSession.findUniqueOrThrow({ where: { id: s.id } });
+  await stu.post('/api/v1/checkin').send({ code: codeAt(codeSecret!, 0) }).expect(200);
+  assert.equal(await open(), null);
 });

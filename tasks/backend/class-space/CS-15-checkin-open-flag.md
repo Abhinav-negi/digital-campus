@@ -7,7 +7,11 @@
 - `npm run gen:api`; `CheckIn` renders only when `codeOpen` is set (Today + My attendance tab), and names the subject.
 
 ## Done when
-- [ ] Test: no open session → `codeOpen: null`; teacher opens a code → set; after the student checks in → null again.
+- [x] Test: no open session → `codeOpen: null`; teacher opens a code → set; after the student checks in → null again.
 
 ## Notes
 - Origin: ST-06 (S10). Without this flag the "Enter class code" card shows all the time (SPEC says only while a code is open). Run after CS-13 (both edit me/today.ts).
+- Done: `/me/today` (students) has `codeOpen` via one extra `attendanceSession.findMany` (same where as POST /checkin, plus `records: none present for me`), then `isOpen()` from attendance/code.ts picks the live one.
+- Test "CS-15" in today.test.ts: null, roll session still null, teacher opens code, set, student POST /checkin, null.
+- `CheckIn` reads `useToday()` (key `['me','today']`, one request) and returns null when `codeOpen` is null; eyebrow shows the subject name. The "marked present" card still shows after success (done state checked first).
+- Only students' first-listed open session is returned if several are open at once.

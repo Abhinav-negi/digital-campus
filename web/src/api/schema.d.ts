@@ -10181,6 +10181,13 @@ export interface components {
             attendance: components["schemas"]["TodayAttendance"][];
             upcoming: components["schemas"]["UpcomingItem"][];
             unreadPosts: components["schemas"]["UnreadPost"][];
+            codeOpen: {
+                sessionId: string;
+                subject: {
+                    id: string;
+                    name: string;
+                };
+            } | null;
             empty: {
                 timetable: boolean;
                 subjects: boolean;

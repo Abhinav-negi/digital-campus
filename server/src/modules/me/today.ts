@@ -4,6 +4,7 @@ import { config } from '../../config.js';
 import { today } from '../../lib/dates.js';
 import { db } from '../../lib/db.js';
 import { registry, route } from '../../lib/openapi.js';
+import { isOpen, WINDOW_MS } from '../attendance/code.js';
 import { myAttendance } from '../attendance/routes.js';
 import { load, present, scheduleItem } from '../classes/schedule.js';
 import { upcoming, upcomingItem } from './upcoming.js';
@@ -49,6 +50,8 @@ const studentToday = z
     attendance: z.array(attendanceRow),
     upcoming: z.array(upcomingItem),
     unreadPosts: z.array(unreadPost),
+    /** CS-15: a check-in code is open in one of my classes and I'm not in yet (drives the "Enter class code" card). */
+    codeOpen: z.object({ sessionId: z.string(), subject: ref }).nullable(),
     /** Drives the D9 placeholders: no timetable yet / no subjects yet. */
     empty: z.object({ timetable: z.boolean(), subjects: z.boolean() }),
   })
@@ -115,7 +118,8 @@ todayRouter.get(
 
     const member = await db.classMember.findFirst({ where: { userId: me.id, role: { in: ['student', 'cr'] } }, select: { classId: true }, orderBy: { createdAt: 'asc' } });
     const classId = member?.classId;
-    const [w, subjects, slots, att, up, unread] = await Promise.all([
+    const now0 = Date.now();
+    const [w, subjects, slots, att, up, unread, sessions] = await Promise.all([
       classId ? load(db, classId, date, date) : null,
       classId ? db.subject.count({ where: { classId, ...active } }) : 0,
       classId ? db.timetableSlot.count({ where: { classId, ...active } }) : 0,
@@ -127,7 +131,18 @@ todayRouter.get(
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         take: 20,
       }),
+      // CS-15: same filter as POST /checkin, minus sessions I'm already present in.
+      db.attendanceSession.findMany({
+        where: {
+          date,
+          codeOpenedAt: { gt: new Date(now0 - WINDOW_MS) },
+          subject: { class: { members: { some: { userId: me.id, role: { in: ['student', 'cr'] } } } } },
+          records: { none: { studentId: me.id, present: true } },
+        },
+        select: { id: true, codeSecret: true, codeOpenedAt: true, savedAt: true, subject: { select: { id: true, name: true } } },
+      }),
     ]);
+    const open = sessions.find((s) => isOpen(s, now0));
     const all = w?.days[0]?.items ?? [];
     // Another class's items only matter for clash maths; a student sees their own class (and its clashes).
     const dec = w ? await decorate(w, all) : null;
@@ -148,6 +163,7 @@ todayRouter.get(
       attendance: att,
       upcoming: up,
       unreadPosts: unread,
+      codeOpen: open ? { sessionId: open.id, subject: open.subject } : null,
       empty: { timetable: slots === 0, subjects: subjects === 0 },
     });
   },
