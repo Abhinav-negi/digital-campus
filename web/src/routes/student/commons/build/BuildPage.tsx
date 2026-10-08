@@ -3,6 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { api, unwrap } from '../../../../api/client';
 import { Empty } from '../../../../ui/Empty';
 import { Icon } from '../../../../ui/Icon';
+import { Challenges } from './Challenges';
+import { ChallengeSheet } from './ChallengeSheet';
+import { NewChallenge } from './NewChallenge';
 import { Flagship } from './Flagship';
 import { NewProject } from './NewProject';
 import { ProjectCard } from './Projects';
@@ -11,6 +14,8 @@ import { ProjectSheet } from './ProjectSheet';
 export function BuildPage() {
   const [openId, setOpenId] = useState<string>();
   const [creating, setCreating] = useState(false);
+  const [chal, setChal] = useState<string>();
+  const [newChal, setNewChal] = useState(false);
   const q = useQuery({ queryKey: ['commons', 'projects'], queryFn: () => unwrap(api.GET('/commons/projects')) });
   const d = q.data;
   if (!d) return <p className="muted">{q.error ? q.error.message : 'Loading…'}</p>;
@@ -29,8 +34,10 @@ export function BuildPage() {
       <h3 style={{ margin: 'var(--s5) 0 var(--s3)' }}>All projects</h3>
       {all.length ? <div className="grid grid-2">{all.map((p) => <ProjectCard key={p.id} p={p} onOpen={setOpenId} />)}</div>
         : <Empty seed="projects" text="No other projects yet. Start one." />}
-      {/* ST-08b: challenges section goes here. */}
+      <Challenges onOpen={setChal} onNew={() => setNewChal(true)} />
       {openId && <ProjectSheet id={openId} onClose={() => setOpenId(undefined)} />}
+      {chal && <ChallengeSheet id={chal} onClose={() => setChal(undefined)} />}
+      {newChal && <NewChallenge onClose={() => setNewChal(false)} onCreated={setChal} />}
       {creating && <NewProject onClose={() => setCreating(false)} onCreated={setOpenId} />}
     </>
   );
