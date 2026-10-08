@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, unwrap } from '../../api/client';
+import { usePoll } from '../../api/hooks';
 import type { components } from '../../api/schema';
 import { upload } from '../../ui/FormSheet';
 
@@ -117,3 +118,16 @@ export const useAddReminder = () => {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['me'] }),
   });
 };
+
+// TE-03 code mode. POST opens the 2-minute window (everyone absent-pending); GET (polled 2s) is the only source of the code.
+export const useOpenCode = (id: string) => useMutation({
+  mutationFn: () => unwrap(api.POST('/attendance-sessions/{id}/code', { params: { path: { id } } })),
+});
+export function useCode(id: string, on: boolean) {
+  const key = ['attendance-code', id];
+  usePoll(on ? key : ['attendance-code', 'off'], 2000);
+  return useQuery({
+    queryKey: key, enabled: on, retry: false,
+    queryFn: () => unwrap(api.GET('/attendance-sessions/{id}/code', { params: { path: { id } } })),
+  });
+}

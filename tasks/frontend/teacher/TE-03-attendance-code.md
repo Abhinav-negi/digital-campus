@@ -12,3 +12,9 @@
 - [ ] A student checking in from the student app flips the tile within 2s.
 
 ## Notes
+- Done. Code tab in `AttendancePage` (state `code` + `fixed` tap overrides); `CodeMode.tsx` = ring/count/flag note only. Absent = not in `checkedIn` unless the teacher tapped; Save reuses TE-02's `useSaveAttendance` unchanged.
+- `queries.ts`: `useOpenCode` (POST, fired on tab open; reopening resets everyone to pending) and `useCode` (GET, `usePoll` 2s). The page and `CodeMode` share one query key, so one poll feeds both.
+- `Roster` got optional `waiting` / `flagged` props ("Waiting" while the window is open, "Same device" badge). Ring counts down locally from the server's `secondsLeft` between polls.
+- Live API checked on a scratch server: open, code, check-in, same-device flags (s33+s34 both present and flagged), PUT save. Note a GET after save returns `code: null`.
+- No automated test: the logic is thin glue over the API; the live curl run covers it.
+- S11 orchestrator: live curl verified (check-in → next GET shows it; shared X-Device-Id → flagged; PUT saves method code). Fixed: re-entering the Code tab re-POSTed …/code, which deleteMany's the session's check-ins server-side; CodeMode now GETs first and only POSTs on 409 NO_CODE.
