@@ -12,3 +12,5 @@
 - [ ] Adding a branch makes it appear in the new-class wizard.
 
 ## Notes
+Done. School.tsx (institution form, branches add/rename/delete via FormSheet; delete disabled when classCount>0), Audit.tsx (useInfiniteQuery, Load more). Actor/class filter options come from rows loaded so far. Live-verified add→wizard list→rename→delete (DB clean), audit filter + cursor.
+- S11 orchestrator: live curl verified (branch add → wizard /branches lists it → rename → delete; audit filter + cursor). Actor/class filters only list values from loaded rows (ponytail-marked).

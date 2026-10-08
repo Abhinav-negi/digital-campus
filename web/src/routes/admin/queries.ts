@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, unwrap } from '../../api/client';
 import type { components } from '../../api/schema';
 
@@ -45,3 +45,30 @@ export function useReportAction() {
     onSuccess: refresh,
   });
 }
+
+// AF-05 school + audit.
+export type AuditFilters = { actorId?: string; classId?: string; action?: string; from?: string; to?: string };
+export const useInstitution = () => useQuery({ queryKey: ['admin', 'institution'], queryFn: () => unwrap(api.GET('/admin/institution')) });
+export function useInstitutionPatch() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { name?: string; timezone?: string }) => unwrap(api.PATCH('/admin/institution', { body })),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin'] }),
+  });
+}
+export const useAdminBranches = () => useQuery({ queryKey: ['admin', 'branches'], queryFn: async () => (await unwrap(api.GET('/admin/branches'))).items });
+export function useBranchMutations() {
+  const qc = useQueryClient();
+  const done = () => { qc.invalidateQueries({ queryKey: ['admin'] }); qc.invalidateQueries({ queryKey: ['branches'] }); };
+  return {
+    add: useMutation({ mutationFn: (body: { code: string; name: string }) => unwrap(api.POST('/admin/branches', { body })), onSuccess: done }),
+    rename: useMutation({ mutationFn: ({ id, ...body }: { id: string; code?: string; name?: string }) => unwrap(api.PATCH('/admin/branches/{id}', { params: { path: { id } }, body })), onSuccess: done }),
+    remove: useMutation({ mutationFn: (id: string) => unwrap(api.DELETE('/admin/branches/{id}', { params: { path: { id } } })), onSuccess: done }),
+  };
+}
+export const useAudit = (f: AuditFilters) => useInfiniteQuery({
+  queryKey: ['admin', 'audit', f],
+  initialPageParam: undefined as string | undefined,
+  queryFn: ({ pageParam }) => unwrap(api.GET('/admin/audit', { params: { query: { ...f, cursor: pageParam } } })),
+  getNextPageParam: (p) => p.nextCursor ?? undefined,
+});
