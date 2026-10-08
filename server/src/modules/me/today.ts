@@ -31,14 +31,21 @@ const attendanceRow = z
 const unreadPost = z
   .object({ id: z.string(), kind: z.enum(['announcement', 'assignment']), title: z.string(), createdAt: z.date(), author: ref })
   .meta({ id: 'UnreadPost' });
-const session = scheduleItem.extend({ class: ref, attendanceDone: z.boolean(), canEdit: z.boolean() }).meta({ id: 'TodaySession' });
+// CS-13: the student CR tag reads change.author.isCr; the clash banner reads clashWith[].teacher.
+const todayItem = scheduleItem
+  .extend({
+    change: scheduleItem.shape.change.unwrap().extend({ author: ref.extend({ isCr: z.boolean() }) }).nullable(),
+    clashWith: z.array(scheduleItem.shape.clashWith.element.extend({ teacher: ref.nullable() })),
+  })
+  .meta({ id: 'TodayItem' });
+const session = todayItem.extend({ class: ref, attendanceDone: z.boolean(), canEdit: z.boolean() }).meta({ id: 'TodaySession' });
 const studentToday = z
   .object({
     date: z.iso.date(),
-    cancelled: z.array(scheduleItem),
-    current: scheduleItem.nullable(),
-    next: scheduleItem.nullable(),
-    items: z.array(scheduleItem),
+    cancelled: z.array(todayItem),
+    current: todayItem.nullable(),
+    next: todayItem.nullable(),
+    items: z.array(todayItem),
     attendance: z.array(attendanceRow),
     upcoming: z.array(upcomingItem),
     unreadPosts: z.array(unreadPost),
@@ -48,6 +55,21 @@ const studentToday = z
   .meta({ id: 'StudentToday' });
 const staffToday = z.object({ date: z.iso.date(), sessions: z.array(session), upcoming: z.array(upcomingItem) }).meta({ id: 'StaffToday' });
 const todayResponse = z.union([studentToday, staffToday]);
+
+type World = NonNullable<Awaited<ReturnType<typeof load>>>;
+/** `present` + author.isCr (CR of the item's own class) + the other teacher on each clash. */
+const decorate = async (w: World, all: Parameters<typeof present>[1]) => {
+  const crs = await db.classMember.findMany({ where: { classId: { in: [...new Set(all.map((i) => i.classId))] }, role: 'cr' }, select: { classId: true, userId: true } });
+  const teacher = new Map(all.map((i) => [i.id, present(w, all, i).teacher]));
+  return (i: (typeof all)[number]) => {
+    const p = present(w, all, i);
+    return {
+      ...p,
+      change: p.change && { ...p.change, author: { ...p.change.author, isCr: crs.some((c) => c.classId === i.classId && c.userId === p.change!.author.id) } },
+      clashWith: p.clashWith.map((c) => ({ ...c, teacher: teacher.get(c.id) ?? null })),
+    };
+  };
+};
 
 export const todayRouter = Router();
 
@@ -78,10 +100,11 @@ todayRouter.get(
         upcoming(me, 7),
       ]);
       const items = w?.days[0]?.items ?? [];
+      const dec = w ? await decorate(w, items) : null;
       const sessions = items
         .filter((i) => i.teacherId === me.id)
         .map((i) => ({
-          ...present(w!, items, i),
+          ...dec!(i),
           class: { id: i.classId, name: w!.classNames.get(i.classId) ?? '' },
           attendanceDone: !i.off && done.some((s) => s.subjectId === i.subjectId && (!i.slotId || s.slotId === i.slotId)),
           canEdit: me.isAdmin || ledIds.has(i.classId) || i.teacherId === me.id,
@@ -107,10 +130,11 @@ todayRouter.get(
     ]);
     const all = w?.days[0]?.items ?? [];
     // Another class's items only matter for clash maths; a student sees their own class (and its clashes).
+    const dec = w ? await decorate(w, all) : null;
     const items = all
       .filter((i) => i.classId === classId)
       .map((i) => {
-        const p = present(w!, all, i);
+        const p = dec!(i);
         return { ...p, clashWith: p.clashWith.filter((c) => c.classId === classId) };
       });
     const live = items.filter((i) => !i.off && i.kind !== 'event');

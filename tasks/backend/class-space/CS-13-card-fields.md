@@ -10,6 +10,10 @@
 - `/me/today` `clashWith[]` entries gain `teacher: { id, name } | null` (TE-01b banner reads "by {teacher}"; add it there once this lands).
 
 ## Done when
-- [ ] Tests: seed teacher t2's class card shows their subjects, invited count and an attendance %; a CR-made cancellation has `isCr: true`; the seed clash's `clashWith[0].teacher` names the other teacher.
+- [x] Tests: seed teacher t2's class card shows their subjects, invited count and an attendance %; a CR-made cancellation has `isCr: true`; the seed clash's `clashWith[0].teacher` names the other teacher.
 
 ## Notes
+- `ClassCard` gains `mySubjects`, `invited`, `myAttendancePct` via `withMine` in classes/service.ts (3 batched queries); students get `[]/0/null`. Attendance % = present/total records over my saved sessions in the class (not a per-session mean).
+- `/me/today` items now use a `TodayItem` schema: `change.author.isCr` (CR of the item's own class) and `clashWith[].teacher`; done in `decorate()` in me/today.ts, so `/classes/:id/schedule` is unchanged.
+- Web: ClassesList and ClashBanner filled in. Student CR tag still to add in student/Today.tsx: `item.change.author.isCr` (on `cancelled[]` entries).
+- S10 orchestrator: server 167/167 re-run; student Today CR tag now reads change.author.isCr (done by orchestrator after ST-06 landed).

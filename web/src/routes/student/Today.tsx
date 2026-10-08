@@ -63,7 +63,7 @@ export function Component() {
       <div className="stack">
         {t.cancelled.map((s) => (
           <div key={s.id} className="banner"><b>{name(s)} is cancelled today</b> <span className="small">({s.start}–{s.end})</span>
-            <div className="small">{s.change?.note} <span className="muted">· posted by {s.change?.author.name}{s.change?.author.id !== s.teacher?.id && ' (CR)'}</span></div>
+            <div className="small">{s.change?.note} <span className="muted">· posted by {s.change?.author.name}{s.change?.author.isCr && ' (CR)'}</span></div>
           </div>
         ))}
         <CheckIn />

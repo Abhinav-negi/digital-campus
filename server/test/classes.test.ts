@@ -48,6 +48,23 @@ test('GET /classes: my classes with term, counts, CRs and my role', async () => 
   assert.ok(!p2.items.some((c: { id: string }) => p1.items.some((d: { id: string }) => d.id === c.id)));
 });
 
+test('CS-13: staff card shows my subjects, invited count and my attendance %; students get none', async () => {
+  const subs = await db.subject.findMany({ where: { classId: 'c1', teacherId: 't2' }, orderBy: { name: 'asc' } });
+  const sub = subs[0]!;
+  await db.attendanceSession.deleteMany({ where: { subjectId: { in: subs.map((s) => s.id) } } }); // seed history would skew the %
+  const sess = await db.attendanceSession.create({ data: { termId: sub.termId, subjectId: sub.id, date: new Date('2026-01-05'), savedAt: new Date() } });
+  const stu = await db.classMember.findMany({ where: { classId: 'c1', role: 'student', user: { status: 'active' } }, take: 4 });
+  await db.attendance.createMany({ data: stu.map((m, i) => ({ sessionId: sess.id, studentId: m.userId, present: i < 3, source: 'teacher' as const })) });
+  const was = await db.classMember.count({ where: { classId: 'c1', user: { status: 'invited' } } });
+  await db.user.update({ where: { id: stu[0]!.userId }, data: { status: 'invited' } });
+  const c1 = card((await (await agent('subjectTeacher')).get('/api/v1/classes').expect(200)).body, 'c1') as unknown as { mySubjects: string[]; invited: number; myAttendancePct: number | null };
+  assert.deepEqual(c1.mySubjects, subs.map((s) => s.name));
+  assert.equal(c1.invited, was + 1);
+  assert.equal(c1.myAttendancePct, 75);
+  const s1 = card((await (await agent('student')).get('/api/v1/classes').expect(200)).body, 'c1') as unknown as typeof c1;
+  assert.deepEqual([s1.mySubjects, s1.invited, s1.myAttendancePct], [[], 0, null]);
+});
+
 test('POST /classes: staff creates a class + Term 1 and becomes its class teacher; PATCH renames', async () => {
   const s1 = await agent('student');
   const body = { branchId: 'it', admissionYear: 2025, section: 'B', minAttendancePct: 80, semester: 3 };

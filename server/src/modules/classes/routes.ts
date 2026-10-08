@@ -34,6 +34,10 @@ const classCard = z
     counts: z.object({ students: z.number().int(), subjects: z.number().int() }),
     crs: z.array(person),
     myRole: z.enum(['classTeacher', 'teacher', 'cr', 'student']).nullable(),
+    /** Staff only (students get []/0/null): subjects I teach here, pending student invites, my sessions' present %. */
+    mySubjects: z.array(z.string()),
+    invited: z.number().int(),
+    myAttendancePct: z.number().int().nullable(),
   })
   .meta({ id: 'ClassCard' });
 const term = z

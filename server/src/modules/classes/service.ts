@@ -83,12 +83,35 @@ const toSummary = (c: Row, userId: string) => {
   };
 };
 
+/** CS-13: the staff-only card fields, for a batch of cards in 3 queries. */
+const withMine = async (cards: ReturnType<typeof toSummary>[], user: AuthUser) => {
+  const ids = cards.map((c) => c.id);
+  if (user.role === 'student' || !ids.length) return cards.map((c) => ({ ...c, mySubjects: [] as string[], invited: 0, myAttendancePct: null as number | null }));
+  const [subs, inv, recs] = await Promise.all([
+    db.subject.findMany({ where: { classId: { in: ids }, teacherId: user.id, term: { endedAt: null } }, select: { classId: true, name: true }, orderBy: { name: 'asc' } }),
+    db.classMember.groupBy({ by: ['classId'], where: { classId: { in: ids }, role: { in: ['student', 'cr'] }, user: { status: 'invited' } }, _count: true }),
+    db.attendance.findMany({
+      where: { session: { savedAt: { not: null }, subject: { classId: { in: ids }, teacherId: user.id, term: { endedAt: null } } } },
+      select: { present: true, session: { select: { subject: { select: { classId: true } } } } },
+    }),
+  ]);
+  return cards.map((c) => {
+    const r = recs.filter((x) => x.session.subject.classId === c.id);
+    return {
+      ...c,
+      mySubjects: subs.filter((s) => s.classId === c.id).map((s) => s.name),
+      invited: inv.find((g) => g.classId === c.id)?._count ?? 0,
+      myAttendancePct: r.length ? Math.round((100 * r.filter((x) => x.present).length) / r.length) : null,
+    };
+  });
+};
+
 export const classSummary = async (id: string, user: AuthUser) =>
-  toSummary(await db.class.findUniqueOrThrow({ where: { id }, select: summarySelect(user.id) }), user.id);
+  (await withMine([toSummary(await db.class.findUniqueOrThrow({ where: { id }, select: summarySelect(user.id) }), user.id)], user))[0]!;
 
 /** Mine = class teacher or any ClassMember (student, CR, allotted teacher). Admin `all` = every class. */
 export const listClasses = async (user: AuthUser, all: boolean, args: { take: number; cursor?: { id: string }; skip?: number }) => {
   const where: Prisma.ClassWhereInput = all && user.isAdmin ? {} : { OR: [{ classTeacherId: user.id }, { members: { some: { userId: user.id } } }] };
   const rows = await db.class.findMany({ where, select: summarySelect(user.id), orderBy: [{ name: 'asc' }, { id: 'asc' }], ...args });
-  return rows.map((c) => toSummary(c, user.id));
+  return withMine(rows.map((c) => toSummary(c, user.id)), user);
 };

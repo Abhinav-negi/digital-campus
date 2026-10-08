@@ -63,6 +63,17 @@ test('teacher Today unions classes and flags the cross-class clash; attendanceDo
   assert.deepEqual(t1.sessions.map((s: { id: string; off: boolean }) => [s.id, s.off]), [['sc', true]]);
 });
 
+test('CS-13: cancellation author.isCr; clashWith[].teacher names the other teacher', async () => {
+  const body = (await (await agent('student')).get('/api/v1/me/today').expect(200)).body;
+  assert.equal(body.cancelled[0].change.author.isCr, true); // x1 was made by s1, c1's CR
+  await db.scheduleChange.update({ where: { id: 'x1' }, data: { authorId: 't1' } });
+  const again = (await (await agent('student')).get('/api/v1/me/today').expect(200)).body;
+  assert.equal(again.cancelled[0].change.author.isCr, false);
+  const sa = again.items.find((i: { id: string }) => i.id === 'sa');
+  const sub3 = await db.subject.findUniqueOrThrow({ where: { id: 'sub3' }, include: { teacher: true } });
+  assert.deepEqual(sa.clashWith[0].teacher, { id: sub3.teacher!.id, name: sub3.teacher!.name });
+});
+
 const day = (n: number) => addDays(today(), n);
 const dueAt = (n: number) => new Date(day(n).getTime() + 10 * 3_600_000); // 10:00 UTC on that date: the same institution date in any zone near UTC+5:30
 

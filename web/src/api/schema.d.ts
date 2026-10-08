@@ -9992,6 +9992,9 @@ export interface components {
             }[];
             /** @enum {string|null} */
             myRole: "classTeacher" | "teacher" | "cr" | "student" | null;
+            mySubjects: string[];
+            invited: number;
+            myAttendancePct: number | null;
         };
         Term: {
             id: string;
@@ -10171,10 +10174,10 @@ export interface components {
         StudentToday: {
             /** Format: date */
             date: string;
-            cancelled: components["schemas"]["ScheduleItem"][];
-            current: components["schemas"]["ScheduleItem"] & unknown;
-            next: components["schemas"]["ScheduleItem"] & unknown;
-            items: components["schemas"]["ScheduleItem"][];
+            cancelled: components["schemas"]["TodayItem"][];
+            current: components["schemas"]["TodayItem"] & unknown;
+            next: components["schemas"]["TodayItem"] & unknown;
+            items: components["schemas"]["TodayItem"][];
             attendance: components["schemas"]["TodayAttendance"][];
             upcoming: components["schemas"]["UpcomingItem"][];
             unreadPosts: components["schemas"]["UnreadPost"][];
@@ -10182,6 +10185,53 @@ export interface components {
                 timetable: boolean;
                 subjects: boolean;
             };
+        };
+        TodayItem: {
+            id: string;
+            /** @enum {string} */
+            kind: "class" | "extra" | "event";
+            classId: string;
+            slotId: string | null;
+            subject: {
+                id: string;
+                name: string;
+            } | null;
+            teacher: {
+                id: string;
+                name: string;
+            } | null;
+            title: string | null;
+            start: string;
+            end: string;
+            room: string | null;
+            off: boolean;
+            change: {
+                id: string;
+                /** @enum {string} */
+                kind: "cancelled" | "moved" | "extra" | "event";
+                date: string;
+                movedToDate: string | null;
+                start: string | null;
+                end: string | null;
+                note: string | null;
+                author: {
+                    id: string;
+                    name: string;
+                    isCr: boolean;
+                };
+            } | null;
+            clashWith: {
+                id: string;
+                classId: string;
+                className: string;
+                name: string;
+                start: string;
+                end: string;
+                teacher: {
+                    id: string;
+                    name: string;
+                } | null;
+            }[];
         };
         TodayAttendance: {
             subject: {
@@ -10255,6 +10305,7 @@ export interface components {
                 author: {
                     id: string;
                     name: string;
+                    isCr: boolean;
                 };
             } | null;
             clashWith: {
@@ -10264,6 +10315,10 @@ export interface components {
                 name: string;
                 start: string;
                 end: string;
+                teacher: {
+                    id: string;
+                    name: string;
+                } | null;
             }[];
             class: {
                 id: string;

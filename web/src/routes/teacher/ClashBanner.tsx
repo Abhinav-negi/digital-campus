@@ -14,7 +14,7 @@ export function ClashBanner({ s, date, mine }: { s: TodaySession; date: string; 
   const keep = () => { try { sessionStorage.setItem(key(s.id), '1'); } catch { /* private mode: dismiss for this render only */ } setGone(true); };
   return (
     <div className="banner row between wrap" role="alert" style={{ marginTop: 'var(--s1)', gap: 'var(--s2)' }}>
-      <span className="small">Overlaps with {o.name} in {o.className} at {o.start}. Who's taking it?</span>
+      <span className="small">Overlaps with {o.name} in {o.className} at {o.start}{o.teacher && ` by ${o.teacher.name}`}. Who's taking it?</span>
       <span className="row" style={{ gap: 'var(--s1)' }}>
         <button type="button" className="btn sm" onClick={keep}>Keep mine</button>
         {mine && <SessionActions s={s} date={date} />}
