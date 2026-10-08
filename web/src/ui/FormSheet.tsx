@@ -6,7 +6,7 @@ import { api, unwrap } from '../api/client';
 // Typed port of PROTO student.html:131-143 formSheet.
 type Base = { name: string; label: string };
 export type Field =
-  | (Base & { type?: 'text' | 'textarea' | 'date' | 'time' | 'number' | 'email' | 'url'; value?: string | number; req?: boolean; ph?: string })
+  | (Base & { type?: 'text' | 'textarea' | 'date' | 'time' | 'number' | 'email' | 'url' | 'password'; value?: string | number; req?: boolean; ph?: string })
   | (Base & { type: 'select'; options: readonly (readonly [string, string])[]; value?: string })
   | (Base & { type: 'checkbox'; value?: boolean })
   | (Base & { type: 'file'; accept?: string; req?: boolean })

@@ -6,6 +6,6 @@ export const studentRoutes: RouteObject[] = [
   { index: true, lazy: () => import('./Today') }, // ST-01 Today
   { path: 'class/*', lazy: () => import('./class/ClassPage') }, // ST-02 ClassPage (owns its tabs below this)
   { path: 'commons/*', lazy: () => import('./commons/CommonsPage') }, // ST-07a CommonsPage
-  { path: 'me/*', lazy: soon }, // ST-10a Me
+  { path: 'me/*', lazy: () => import('./me/MePage') }, // ST-10a Me
   { path: '*', lazy: soon },
 ];

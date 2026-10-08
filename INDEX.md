@@ -8,8 +8,8 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S09-2026-10-06.md](handoff/S09-2026-10-06.md) |
-| **Progress** | **72%** · 62 / 86 done (project-ready) · 4 deployment tasks parked |
-| **Ready to start** | ST-03c · TE-03 · CS-14 · ST-10a · AF-01 · ST-08a · CS-13 |
+| **Progress** | **74%** · 64 / 87 done (project-ready) · 4 deployment tasks parked |
+| **Ready to start** | ST-03c · TE-03 · CS-14 · CS-15 · CM-09 · ST-10b · AF-01 · ST-08a |
 | **Current wave** | Wave 3: Frontend (Waves 1–2 ✅) |
 
 ## Waves (dispatch plan)
@@ -124,7 +124,7 @@
 | [ST-08a](tasks/frontend/student/ST-08a-projects.md) | Build: flagship + projects | ST-07a, CM-04 | ⬜ |
 | [ST-08b](tasks/frontend/student/ST-08b-challenges.md) | Build: challenges | ST-08a, CM-05 | ⬜ |
 | [ST-09](tasks/frontend/student/ST-09-people.md) | People + person sheet + request | ST-07, CM-01, CM-06 | ✅ |
-| [ST-10a](tasks/frontend/student/ST-10a-me-profile.md) | Me: profile + your data | ST-09 | ⬜ |
+| [ST-10a](tasks/frontend/student/ST-10a-me-profile.md) | Me: profile + your data | ST-09 | ✅ |
 | [ST-10b](tasks/frontend/student/ST-10b-me-inbox.md) | Me: messages, notifications, contact admin | ST-10a, CS-12, AD-05 | ⬜ |
 
 ## Frontend: Teacher
@@ -165,6 +165,7 @@
 *Findings and follow-ups discovered while building go here as new rows (next free ID in their region). Create the task file too.*
 | ID | Task | Deps | Status | Origin |
 |---|---|---|---|---|
-| [CS-13](tasks/backend/class-space/CS-13-card-fields.md) | ClassCard subjects/invited/attendance + change author isCr | CS-01, CS-11 | 🟨 | TE-04, ST-01 (S08) |
+| [CS-13](tasks/backend/class-space/CS-13-card-fields.md) | ClassCard subjects/invited/attendance + change author isCr | CS-01, CS-11 | ✅ | TE-04, ST-01 (S08) |
 | [CS-14](tasks/backend/class-space/CS-14-attendance-session-get.md) | GET one attendance session (reload-safe attendance page) | CS-09, TE-02 | ⬜ | TE-02 (S10) |
 | [CS-15](tasks/backend/class-space/CS-15-checkin-open-flag.md) | `/me/today` codeOpen flag; CheckIn card only while a code is open | CS-13, ST-06 | ⬜ | ST-06 (S10) |
+| [CM-09](tasks/backend/commons/CM-09-board-mine-filter.md) | Board posts `mine` filter for Me | CM-02, ST-10a | ⬜ | ST-10a (S10) |
