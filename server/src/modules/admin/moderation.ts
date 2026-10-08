@@ -23,7 +23,7 @@ const AUDIT_TYPE = { 'board-post': 'BoardPost', project: 'Project', challenge: '
 // ponytail: "any field" is the text fields a moderator would fix; relations, ownership and counters stay out. Add keys here as needed.
 const patchBodies = {
   'board-post': z.object({ title: z.string().trim().min(1).max(200), body: z.string().max(5000).nullable(), tags: z.array(z.string().max(40)).max(20), place: z.string().max(200).nullable(), condition: z.string().max(200).nullable() }),
-  project: z.object({ title: z.string().trim().min(1).max(200), description: z.string().max(5000), roles: z.array(z.string().max(60)).max(20), repoUrl: z.url().nullable() }),
+  project: z.object({ title: z.string().trim().min(1).max(200), description: z.string().max(5000), roles: z.array(z.string().max(60)).max(20), repoUrl: z.url({ protocol: /^https?$/ }).trim().max(200).nullable() }),
   challenge: z.object({ title: z.string().trim().min(1).max(200), description: z.string().max(5000) }),
   profile: z.object({ headline: z.string().max(200), skills: z.array(z.string().max(40)).max(30), helpsJuniors: z.boolean() }),
 } as const;

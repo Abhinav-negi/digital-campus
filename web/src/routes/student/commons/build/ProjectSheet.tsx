@@ -31,7 +31,7 @@ export function ProjectSheet({ id, onClose }: { id: string; onClose: () => void 
           <JoinCta p={p} />
         </div>
         <p>{p.description}</p>
-        {p.repoUrl && <a className="row small" href={p.repoUrl} target="_blank" rel="noopener noreferrer"><Icon name="github" size={16} /> {p.repoUrl}</a>}
+        {p.repoUrl && /^https?:\/\//.test(p.repoUrl) && <a className="row small" href={p.repoUrl} target="_blank" rel="noopener noreferrer"><Icon name="github" size={16} /> {p.repoUrl}</a>}
         <div><Eyebrow>Roles needed</Eyebrow><Roles roles={p.roles} /></div>
         <div><Eyebrow>Team</Eyebrow><div className="list">{p.members.map((m) => (
           <div key={m.id} className="row"><Avatar user={m} size="sm" />
