@@ -8,8 +8,8 @@
 | | |
 |---|---|
 | **Latest handoff** | [handoff/S09-2026-10-06.md](handoff/S09-2026-10-06.md) |
-| **Progress** | **74%** · 65 / 88 done (project-ready) · 4 deployment tasks parked |
-| **Ready to start** | ST-03c · TE-03 · CS-14 · CS-15 · CM-09 · CS-16 · AF-01 · ST-08a |
+| **Progress** | **75%** · 66 / 88 done (project-ready) · 4 deployment tasks parked |
+| **Ready to start** | ST-03c · TE-03 · CS-14 · CS-15 · CM-09 · CS-16 · AF-01 · ST-08b |
 | **Current wave** | Wave 3: Frontend (Waves 1–2 ✅) |
 
 ## Waves (dispatch plan)
@@ -121,7 +121,7 @@
 | [ST-06](tasks/frontend/student/ST-06-posts-attendance.md) | Posts, my attendance, check-in | ST-02, CS-08, CS-10 | ✅ |
 | [ST-07a](tasks/frontend/student/ST-07a-commons-feed.md) | Commons: header, feed, compose | FS-06, CM-02 | ✅ |
 | [ST-07b](tasks/frontend/student/ST-07b-post-sheet.md) | Commons: post sheet actions + report | ST-07a, CM-03, CM-06, CM-07 | ✅ |
-| [ST-08a](tasks/frontend/student/ST-08a-projects.md) | Build: flagship + projects | ST-07a, CM-04 | ⬜ |
+| [ST-08a](tasks/frontend/student/ST-08a-projects.md) | Build: flagship + projects | ST-07a, CM-04 | ✅ |
 | [ST-08b](tasks/frontend/student/ST-08b-challenges.md) | Build: challenges | ST-08a, CM-05 | ⬜ |
 | [ST-09](tasks/frontend/student/ST-09-people.md) | People + person sheet + request | ST-07, CM-01, CM-06 | ✅ |
 | [ST-10a](tasks/frontend/student/ST-10a-me-profile.md) | Me: profile + your data | ST-09 | ✅ |

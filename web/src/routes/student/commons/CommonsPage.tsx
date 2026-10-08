@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useParams } from 'react-router';
-import { Empty } from '../../../ui/Empty';
+import { BuildPage } from './build/BuildPage';
 import { Icon } from '../../../ui/Icon';
 import { Board } from './Board';
 import { Compose } from './Compose';
@@ -27,7 +27,7 @@ export function Component() {
       <p className="small muted" style={{ marginTop: 'var(--s2)' }}>Admins can see Commons activity, including messages, for safety.</p>
       <div style={{ marginTop: 'var(--s4)' }}>
         {tab === '' && <Board onOpen={setOpenId} />}
-        {tab === 'build' && <Empty text="Build is coming soon." />}
+        {tab === 'build' && <BuildPage />}
         {tab === 'people' && <People />}
       </div>
       {post('fab')}
