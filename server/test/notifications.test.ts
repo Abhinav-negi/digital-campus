@@ -3,6 +3,7 @@ import { after, before, test } from 'node:test';
 import { attendanceDigest, boardExpiryNudges, cleanInvites, examReminders, start } from '../src/jobs.js';
 import { addDays, today } from '../src/lib/dates.js';
 import { db } from '../src/lib/db.js';
+import { linkFor } from '../src/modules/me/notifications.js';
 import { agent, resetDb } from './helpers.js';
 
 before(resetDb);
@@ -101,7 +102,7 @@ test('inbox: rendered text and link, unread count, mark read by ids and all, cur
   });
   const s = await agent('student');
   const first = (await s.get('/api/v1/me/notifications?limit=2').expect(200)).body;
-  assert.deepEqual(first.items.map((i: { text: string; link: string }) => [i.text, i.link]), [['Maths cancelled', '/s/today'], ['New post', '/s/posts/p9']]);
+  assert.deepEqual(first.items.map((i: { text: string; link: string }) => [i.text, i.link]), [['Maths cancelled', '/s'], ['New post', '/s/class/posts']]);
   assert.equal(first.unreadCount, 3);
   assert.ok(first.nextCursor);
   const rest = (await s.get(`/api/v1/me/notifications?limit=2&cursor=${first.nextCursor}`).expect(200)).body;
@@ -111,4 +112,27 @@ test('inbox: rendered text and link, unread count, mark read by ids and all, cur
   assert.equal((await s.post('/api/v1/me/notifications/read').send({ all: true }).expect(200)).body.unreadCount, 0);
   const again = (await s.get('/api/v1/me/notifications').expect(200)).body;
   assert.ok(again.items.every((i: { read: boolean }) => i.read));
+});
+
+test('linkFor maps every payload type to a real route for students and teachers', () => {
+  const cases: [string, Record<string, string>, string | null, string | null][] = [
+    ['message', { conversationId: 'v1' }, '/s/me/messages/v1', null],
+    ['ticket-reply', { ticketId: 'k1' }, '/s/me', null],
+    ['project-invite', { projectId: 'p1' }, '/s/commons/build', null],
+    ['challenge', { challengeId: 'h1' }, '/s/commons/build', null],
+    ['post', { postId: 'b1', classId: 'c1' }, '/s/class/posts', '/t/classes/c1'],
+    ['board-expiring', { postId: 'b1' }, '/s/commons', null],
+    ['class-change', { classId: 'c1' }, '/s', '/t'],
+    ['attendance-low', { classId: 'c1' }, '/s/class/attendance', '/t'],
+    ['attendance-digest', {}, '/s/class/attendance', '/t'],
+    ['exam-reminder', {}, '/s', '/t/upcoming'],
+    ['deadline-reminder', {}, '/s', '/t/upcoming'],
+    ['other', { classId: 'c1' }, '/s/class', '/t/classes/c1'],
+    ['thanks', {}, null, null],
+  ];
+  for (const [type, p, stu, tea] of cases) {
+    assert.equal(linkFor(type, p, 's'), stu, `${type} student`);
+    assert.equal(linkFor(type, p, 't'), tea, `${type} teacher`);
+    for (const l of [stu, tea]) assert.ok(!l || !/^\/(s|t)\/today|^\/s\/commons\/messages/.test(l), `${type} stale link`);
+  }
 });

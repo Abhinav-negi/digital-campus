@@ -12,18 +12,18 @@ const notification = z
 
 type Payload = Record<string, string | undefined>;
 
-/** Where tapping a notification goes: the app's `/s` (student) or `/t` (staff) shell. */
-const linkFor = (type: string, p: Payload, home: 's' | 't'): string | null => {
-  const base = `/${home}`;
-  if (p.conversationId) return `${base}/commons/messages/${p.conversationId}`;
-  if (p.projectId) return `${base}/commons/projects/${p.projectId}`;
-  if (p.challengeId) return `${base}/commons/challenges/${p.challengeId}`;
-  if (p.ticketId) return `${base}/tickets/${p.ticketId}`;
-  if (p.postId) return type === 'post' ? `${base}/posts/${p.postId}` : `${base}/commons/board/${p.postId}`;
-  if (type === 'class-change') return `${base}/today`;
-  if (type === 'attendance-low' || type === 'attendance-digest') return `${base}/attendance`;
-  if (type === 'exam-reminder' || type === 'deadline-reminder') return `${base}/upcoming`;
-  return p.classId ? `${base}/classes/${p.classId}` : null;
+/** Where tapping a notification goes, as a route that exists in the web app; null when there is none (staff have no messages/commons screens). */
+export const linkFor = (type: string, p: Payload, home: 's' | 't'): string | null => {
+  const s = home === 's';
+  if (p.conversationId) return s ? `/s/me/messages/${p.conversationId}` : null;
+  if (p.ticketId) return s ? '/s/me' : null;
+  if (p.projectId || p.challengeId) return s ? '/s/commons/build' : null;
+  if (p.postId && type !== 'post') return s ? '/s/commons' : null;
+  if (type === 'post' && s) return '/s/class/posts';
+  if (type === 'class-change') return s ? '/s' : '/t';
+  if (type === 'attendance-low' || type === 'attendance-digest') return s ? '/s/class/attendance' : '/t';
+  if (type === 'exam-reminder' || type === 'deadline-reminder') return s ? '/s' : '/t/upcoming';
+  return p.classId ? (s ? '/s/class' : `/t/classes/${p.classId}`) : null;
 };
 
 const body = z.object({ muted: z.array(z.string().trim().min(1).max(50)).max(100) });

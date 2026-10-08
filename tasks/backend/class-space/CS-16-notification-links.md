@@ -11,7 +11,9 @@ Map payloads to routes that exist (from ST-10b, S10):
 - Anything unmapped → `null` (the client already handles null).
 
 ## Done when
-- [ ] Test: one notification per mapped type for a student and a teacher returns the path above; no link starts with `/s/today`, `/t/today` or `/s/commons/messages`.
+- [x] Test: one notification per mapped type for a student and a teacher returns the path above; no link starts with `/s/today`, `/t/today` or `/s/commons/messages`.
 
 ## Notes
 - Re-check against the route tables when ST-08a (Build) and AF-01 (admin) add routes.
+- Done: `linkFor` is exported; student-only payloads (conversation, ticket, project, challenge, board post) return null for staff. Test: `linkFor maps every payload type…` in notifications.test.ts.
+- S11 orchestrator: server 171/171 (both test DBs). Staff get null for ticket links: only the filer is notified and teachers have no tickets UI.
