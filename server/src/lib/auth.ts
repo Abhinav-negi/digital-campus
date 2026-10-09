@@ -193,6 +193,8 @@ export const rateLimit = (max: number, windowMs: number, keyOf: (req: Request) =
     let hit = hits.get(key);
     if (!hit || hit.resetAt <= now) {
       if (hits.size > 10_000) for (const [k, v] of hits) if (v.resetAt <= now) hits.delete(k);
+      // ponytail: hard cap evicts oldest keys (Map keeps insertion order); a shared store (Redis) if we ever run >1 process
+      if (hits.size > 50_000) for (const k of [...hits.keys()].slice(0, hits.size - 40_000)) hits.delete(k);
       hit = { count: 0, resetAt: now + windowMs };
       hits.set(key, hit);
     }

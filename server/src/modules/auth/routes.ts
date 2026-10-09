@@ -58,13 +58,14 @@ const badLogin = () => new HttpError(401, 'INVALID_CREDENTIALS', 'Email or passw
 const router = Router();
 
 // D18: a lab shares one NAT IP, so count per (IP, email) and keep only a loose per-IP ceiling.
-const emailOf = (req: Request) => String(req.body?.email ?? '').trim().toLowerCase();
+const emailOf = (req: Request) => String(req.body?.email ?? '').trim().toLowerCase().slice(0, 254); // bounded key length
 const WINDOW = 15 * 60_000;
 
 router.post(
   '/login',
   rateLimit(300, WINDOW),
   rateLimit(10, WINDOW, (req) => `${req.ip}|${emailOf(req)}`),
+  rateLimit(30, WINDOW, emailOf), // per-account ceiling across IPs (no IP-rotation brute force)
   route(registry, {
     method: 'post',
     path: '/auth/login',
@@ -121,6 +122,7 @@ router.get(
 
 router.post(
   '/forgot',
+  rateLimit(30, 60_000),
   rateLimit(10, 60_000, emailOf),
   route(registry, {
     method: 'post',
