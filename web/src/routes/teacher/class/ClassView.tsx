@@ -24,7 +24,6 @@ export function ClassView({ adminMode = false }: { adminMode?: boolean }) {
   const ct = adminMode || c.myRole === 'classTeacher';
   const tabs = [['board', 'Board'], ['posts', 'Posts'], ['students', 'Students'], ['attendance', 'Attendance'], ...(ct ? [['settings', 'Settings']] : [])] as const;
   const tab = tabs.some(([k]) => k === splat) ? splat : 'board';
-  const soon = (what: string, task: string) => <p className="muted">{what} — coming in {task}</p>;
 
   return (
     <>
@@ -40,8 +39,8 @@ export function ClassView({ adminMode = false }: { adminMode?: boolean }) {
       </div>
       {tab === 'board' && <BoardTab classId={id} crNames={c.crs.map((r) => r.name).join(', ')} canEdit={ct} />}
       {tab === 'posts' && <PostsTab classId={id} userId={adminMode ? undefined : me.user.id} onNew={() => setComposing(true)} />}
-      {tab === 'students' && soon('Students', 'TE-05b')}
-      {tab === 'attendance' && soon('Attendance', 'TE-05b')}
+      {tab === 'students' && <StudentsTab classId={id} canEdit={ct} />}
+      {tab === 'attendance' && <AttendanceTab classId={id} userId={adminMode ? undefined : me.user.id} all={ct} minPct={c.minAttendancePct} />}
       {tab === 'settings' && <SettingsTab c={c} isAdmin={adminMode} />}
       {composing && <Composer classId={id} onClose={() => setComposing(false)} />}
     </>

@@ -13,7 +13,7 @@ export function CodeMode({ sessionId, roster }: { sessionId: string; roster: Att
     let off = false;
     api.GET('/attendance-sessions/{id}/code', { params: { path: { id: sessionId } } }).then(({ error }) => {
       if (off) return;
-      if ((error as { error?: { code?: string } } | undefined)?.error?.code === 'NO_CODE') mutate(undefined, { onSuccess: () => setReady(true) });
+      if (error?.code === 'NO_CODE') mutate(undefined, { onSuccess: () => setReady(true) });
       else setReady(true);
     });
     return () => { off = true; };

@@ -155,7 +155,8 @@
 | ID | Task | Deps | Status |
 |---|---|---|---|
 | [QA-01](tasks/qa/QA-01-permission-suite.md) | Permission suite (the wall) | all CS, CM, AD | ✅ |
-| [QA-02](tasks/qa/QA-02-lab-demo.md) | Lab-demo walk-through | all ST, TE, AF | 🟨 |
+| [QA-02a](tasks/qa/QA-02-lab-demo.md) | Lab-demo walk-through: first run (docs/DEMO.md), F1–F7 filed | all ST, TE, AF | ✅ |
+| [QA-02b](tasks/qa/QA-02b-demo-rerun.md) | Lab demo re-run after fixes | QA-02a, FS-11, TE-09, ST-11, FND-09, FS-10, FS-12 | ⬜ |
 | [QA-03a](tasks/qa/QA-03-visual-parity.md) | Visual parity: first pass + fixes (docs/PARITY.md) | all ST, TE, AF, FS-08 | ✅ |
 | [QA-03b](tasks/qa/QA-03b-visual-parity-rest.md) | Visual parity: remaining screens + re-check | QA-03a, CS-17, FS-10 | ⬜ |
 | [QA-04](tasks/qa/QA-04-review.md) | Code + security review | QA-01 | ⬜ |
@@ -176,3 +177,8 @@
 | [AD-10](tasks/backend/admin/AD-10-direct-hide.md) | Admin direct hide + `includeHidden` lists | AD-06, AF-04a | ✅ | AF-04a (S12) |
 | [CS-17](tasks/backend/class-space/CS-17-parity-fields.md) | Parity fields: post body preview, byline label, upcoming class name, file age | CS-11, CM-08 | ✅ | QA-03a (S12) |
 | [FS-10](tasks/frontend/shared/FS-10-parity-polish.md) | Parity polish: history, Me projects, sheet footer, TipSheet trigger | QA-03a | 🟨 | QA-03a (S12) |
+| [FS-11](tasks/frontend/shared/FS-11-shell-gaps.md) | Bell panel, phone log out, 403 page | FS-10 | ⬜ | QA-02a F3a F4 F6 (S12) |
+| [TE-09](tasks/frontend/teacher/TE-09-future-session-actions.md) | Cancel/postpone a future class; clash in Upcoming | CS-17 | ⬜ | QA-02a F3b (S12) |
+| [ST-11](tasks/frontend/student/ST-11-past-term-readonly.md) | Past term read-only in the UI | QA-03a | ⬜ | QA-02a F5 (S12) |
+| [FND-09](tasks/backend/foundation/FND-09-login-limiter.md) | Login limiter keyed IP+email (lab NAT) | FND-04 | ⬜ | QA-02a F7 (S12) |
+| [FS-12](tasks/frontend/shared/FS-12-demo-copy.md) | Demo copy/label nits | FS-10 | ⬜ | QA-02a minor (S12) |
