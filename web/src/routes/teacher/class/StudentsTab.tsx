@@ -53,6 +53,7 @@ export function StudentsTab({ classId, canEdit }: { classId: string; canEdit: bo
   const roster = useRoster(classId);
   const { resend, setCr, remove } = useRosterActions(classId);
   const [adding, setAdding] = useState(false);
+  const [replacing, setReplacing] = useState<{ id: string; name: string }>(); // third CR: ask whom to replace
   if (!roster.data) return null;
   const all = roster.data;
   const crIds = all.filter((s) => s.isCR).map((s) => s.id);
@@ -72,12 +73,26 @@ export function StudentsTab({ classId, canEdit }: { classId: string; canEdit: bo
               ? <><Badge kind="warn">Invited</Badge>
                 {canEdit && <button type="button" className="btn sm" disabled={resend.isPending} onClick={() => resend.mutate(s.id, { onSuccess: () => toast(`Invite resent to ${s.email}`), onError: err })}>Resend</button>}</>
               : <Badge kind="open">Active</Badge>}
+            {canEdit && s.isCR && (
+              // The server refuses an empty set (min 1 CR), so the sole CR can only be replaced.
+              <button type="button" className="btn sm" disabled={setCr.isPending || crIds.length < 2} title={crIds.length < 2 ? 'Make another student CR to replace this one' : undefined}
+                onClick={() => setCr.mutate(crIds.filter((id) => id !== s.id), { onSuccess: () => toast(`${s.name} is no longer CR`), onError: err })}>Remove CR</button>)}
             {canEdit && !s.isCR && s.status === 'active' && (
-              // PUT /cr replaces the set (max 2): keep the newest current CR and add this one.
-              <button type="button" className="btn sm" disabled={setCr.isPending} onClick={() => setCr.mutate([...crIds.slice(-1), s.id], { onSuccess: () => toast(`${s.name} is now CR`), onError: err })}>Make CR</button>)}
+              <button type="button" className="btn sm" disabled={setCr.isPending}
+                onClick={() => crIds.length < 2 ? setCr.mutate([...crIds, s.id], { onSuccess: () => toast(`${s.name} is now CR`), onError: err }) : setReplacing(s)}>Make CR</button>)}
             {canEdit && <button type="button" className="btn sm ghost" disabled={remove.isPending} onClick={() => confirm(`Remove ${s.name} from this class?`) && remove.mutate(s.id, { onSuccess: () => toast(`${s.name} removed`), onError: err })}>Remove</button>}
           </div>))}</div>
       ) : <Empty seed="welcome" text="No students yet. Add some to send invites." />}</div>
+      {replacing && (
+        <Sheet title={`Make ${replacing.name} CR`} onClose={() => setReplacing(undefined)}>
+          <p className="small">A class has at most 2 CRs. Who should {replacing.name} replace?</p>
+          <div className="actions">
+            {all.filter((s) => s.isCR).map((c) => (
+              <button key={c.id} type="button" className="btn" disabled={setCr.isPending}
+                onClick={() => setCr.mutate(crIds.map((id) => id === c.id ? replacing.id : id), { onSuccess: () => { toast(`${replacing.name} replaces ${c.name} as CR`); setReplacing(undefined); }, onError: err })}>{c.name}</button>))}
+            <button type="button" className="btn ghost" onClick={() => setReplacing(undefined)}>Cancel</button>
+          </div>
+        </Sheet>)}
       {adding && <AddSheet classId={classId} onClose={() => setAdding(false)} />}
     </div>
   );
