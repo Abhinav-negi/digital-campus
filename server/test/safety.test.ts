@@ -87,3 +87,29 @@ test('message and profile reports are stored without hiding', async () => {
   await riya.post(`${url}/reports`).send({ targetType: 'profile', targetId: 's2', reason: 'Spam' }).expect(201);
   assert.equal(await db.report.count({ where: { reporterId: 's1', targetType: { in: ['message', 'profile'] } } }), 2);
 });
+
+test('CM-11: s2 blocks s3 -> s3 cannot act on or open s2\'s items; s2 gets no notification', async () => {
+  const soon = new Date(Date.now() + 5 * 86_400_000);
+  const post = (id: string, kind: 'ask' | 'gig' | 'found') => db.boardPost.create({ data: { id, authorId: 's2', kind, title: id, body: 'b', hiddenDetail: 'x', expiresAt: soon } });
+  await Promise.all([post('b11ask', 'ask'), post('b11gig', 'gig'), post('b11found', 'found')]);
+  const project = await db.project.create({ data: { ownerId: 's2', title: 'p11', description: 'd' } });
+  const challenge = await db.challenge.create({ data: { ownerId: 's2', title: 'c11', description: 'd', endsAt: soon, judging: 'likes' } });
+  const sub = await db.submission.create({ data: { challengeId: challenge.id, userId: 's2', url: 'https://x.test' } });
+  const s2 = await as('s2');
+  const s3 = await as('s3');
+  await s2.post(`${url}/blocks`).send({ userId: 's3' }).expect(201);
+  const before = await db.notification.count({ where: { userId: 's2' } });
+
+  await s3.post(`${url}/board-posts/b11ask/answers`).send({ body: 'hi' }).expect(404);
+  await s3.post(`${url}/board-posts/b11gig/interests`).send({ note: 'me' }).expect(404);
+  await s3.post(`${url}/board-posts/b11found/claims`).send({ answer: 'mine' }).expect(404);
+  await s3.post(`${url}/projects/${project.id}/join`).send({}).expect(404);
+  await s3.post(`${url}/challenges/${challenge.id}/submissions`).send({ url: 'https://y.test' }).expect(404);
+  await s3.post(`${url}/submissions/${sub.id}/like`).expect(404);
+  for (const p of ['board-posts/b11ask', `projects/${project.id}`, `challenges/${challenge.id}`]) await s3.get(`${url}/${p}`).expect(404);
+  assert.equal(await db.notification.count({ where: { userId: 's2' } }), before);
+  await s2.get(`${url}/board-posts/b11ask`).expect(200); // the blocker still sees their own
+
+  await s2.delete(`${url}/blocks/s3`).expect(204);
+  await s3.get(`${url}/board-posts/b11ask`).expect(200);
+});

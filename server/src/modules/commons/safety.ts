@@ -16,6 +16,11 @@ export const blockedIds = async (userId: string) => {
   const rows = await db.block.findMany({ where: { OR: [{ userId }, { blockedId: userId }] }, select: { userId: true, blockedId: true } });
   return rows.map((b) => (b.userId === userId ? b.blockedId : b.userId));
 };
+/** `ids` minus anyone blocked either way with `me`: who may still be notified of what `me` does. */
+export const unblocked = async (me: string, ids: string[]) => {
+  const hide = new Set(await blockedIds(me));
+  return ids.filter((id) => !hide.has(id));
+};
 export const blockedEitherWay = async (a: string, b: string) => (await blockedIds(a)).includes(b);
 
 const idParams = z.object({ userId: z.string().min(1) });

@@ -6,6 +6,7 @@ import { addDays, today } from '../../lib/dates.js';
 import { db } from '../../lib/db.js';
 import { HttpError } from '../../lib/http.js';
 import { notify } from '../../lib/notify.js';
+import { blockedEitherWay, unblocked } from './safety.js';
 import { registry, route } from '../../lib/openapi.js';
 import { studentOnly } from './board.js';
 import { personSelect } from './profiles.js';
@@ -104,6 +105,7 @@ const findChallenge = async (id: string, me: AuthUser) => {
   ]);
   if (!c || c.owner.institutionId !== institutionId || (c.hiddenAt && c.ownerId !== me.id && !me.isAdmin))
     throw new HttpError(404, 'NOT_FOUND', 'Challenge not found');
+  if (c.ownerId !== me.id && (await blockedEitherWay(me.id, c.ownerId))) throw new HttpError(404, 'NOT_FOUND', 'Challenge not found');
   return { c, v };
 };
 
@@ -283,7 +285,7 @@ router.put(
     const fresh = ids.filter((id) => !c.winnerIds.includes(id));
     await db.$transaction(async (tx) => {
       await tx.challenge.update({ where: { id: c.id }, data: { winnerIds: ids } });
-      await notify(fresh, 'challenge-winner', { text: `You won "${c.title}"`, challengeId: c.id }, tx);
+      await notify(await unblocked(me.id, fresh), 'challenge-winner', { text: `You won "${c.title}"`, challengeId: c.id }, tx);
     });
     res.json(await challengeView(c.id, me));
   },

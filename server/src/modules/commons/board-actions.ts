@@ -4,6 +4,7 @@ import { db } from '../../lib/db.js';
 import { HttpError } from '../../lib/http.js';
 import { notify } from '../../lib/notify.js';
 import { registry, route } from '../../lib/openapi.js';
+import { unblocked } from './safety.js';
 import { CLOSED, authorOnly, boardPostDetail, findPost, gigDone, helpersOf, isOpen, postDetail, studentOnly } from './board.js';
 
 // CM-03: what people do on a post (SPEC §9.2 actions, §9.6 thanks; PROTO student.html:305-339, :596-599, :630-632).
@@ -86,7 +87,7 @@ router.post(
     if (!p.interests.some((i) => i.userId === userId)) throw new HttpError(422, 'VALIDATION', 'Only someone who is interested can be assigned');
     await db.$transaction(async (tx) => {
       await tx.boardPost.update({ where: { id: p.id }, data: { status: 'assigned', assigneeId: userId } });
-      await notify([userId], 'board-assigned', { text: `You were picked for "${p.title}"`, postId: p.id }, tx);
+      await notify(await unblocked(me.id, [userId]), 'board-assigned', { text: `You were picked for "${p.title}"`, postId: p.id }, tx);
     });
     res.json(await postDetail(p.id, me));
   },
@@ -161,7 +162,7 @@ router.post(
       await tx.boardPost.update({ where: { id }, data: { status: 'returned' } });
       await tx.claim.update({ where: { id: claimId }, data: { state: 'confirmed' } });
       await tx.claim.updateMany({ where: { postId: id, id: { not: claimId } }, data: { state: 'declined' } });
-      await notify([claim.userId], 'board-claim', { text: `Your claim on "${p.title}" was confirmed`, postId: id }, tx);
+      await notify(await unblocked(me.id, [claim.userId]), 'board-claim', { text: `Your claim on "${p.title}" was confirmed`, postId: id }, tx);
     });
     res.json(await postDetail(id, me));
   },
@@ -189,7 +190,7 @@ router.post(
     if (p.thanks.some((t) => t.toId === toId)) throw new HttpError(409, 'CONFLICT', 'You already thanked them for this post');
     await db.$transaction(async (tx) => {
       await tx.thanks.create({ data: { fromId: me.id, toId, postId } });
-      await notify([toId], 'thanks', { text: `You were thanked by ${me.name} for "${p.title}"`, postId }, tx);
+      await notify(await unblocked(me.id, [toId]), 'thanks', { text: `You were thanked by ${me.name} for "${p.title}"`, postId }, tx);
     });
     res.status(201).json(await postDetail(postId, me));
   },

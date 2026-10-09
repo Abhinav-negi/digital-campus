@@ -8,7 +8,7 @@ import { HttpError, pageQuery } from '../../lib/http.js';
 import { notify } from '../../lib/notify.js';
 import { registry, route } from '../../lib/openapi.js';
 import { personCard, personSelect, toCard, viewerOf } from './profiles.js';
-import { blockedIds } from './safety.js';
+import { blockedEitherWay, blockedIds, unblocked } from './safety.js';
 
 // CM-02: the Board (SPEC §9.2, §9.5; PROTO student.html:249-304). No email is ever selected (personSelect has none).
 
@@ -149,6 +149,7 @@ export const findPost = async (id: string, me: AuthUser) => {
   const [viewer, p] = await Promise.all([viewerOf(me.id), db.boardPost.findUnique({ where: { id }, include: { ...detailInclude, author: { select: { ...personSelect, institutionId: true } } } })]);
   if (!p || p.author.institutionId !== viewer.institutionId || (p.hiddenAt && p.authorId !== me.id && !me.isAdmin))
     throw new HttpError(404, 'NOT_FOUND', 'Post not found');
+  if (p.authorId !== me.id && (await blockedEitherWay(me.id, p.authorId))) throw new HttpError(404, 'NOT_FOUND', 'Post not found');
   return { p, viewer: { branchId: viewer.homeClass?.branchId ?? null, on: today() } };
 };
 
@@ -196,7 +197,7 @@ export const gigDone = (p: PostRow, me: AuthUser) =>
   db.$transaction(async (tx) => {
     await tx.boardPost.update({ where: { id: p.id }, data: { status: 'done' } });
     await tx.thanks.create({ data: { fromId: me.id, toId: p.assigneeId!, postId: p.id } });
-    await notify([p.assigneeId!], 'thanks', { text: `${me.name} marked "${p.title}" done and thanked you`, postId: p.id }, tx);
+    await notify(await unblocked(me.id, [p.assigneeId!]), 'thanks', { text: `${me.name} marked "${p.title}" done and thanked you`, postId: p.id }, tx);
   });
 
 /** 403 unless I wrote the post (admins included: moderation is AD-06). */
@@ -363,7 +364,7 @@ const routeToHelpers = async (p: { id: string; kind: string; title: string; tags
   if (!ids.length) return;
   const sent = await db.notification.findMany({ where: { userId: { in: ids }, type: 'board-match', createdAt: { gte: addDays(on, -1) } }, select: { userId: true, createdAt: true } });
   const skip = new Set(sent.filter((n) => sameDay(n.createdAt, on)).map((n) => n.userId));
-  await notify(ids.filter((id) => !skip.has(id)), 'board-match', { text: `A new ${p.kind === 'ask' ? 'Ask' : 'Gig'} you could help with: "${p.title}"`, postId: p.id });
+  await notify(await unblocked(authorId, ids.filter((id) => !skip.has(id))), 'board-match', { text: `A new ${p.kind === 'ask' ? 'Ask' : 'Gig'} you could help with: "${p.title}"`, postId: p.id });
 };
 
 router.get(

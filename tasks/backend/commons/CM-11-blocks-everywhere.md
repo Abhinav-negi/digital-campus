@@ -9,3 +9,8 @@
 - [ ] Test: s2 blocks s3 → s3 can't answer/claim/join/like s2's items or open them by id; s2 gets no notification. QA-01 wall suite stays green.
 
 ## Notes
+- Reused CM-07's `blockedEitherWay` (no new pair helper); added `unblocked(me, ids)` in safety.ts to drop blocked people from notify lists.
+- `findPost`/`findProject`/`findChallenge` now 404 when the owner is blocked either way (skipped for own items), which covers every action and by-id GET through the finders.
+- Third-party notifies (assign, confirm claim, thanks, gig-done, join reply, winners, board-match routing) go through `unblocked`.
+- Test: safety.test.ts "CM-11" (s2 blocks s3: all six actions + three GETs 404, s2 notifications unchanged, unblock restores). typecheck + 179 server tests green.
+- Left: an old answer by a since-blocked person still shows in the blocker's own post detail (card.ts hides it only on the dashboard).

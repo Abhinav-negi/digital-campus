@@ -6,6 +6,7 @@ import { today } from '../../lib/dates.js';
 import { db } from '../../lib/db.js';
 import { HttpError } from '../../lib/http.js';
 import { notify } from '../../lib/notify.js';
+import { blockedEitherWay, unblocked } from './safety.js';
 import { registry, route } from '../../lib/openapi.js';
 import { boardPostDetail, studentOnly } from './board.js';
 import { personCard, personSelect, toCard, viewerOf } from './profiles.js';
@@ -119,6 +120,7 @@ const findProject = async (id: string, me: AuthUser) => {
   ]);
   if (!p || p.owner.institutionId !== institutionId || (p.hiddenAt && p.ownerId !== me.id && !me.isAdmin))
     throw new HttpError(404, 'NOT_FOUND', 'Project not found');
+  if (p.ownerId !== me.id && (await blockedEitherWay(me.id, p.ownerId))) throw new HttpError(404, 'NOT_FOUND', 'Project not found');
   return { p, v };
 };
 
@@ -316,7 +318,7 @@ router.post(
       if (!count) throw new HttpError(409, 'CONFLICT', 'This request was already answered');
       if (state === 'accepted') await tx.projectMember.create({ data: { projectId: p.id, userId: r.userId, role: 'Member' } });
       const text = state === 'accepted' ? `You joined ${p.title}` : `Your request to join ${p.title} was declined`;
-      await notify([r.userId], 'project-join-reply', { text, projectId: p.id }, tx);
+      await notify(await unblocked(me.id, [r.userId]), 'project-join-reply', { text, projectId: p.id }, tx);
     });
     res.json(await projectView(p.id, me));
   },
