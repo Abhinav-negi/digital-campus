@@ -123,8 +123,8 @@ router.get(
 router.post(
   '/forgot',
   rateLimit(30, 60_000),
-  rateLimit(10, 60_000, emailOf),
-  rateLimit(3, WINDOW, emailOf), // R8: 3 mails / 15 min per address
+  rateLimit(3, WINDOW, (req) => `${req.ip}|${emailOf(req)}`), // R8: 3 mails / 15 min per (IP, address)
+  rateLimit(10, 60 * 60_000, emailOf), // cross-IP mail-bomb ceiling; exhausting it needs many IPs and only blocks for the rest of the hour
   route(registry, {
     method: 'post',
     path: '/auth/forgot',

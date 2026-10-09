@@ -138,8 +138,8 @@ router.post(
 
 router.post(
   '/invites/resend',
+  classAccess('id', 'own'), // authenticate first so perUser keys on the user, not the shared lab IP
   perUser(20, 3_600_000),
-  classAccess('id', 'own'),
   writable,
   route(registry, {
     method: 'post',
