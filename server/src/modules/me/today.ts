@@ -30,7 +30,7 @@ const attendanceRow = z
   })
   .meta({ id: 'TodayAttendance' });
 const unreadPost = z
-  .object({ id: z.string(), kind: z.enum(['announcement', 'assignment']), title: z.string(), createdAt: z.date(), author: ref })
+  .object({ id: z.string(), kind: z.enum(['announcement', 'assignment']), title: z.string(), /** First 200 chars, for the 2-line preview. */ body: z.string(), createdAt: z.date(), author: ref })
   .meta({ id: 'UnreadPost' });
 // CS-13: the student CR tag reads change.author.isCr; the clash banner reads clashWith[].teacher.
 const todayItem = scheduleItem
@@ -127,7 +127,7 @@ todayRouter.get(
       upcoming(me, 14),
       db.post.findMany({
         where: { targets: { some: { class: { members: { some: { userId: me.id } } } } }, seen: { none: { userId: me.id } } },
-        select: { id: true, kind: true, title: true, createdAt: true, author: { select: { id: true, name: true } } },
+        select: { id: true, kind: true, title: true, body: true, createdAt: true, author: { select: { id: true, name: true } } },
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         take: 20,
       }),
@@ -162,7 +162,7 @@ todayRouter.get(
       items,
       attendance: att,
       upcoming: up,
-      unreadPosts: unread,
+      unreadPosts: unread.map((p) => ({ ...p, body: p.body.slice(0, 200) })),
       codeOpen: open ? { sessionId: open.id, subject: open.subject } : null,
       empty: { timetable: slots === 0, subjects: subjects === 0 },
     });

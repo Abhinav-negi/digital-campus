@@ -34,7 +34,7 @@ function Commons() {
     <>
       <Link to="/s/commons" className="card tint click" style={{ display: 'block' }}>
         <div className="eyebrow">{{ answer: 'New answer on your Ask', 'join-requests': 'Join requests', ask: 'Matching your skills · unanswered', project: 'Matches your skills' }[c.type]}</div>
-        {c.byline && <div className="row" style={{ margin: 'var(--s1) 0' }}><Avatar user={c.byline} size="sm" /><span className="small">{c.byline.name}</span></div>}
+        {c.byline && <div className="row" style={{ margin: 'var(--s1) 0' }}><Avatar user={c.byline} size="sm" /><span className="small">{c.byline.name}</span>{c.byline.label && <span className={c.byline.otherBranch ? 'pl xb' : 'pl'}>{c.byline.label}</span>}</div>}
         <h4>{c.title}</h4><p className="small muted clamp">{c.body}</p>
       </Link>
       {items.length > 1 && (
@@ -119,6 +119,7 @@ export function Component() {
           <Link key={p.id} to="/s/class/posts" className="card click" style={{ display: 'block' }}>
             <div className="row"><Avatar user={p.author} size="sm" /><div className="grow"><b>{p.author.name}</b> <span className="small muted">· {rel(p.createdAt)}</span></div><Chip tone="vio">New</Chip></div>
             <h4 style={{ marginTop: 'var(--s2)' }}>{p.title}</h4>
+            <p className="small muted clamp">{p.body}</p>
           </Link>
         ))}</div> : <Empty text="You're all caught up." />}
       </Sec>

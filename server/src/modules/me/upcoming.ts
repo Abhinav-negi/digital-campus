@@ -15,6 +15,10 @@ export const upcomingItem = z
     title: z.string(),
     date: z.iso.date(),
     classId: z.string().nullable(),
+    /** Class name for the row (null for a reminder). */
+    className: z.string().nullable(),
+    /** True for a teacher's own reminder ("Only you"). */
+    private: z.boolean(),
     /** The board item, post or reminder id. */
     ref: z.string(),
   })
@@ -52,15 +56,20 @@ export const upcoming = async (user: AuthUser, days: number): Promise<UpcomingIt
     user.role === 'staff' ? db.reminder.findMany({ where: { teacherId: user.id, date: { gte: from, lte: to } } }) : [],
   ]);
 
+  const names = new Map((await db.class.findMany({ where: { id: { in: classIds } }, select: { id: true, name: true } })).map((c) => [c.id, c.name]));
+  const cn = (id: string) => names.get(id) ?? null;
   const items: UpcomingItem[] = [];
   for (const b of board)
     if (!mySubjects || !b.subjectId || mySubjects.has(b.subjectId) || leads.has(b.classId))
-      items.push({ kind: b.kind as 'exam' | 'deadline', title: b.title, date: iso(b.date!), classId: b.classId, ref: b.id });
+      items.push({ kind: b.kind as 'exam' | 'deadline', title: b.title, date: iso(b.date!), classId: b.classId, className: cn(b.classId), private: false, ref: b.id });
   for (const p of posts) {
     const date = iso(today(undefined, p.dueAt!));
-    if (date >= iso(from) && date <= iso(to)) items.push({ kind: 'assignment', title: p.title, date, classId: p.targets.find((t) => classIds.includes(t.classId))!.classId, ref: p.id });
+    if (date >= iso(from) && date <= iso(to)) {
+      const classId = p.targets.find((t) => classIds.includes(t.classId))!.classId;
+      items.push({ kind: 'assignment', title: p.title, date, classId, className: cn(classId), private: false, ref: p.id });
+    }
   }
-  for (const r of reminders) items.push({ kind: 'reminder', title: r.title, date: iso(r.date), classId: null, ref: r.id });
+  for (const r of reminders) items.push({ kind: 'reminder', title: r.title, date: iso(r.date), classId: null, className: null, private: true, ref: r.id });
   return items.sort((a, b) => a.date.localeCompare(b.date));
 };
 

@@ -73,6 +73,7 @@ test('files: own uploads only, read back as a presigned URL', async () => {
   await cr.post(url).send({ kind: 'file', title: 'Lab manual', fileKey: 'uploads/s1/../t1/abc-manual.pdf' }).expect(422);
   const f = (await cr.post(url).send({ kind: 'file', title: 'Lab manual', fileKey: 'uploads/s1/abc-manual.pdf', fileName: 'manual.pdf' }).expect(201)).body;
   assert.equal(f.fileName, 'manual.pdf');
+  assert.ok(!Number.isNaN(Date.parse(f.createdAt)));
   assert.match(f.fileUrl, /\/files\/local\/uploads\/s1\/abc-manual\.pdf\?exp=\d+&sig=/);
   // The class teacher edits the CR's file item without re-uploading it.
   const v2 = (await (await agent('teacher')).patch(`${url}/${f.id}`).send({ title: 'Web Lab manual v2', fileKey: 'uploads/s1/abc-manual.pdf' }).expect(200)).body;

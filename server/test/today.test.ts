@@ -48,6 +48,7 @@ test('student Today: unread posts shrink once seen', async () => {
   const p = await db.post.create({ data: { id: 'p1', authorId: 't2', kind: 'announcement', title: 'Hello', body: 'x', targets: { create: { classId: 'c1' } } } });
   const s1 = await agent('student');
   assert.deepEqual(ids((await s1.get('/api/v1/me/today').expect(200)).body.unreadPosts), [p.id]);
+  assert.equal((await s1.get('/api/v1/me/today').expect(200)).body.unreadPosts[0].body, 'x');
   await s1.post(`/api/v1/posts/${p.id}/seen`).expect(204);
   assert.deepEqual((await s1.get('/api/v1/me/today').expect(200)).body.unreadPosts, []);
 });
@@ -87,6 +88,10 @@ test('upcoming: windows filter, staff see only theirs, reminders are private', a
   const get = async (a: typeof t2, q = '') => ((await a.get(`/api/v1/me/upcoming${q}`).expect(200)).body.items as { ref: string; kind: string }[]).map((i) => i.ref);
 
   const student = await agent('student');
+  const full = (await t2.get('/api/v1/me/upcoming').expect(200)).body.items as { ref: string; className: string | null; private: boolean }[];
+  const rem = full.find((i) => i.ref === mine.id)!;
+  assert.deepEqual([rem.className, rem.private], [null, true]);
+  assert.ok(full.some((i) => !i.private && i.className));
   assert.deepEqual(await get(student), ['e0', 'e3', 'a5', 'd10']); // 14 days, soonest first, no reminder
   assert.deepEqual(await get(student, '?days=30'), ['e0', 'e3', 'a5', 'd10', 'e20']);
   await student.get('/api/v1/me/upcoming?days=7').expect(422);

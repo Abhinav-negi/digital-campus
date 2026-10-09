@@ -13,3 +13,8 @@ Additive fields only; `npm run gen:api`.
 - [ ] Each field present in the API (test) and rendered; server + web tests, typecheck, build green.
 
 ## Notes
+- Done: UnreadPost.body (sliced to 200 in today.ts), UpcomingItem.className/private (one db.class lookup in upcoming.ts), BoardItem.createdAt. All additive; schema.d.ts regenerated.
+- Commons byline already carried `label` (Byline = personCard pick); only the web pill was missing (Today.tsx, same `pl`/`pl xb` classes as BoardCard).
+- Teacher Upcoming now reads className/private instead of a client-side class lookup; teacher Today 'Coming up' rows show it too.
+- Tests: today.test (body), today.test upcoming (className/private), board.test (createdAt), card.test (byline.label). typecheck+npm test+build green.
+

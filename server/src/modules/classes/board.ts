@@ -37,6 +37,7 @@ const boardItem = z
     /** Short-lived download link (presignGet) when the item has a file. */
     fileUrl: z.string().nullable(),
     author: person,
+    createdAt: z.string(),
     updatedAt: z.string(),
   })
   .meta({ id: 'BoardItem' });
@@ -72,6 +73,7 @@ const present = async (b: Row) => ({
   fileName: b.fileName,
   fileUrl: b.fileKey ? await presignGet(b.fileKey) : null,
   author: b.author,
+  createdAt: b.createdAt,
   updatedAt: b.updatedAt,
 });
 

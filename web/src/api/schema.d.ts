@@ -9967,6 +9967,7 @@ export interface components {
                 id: string;
                 name: string;
             };
+            createdAt: string;
             updatedAt: string;
         };
         HistoryEntry: {
@@ -10332,6 +10333,8 @@ export interface components {
             /** Format: date */
             date: string;
             classId: string | null;
+            className: string | null;
+            private: boolean;
             ref: string;
         };
         StudentToday: {
@@ -10431,6 +10434,7 @@ export interface components {
             /** @enum {string} */
             kind: "announcement" | "assignment";
             title: string;
+            body: string;
             /** Format: date-time */
             createdAt: string;
             author: {

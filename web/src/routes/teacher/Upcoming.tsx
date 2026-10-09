@@ -4,7 +4,7 @@ import { Empty } from '../../ui/Empty';
 import { Icon } from '../../ui/Icon';
 import { Sheet } from '../../ui/Sheet';
 import { toast } from '../../ui/Toast';
-import { useAddReminder, useTeachingClasses, useUpcoming } from './queries';
+import { useAddReminder, useUpcoming } from './queries';
 
 const KIND = { exam: ['questions', 'Exam'], deadline: ['danger', 'Deadline'], assignment: ['open', 'Assignment'], reminder: ['focus', 'Private reminder'] } as const;
 const iso = (d: Date) => d.toLocaleDateString('sv');
@@ -14,7 +14,6 @@ const weekIdx = (s: string) => Math.floor((dayNum(s) + 3) / 7); // epoch day 0 w
 // PROTO teacher.html:440-463, 473-483.
 export function Component() {
   const { data: items, error } = useUpcoming();
-  const classes = useTeachingClasses().data ?? [];
   const [adding, setAdding] = useState(false);
   const today = iso(new Date()), cur = weekIdx(today);
   const groups = new Map<number, NonNullable<typeof items>>();
@@ -33,7 +32,7 @@ export function Component() {
           const d = new Date(i.date + 'T00:00'), [b, l] = KIND[i.kind];
           return (
             <div key={i.ref} className="item"><div className="dateblk"><b>{d.getDate()}</b><span className="tiny muted">{d.toLocaleDateString('en-GB', { month: 'short' })}</span></div>
-              <div className="grow"><h4>{i.title}</h4><div className="tiny muted">{i.classId ? classes.find((c) => c.id === i.classId)?.name ?? 'Class' : 'Only you'} · {d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}</div></div>
+              <div className="grow"><h4>{i.title}</h4><div className="tiny muted">{i.private ? 'Only you' : i.className ?? 'Class'} · {d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}</div></div>
               {i.date === today ? <Badge kind="warn" plain>Today</Badge> : <span className="tiny muted">{rel(i.date)}</span>}<Badge kind={b}>{l}</Badge></div>
           );
         })}</div></div></div>

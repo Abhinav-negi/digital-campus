@@ -174,5 +174,5 @@
 | [ST-08c](tasks/frontend/student/ST-08c-pick-winners.md) | Owner picks challenge winners | ST-08b, CM-05 | ✅ | ST-08b (S11) |
 | [AD-09](tasks/backend/admin/AD-09-user-ban-state.md) | Ban state on AdminUser (state-aware Ban/Unban) | AD-06, AF-02 | ✅ | AF-02 (S12) |
 | [AD-10](tasks/backend/admin/AD-10-direct-hide.md) | Admin direct hide + `includeHidden` lists | AD-06, AF-04a | ✅ | AF-04a (S12) |
-| [CS-17](tasks/backend/class-space/CS-17-parity-fields.md) | Parity fields: post body preview, byline label, upcoming class name, file age | CS-11, CM-08 | 🟨 | QA-03a (S12) |
-| [FS-10](tasks/frontend/shared/FS-10-parity-polish.md) | Parity polish: history, Me projects, sheet footer, TipSheet trigger | QA-03a | ⬜ | QA-03a (S12) |
+| [CS-17](tasks/backend/class-space/CS-17-parity-fields.md) | Parity fields: post body preview, byline label, upcoming class name, file age | CS-11, CM-08 | ✅ | QA-03a (S12) |
+| [FS-10](tasks/frontend/shared/FS-10-parity-polish.md) | Parity polish: history, Me projects, sheet footer, TipSheet trigger | QA-03a | 🟨 | QA-03a (S12) |

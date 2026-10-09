@@ -15,6 +15,7 @@ test('Riya gets the answer, join-request and project cards (every skill-matching
   assert.equal(items[2].title, 'DSA Study Circle');
   assert.equal(items[0].refId, 'bp14');
   assert.equal(items[0].byline.id, (await db.answer.findUniqueOrThrow({ where: { id: 'an5' } })).authorId);
+  assert.match(items[0].byline.label, /\S/); // "ME · 2nd year" pill on Today
   assert.equal(items[1].refId, 'pr1');
   assert.match(items[1].title, /^2 people want to join Campus Events/);
 });

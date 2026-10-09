@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api, unwrap } from '../../../api/client';
 import type { components } from '../../../api/schema';
-import { fmt } from '../../../lib/dates';
+import { fmt, rel } from '../../../lib/dates';
 import { Badge, Chip } from '../../../ui/Badge';
 import { Icon } from '../../../ui/Icon';
 import { CrWillAdd } from '../../../ui/Empty';
@@ -131,7 +131,7 @@ export function Board({ classId, termId, current, editing, staff }: { classId: s
         {b.files.length ? <div className="card"><div className="list">{b.files.map((f) => (
           <div className="row" key={f.id}>
             <span className="ico"><Icon name="file" /></span>
-            <div className="grow">{f.title}<div className="small muted">{f.fileName}</div></div>
+            <div className="grow">{f.title}<div className="small muted">{f.fileName} · {rel(f.createdAt.slice(0, 10))}</div></div>
             {f.fileUrl && <a className="btn ghost sm" href={f.fileUrl} target="_blank" rel="noreferrer">Open</a>}
             {del?.(f.id)}
           </div>))}</div></div> : empty('files')}

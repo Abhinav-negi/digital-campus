@@ -75,7 +75,7 @@ export function Component() {
             const d = new Date(i.date + 'T00:00'), [b, l] = KIND[i.kind];
             return (
               <div key={i.ref} className="item"><div className="dateblk"><b>{d.getDate()}</b><span className="tiny muted">{d.toLocaleDateString('en-GB', { month: 'short' })}</span></div>
-                <div className="grow"><h4>{i.title}</h4><div className="tiny muted">{fmt(i.date)}</div></div>
+                <div className="grow"><h4>{i.title}</h4><div className="tiny muted">{i.private ? 'Only you' : i.className} · {fmt(i.date)}</div></div>
                 <span className="tiny muted">{rel(i.date)}</span>
                 <Badge kind={b}>{l}</Badge></div>
             );
