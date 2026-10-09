@@ -3,12 +3,12 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { api, unwrap } from '../../../api/client';
 import { Chip } from '../../../ui/Badge';
 import { Empty } from '../../../ui/Empty';
-import { BoardCard } from './BoardCard';
+import { BoardCard, type Moderation } from './BoardCard';
 
 type Kind = 'all' | 'ask' | 'gig' | 'market' | 'lf';
 const CHIPS: [Kind, string][] = [['all', 'All'], ['ask', 'Ask'], ['gig', 'Gigs'], ['market', 'Market'], ['lf', 'Lost & Found']];
 
-export function Board({ onOpen }: { onOpen?: (id: string) => void }) {
+export function Board({ onOpen, moderation }: { onOpen?: (id: string) => void; moderation?: Moderation }) {
   const [q, setQ] = useState('');
   const [dq, setDq] = useState('');
   const [kind, setKind] = useState<Kind>('all');
@@ -42,7 +42,7 @@ export function Board({ onOpen }: { onOpen?: (id: string) => void }) {
         {feed.error ? <p className="muted">{feed.error.message}</p>
           : !feed.data ? <p className="muted">Loading…</p>
           : !items.length ? <Empty seed="board" text="Nothing here yet. Be the first to post." />
-          : <div className="grid grid-2">{items.map((p) => <BoardCard key={p.id} p={p} onOpen={onOpen} />)}</div>}
+          : <div className="grid grid-2">{items.map((p) => <BoardCard key={p.id} p={p} onOpen={onOpen} mod={moderation?.({ type: 'board-post', id: p.id, title: p.title, text: p.body, authorId: p.author.id })} />)}</div>}
         {feed.hasNextPage && (
           <div className="row" style={{ justifyContent: 'center', marginTop: 'var(--s3)' }}>
             <button className="btn ghost" disabled={feed.isFetchingNextPage} onClick={() => feed.fetchNextPage()}>Show more</button>

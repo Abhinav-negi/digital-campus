@@ -1,7 +1,12 @@
+import type { ReactNode } from 'react';
 import type { components } from '../../../api/schema';
 import { Avatar } from '../../../ui/Avatar';
 import { Icon, type IconName } from '../../../ui/Icon';
 import { rel } from '../../../lib/dates';
+
+/** AF-04a: admin moderation row. Students never pass `moderation`, so nothing changes for them. */
+export type ModTarget = { type: 'board-post' | 'project' | 'challenge' | 'profile'; id: string; title: string; text: string | null; authorId: string };
+export type Moderation = (t: ModTarget) => ReactNode;
 
 export type Post = components['schemas']['BoardPostCard'];
 
@@ -12,7 +17,7 @@ const NOUN = { ask: 'answer', gig: 'interested', found: 'claim' } as const;
 const price = (p: Post) => (p.kind === 'gig' ? `₹${p.price} · ${p.priceType === 'negotiable' ? 'negotiable' : 'fixed'}` : p.price === 0 ? 'Free' : `₹${p.price}`);
 
 /** `onOpen` is the hook ST-07b uses to open the post sheet. */
-export function BoardCard({ p, onOpen }: { p: Post; onOpen?: (id: string) => void }) {
+export function BoardCard({ p, onOpen, mod }: { p: Post; onOpen?: (id: string) => void; mod?: ReactNode }) {
   const [label, icon] = KIND[p.kind];
   const closed = CLOSED.includes(p.status);
   const noun = p.kind === 'ask' || p.kind === 'gig' || p.kind === 'found' ? NOUN[p.kind] : undefined;
@@ -39,6 +44,7 @@ export function BoardCard({ p, onOpen }: { p: Post; onOpen?: (id: string) => voi
           {p.author.otherBranch && <span className="pl xb">Other branch</span>}
           {noun && <span className="chip">{p.count} {noun}{p.count !== 1 && noun !== 'interested' ? 's' : ''}</span>}
         </div>
+        {mod}
       </div>
     </div>
   );

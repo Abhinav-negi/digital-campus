@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { api, unwrap } from '../../../../api/client';
 import type { components } from '../../../../api/schema';
+import type { Moderation } from '../BoardCard';
 import { Empty } from '../../../../ui/Empty';
 import { Icon } from '../../../../ui/Icon';
 import { rel } from '../../../../lib/dates';
@@ -12,7 +13,7 @@ export const Winners = ({ w }: { w: Chal['winners'] }) => {
   return names ? <span className="chip vio"><Icon name="star" size={16} /> Winner: {names}</span> : null;
 };
 
-export function Challenges({ onOpen, onNew }: { onOpen: (id: string) => void; onNew: () => void }) {
+export function Challenges({ onOpen, onNew, moderation }: { onOpen: (id: string) => void; onNew: () => void; moderation?: Moderation }) {
   const q = useQuery({ queryKey: ['commons', 'challenges'], queryFn: () => unwrap(api.GET('/commons/challenges')) });
   const list = q.data?.items.filter((c) => c != null);
   return (
@@ -29,6 +30,7 @@ export function Challenges({ onOpen, onNew }: { onOpen: (id: string) => void; on
             <p className="small muted clamp" style={{ margin: 'var(--s1) 0' }}>{c.description}</p>
             <div className="small muted">{c.submissionCount} submission{c.submissionCount === 1 ? '' : 's'} · by {c.owner.name}</div>
             {c.winners.length > 0 && <div style={{ marginTop: 'var(--s1)' }}><Winners w={c.winners} /></div>}
+            {moderation?.({ type: 'challenge', id: c.id, title: c.title, text: c.description, authorId: c.owner.id })}
           </div>))}</div>
           : <Empty seed="challenges" text="No challenges yet. Start one." />}
     </>

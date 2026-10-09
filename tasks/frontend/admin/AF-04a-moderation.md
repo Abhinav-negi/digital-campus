@@ -9,6 +9,11 @@
 **Visual rule:** copy the PROTO markup structure and class names; use DESIGN.md tokens only. No screenshots here: QA-03 does one visual pass at the end.
 
 ## Done when
-- [ ] Hiding a reported post removes it from the student feed.
+- [x] Hiding a reported post removes it from the student feed.
 
 ## Notes
+- Student cards got an optional `moderation`/`mod` prop (Board, BoardCard, BuildPage, ProjectCard, Challenges, People); `ModTarget`/`Moderation` types live in student/commons/BoardCard.tsx. Students unchanged.
+- API gap: no direct hide (only POST /admin/reports/{id} action hide, so Hide needs an open report) and no admin listing of hidden items (feeds filter hiddenAt:null even for admins). Hidden items are indexed via Inbox reports state=hidden + GET detail (admins may read hidden); Unhide uses /admin/commons/{type}/{id}/unhide.
+- Live: hid bp15 via rp3 -> student feed 1->0; admin feed also 0 (no hidden flag in any list); unhide -> back. rp3 restored to open. No data created.
+- Conversations and Featured tabs: placeholder "Coming in AF-04b."
+

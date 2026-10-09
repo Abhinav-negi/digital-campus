@@ -6,7 +6,7 @@ export const adminRoutes: RouteObject[] = [
   { index: true, lazy: () => import('./Inbox') }, // AF-01 Inbox
   { path: 'people', lazy: () => import('./people') }, // AF-02
   { path: 'classes/*', lazy: soon }, // AF-03
-  { path: 'commons/*', lazy: soon }, // AF-04a
+  { path: 'commons/*', lazy: () => import('./commons/CommonsAdmin') }, // AF-04a
   { path: 'school/*', lazy: () => import('./School') }, // AF-05
   { path: 'audit', lazy: () => import('./Audit') }, // AF-05
   { path: '*', lazy: soon },

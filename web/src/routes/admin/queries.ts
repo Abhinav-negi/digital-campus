@@ -103,3 +103,17 @@ export function usePeopleMutations() {
     remove: useMutation({ mutationFn: (id: string) => unwrap(api.DELETE('/admin/users/{id}', p(id))), onSuccess: done }),
   };
 }
+
+// AF-04a Commons moderation (AD-06). Hide is a report action: the API has no direct hide.
+export type ModType = 'board-post' | 'project' | 'challenge' | 'profile';
+export function useCommonsMod() {
+  const qc = useQueryClient();
+  const done = () => { qc.invalidateQueries({ queryKey: ['commons'] }); qc.invalidateQueries({ queryKey: ['admin'] }); };
+  const path = (type: ModType, id: string) => ({ params: { path: { type, id } } });
+  return {
+    edit: useMutation({ mutationFn: ({ type, id, ...body }: { type: ModType; id: string; title?: string; body?: string | null; description?: string; headline?: string }) => unwrap(api.PATCH('/admin/commons/{type}/{id}', { ...path(type, id), body })), onSuccess: done }),
+    hide: useMutation({ mutationFn: (reportId: string) => unwrap(api.POST('/admin/reports/{id}', { params: { path: { id: reportId } }, body: { action: 'hide' } })), onSuccess: done }),
+    unhide: useMutation({ mutationFn: ({ type, id }: { type: ModType; id: string }) => unwrap(api.POST('/admin/commons/{type}/{id}/unhide', path(type, id))), onSuccess: done }),
+    remove: useMutation({ mutationFn: ({ type, id }: { type: ModType; id: string }) => unwrap(api.DELETE('/admin/commons/{type}/{id}', path(type, id))), onSuccess: done }),
+  };
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api, unwrap } from '../../../../api/client';
+import type { Moderation } from '../BoardCard';
 import { Empty } from '../../../../ui/Empty';
 import { Icon } from '../../../../ui/Icon';
 import { Challenges } from './Challenges';
@@ -11,7 +12,7 @@ import { NewProject } from './NewProject';
 import { ProjectCard } from './Projects';
 import { ProjectSheet } from './ProjectSheet';
 
-export function BuildPage() {
+export function BuildPage({ moderation }: { moderation?: Moderation } = {}) {
   const [openId, setOpenId] = useState<string>();
   const [creating, setCreating] = useState(false);
   const [chal, setChal] = useState<string>();
@@ -21,6 +22,7 @@ export function BuildPage() {
   if (!d) return <p className="muted">{q.error ? q.error.message : 'Loading…'}</p>;
 
   // Generated array items are typed nullable; they never are.
+  const mod = (p: NonNullable<typeof d>['all'][number] & {}) => moderation?.({ type: 'project', id: p.id, title: p.title, text: p.description, authorId: p.members.find((m) => m.role === 'Owner')?.id ?? '' });
   const featured = d.featured.filter((p) => p != null), all = d.all.filter((p) => p != null);
   return (
     <>
@@ -29,12 +31,12 @@ export function BuildPage() {
         <h3>Featured and community</h3>
         <button type="button" className="btn primary" onClick={() => setCreating(true)}><Icon name="plus" size={16} /> New project</button>
       </div>
-      {featured.length ? <div className="strip">{featured.map((p) => <ProjectCard key={p.id} p={p} feat onOpen={setOpenId} />)}</div>
+      {featured.length ? <div className="strip">{featured.map((p) => <ProjectCard key={p.id} p={p} feat onOpen={setOpenId} mod={mod(p)} />)}</div>
         : <Empty seed="build" text="Nothing featured yet." />}
       <h3 style={{ margin: 'var(--s5) 0 var(--s3)' }}>All projects</h3>
-      {all.length ? <div className="grid grid-2">{all.map((p) => <ProjectCard key={p.id} p={p} onOpen={setOpenId} />)}</div>
+      {all.length ? <div className="grid grid-2">{all.map((p) => <ProjectCard key={p.id} p={p} onOpen={setOpenId} mod={mod(p)} />)}</div>
         : <Empty seed="projects" text="No other projects yet. Start one." />}
-      <Challenges onOpen={setChal} onNew={() => setNewChal(true)} />
+      <Challenges onOpen={setChal} onNew={() => setNewChal(true)} moderation={moderation} />
       {openId && <ProjectSheet id={openId} onClose={() => setOpenId(undefined)} />}
       {chal && <ChallengeSheet id={chal} onClose={() => setChal(undefined)} />}
       {newChal && <NewChallenge onClose={() => setNewChal(false)} onCreated={setChal} />}

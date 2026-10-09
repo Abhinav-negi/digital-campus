@@ -9,6 +9,7 @@ import { FormSheet } from '../../../../ui/FormSheet';
 import { Icon } from '../../../../ui/Icon';
 import { Sheet } from '../../../../ui/Sheet';
 import { toast } from '../../../../ui/Toast';
+import type { Moderation } from '../BoardCard';
 import { ReportSheet } from '../ReportSheet';
 
 type Card = components['schemas']['PersonCard'];
@@ -18,7 +19,7 @@ const AV_LABEL: Record<Avail, string> = { open: 'Open', questions: 'Questions on
 const day = (iso: string) => new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 const place = (p: Pick<Card, 'label' | 'branch' | 'year'>) => p.label ?? [p.branch?.code, p.year && `Year ${p.year}`].filter(Boolean).join(' · ');
 
-export function People() {
+export function People({ moderation }: { moderation?: Moderation } = {}) {
   const [q, setQ] = useState('');
   const [dq, setDq] = useState('');
   const [av, setAv] = useState<Avail | ''>('');
@@ -78,6 +79,7 @@ export function People() {
                 {u.helpsJuniors && <Chip tone="vio">Helps juniors</Chip>}
                 {u.skills.slice(0, 3).map((s) => <Chip key={s}>{s}</Chip>)}
               </div>
+              {moderation?.({ type: 'profile', id: u.id, title: u.name, text: u.headline, authorId: u.id })}
             </div>))}</div>}
         {feed.hasNextPage && (
           <div className="row" style={{ justifyContent: 'center', marginTop: 'var(--s3)' }}>

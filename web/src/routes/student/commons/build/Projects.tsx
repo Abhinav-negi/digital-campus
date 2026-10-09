@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, unwrap } from '../../../../api/client';
 import type { components } from '../../../../api/schema';
@@ -22,7 +23,7 @@ export function JoinCta({ p, cls = 'primary' }: { p: Pick<Card, 'id' | 'me'>; cl
 
 export const Roles = ({ roles }: { roles: string[] }) => <div className="fl">{roles.map((r) => <span key={r} className="chip">{r}</span>)}</div>;
 
-export function ProjectCard({ p, feat, onOpen }: { p: Card; feat?: boolean; onOpen: (id: string) => void }) {
+export function ProjectCard({ p, feat, onOpen, mod }: { p: Card; feat?: boolean; onOpen: (id: string) => void; mod?: ReactNode }) {
   return (
     <div className={feat ? 'card click tint' : 'card click'} role="button" tabIndex={0} onClick={() => onOpen(p.id)}
       onKeyDown={(e) => e.key === 'Enter' && onOpen(p.id)}>
@@ -34,6 +35,7 @@ export function ProjectCard({ p, feat, onOpen }: { p: Card; feat?: boolean; onOp
         <div className="avatars">{p.members.slice(0, 4).map((m) => <Avatar key={m.id} user={m} size="sm" />)}</div>
         <span className="small muted">{p.members.length} on the team</span>
       </div>
+      {mod}
     </div>
   );
 }
