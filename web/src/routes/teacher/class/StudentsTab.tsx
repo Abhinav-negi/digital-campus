@@ -64,7 +64,7 @@ export function StudentsTab({ classId, canEdit }: { classId: string; canEdit: bo
       </div>
       <div className="card">{all.length ? (
         <div className="list">{all.map((s) => (
-          <div key={s.id} className="row wrap">
+          <div key={s.id} className="item wrap">
             <Avatar user={s} size="sm" />
             <div className="grow"><b>{s.name}</b> {s.isCR && <Badge kind="questions">CR</Badge>}
               {s.studentIdNo && <div className="tiny muted">{s.studentIdNo} · {s.email}</div>}</div>

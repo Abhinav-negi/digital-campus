@@ -83,7 +83,7 @@ export function AppShell({ personality, nav, railFooter, fab, isAdmin, onBell, c
         </aside>
         <main className="main">
           <div className="topbar">
-            <button type="button" className="icon-btn bell" aria-label={unread ? `Notifications, ${unread} unread` : 'Notifications'} onClick={onBell ?? (personality === 'student' ? undefined : () => setBellOpen(true))}>
+            <button type="button" className="icon-btn bell" aria-label={unread ? `Notifications, ${unread} unread` : 'Notifications'} onClick={onBell ?? (() => setBellOpen(true))}>
               <Icon name="bell" />{unread > 0 && <b>{unread}</b>}
             </button>
           </div>

@@ -44,3 +44,34 @@ Method: headless Chrome, real login, app (Vite :5173, seeded DB) vs PROTO (`digi
 - Commons subtitle "Every student here..." and the students-only privacy line (ARCH students-only Commons).
 - Teacher class Board: class teacher and admin get Edit (TE-05a); subject teachers see the read-only line as in PROTO.
 - Sheet close (x) button, "Other branch" meaning kept as a violet pill (now carries the label).
+
+# QA-03b (second pass)
+
+Method as above (headless Chrome, real login, 1280 and 390, app vs PROTO; side-by-side composites).
+
+## Screens checked
+Landing; student Class Posts / My attendance / Board, Commons Board + People, Me (desktop + mobile); teacher class Board / Posts / Students / Attendance / Settings (desktop + mobile); admin Classes / Commons / School (no PROTO twin: sanity check, no overflow at 390); sheets at 390: bell, class post, Commons post, new Commons post, project, person, ticket (Contact admin). Also all of the above for horizontal overflow: none. Not checked: attendance code sheet (no live session at run time), Import sheet, teacher composer after the footer change (CSS-only, same rule).
+S12 re-check: Filed 1-10 (item 6 "My projects" now cards; 7-10 still open, see QA-03a list), CS-17/FS-10 sticky footer (moved, below), bell sheet (teacher/admin ok, student was dead, fixed), /403 page ok, Me "Log out" ok, WeekAhead 7 columns ok, teacher Upcoming 14-day list with clash "Keep mine"/"..." ok.
+
+## Differences and fixed (web/src)
+| Difference | Fix |
+|---|---|
+| Sheet footer rule only in teacher.css (student sheets scrolled the submit button away) | `.sheet .actions` moved to `styles/style.css`; `.sheet form > .btn.block:last-child` sticky for FormSheet |
+| Student bell did nothing on click (PROTO opens the notification sheet) | `ui/AppShell.tsx`: bell opens the sheet for every role |
+| Student Posts: no avatar next to teacher, due chip "Due 13 Oct" orange always (PROTO: avatar, "Due in 4 days", orange only within 2 days) | `student/class/Posts.tsx` |
+| Teacher class Posts: kind as plain text, due chip row (PROTO: kind badge, "due Tue 13 Oct" in the header line) | `teacher/class/PostsTab.tsx` |
+| Teacher Students rows at 390: name squeezed to one word per line (`.row .grow` has no basis) | `teacher/class/StudentsTab.tsx` row now `item wrap` like PROTO |
+| Teacher Upcoming heading "Your classes - next 14 days" wrapped into a 5-col grid (my shared `.week` rule from QA-03a leaked onto `h3.week`) | `h3.week { display:block }` in `styles/style.css` |
+
+## Filed (QA-03b)
+1. **Student ID on Me header** - PROTO "CSE . 2nd year . 25CSEA001"; app omits it. Task "Me: show student ID" - `student/me/MePage.tsx` (+ `studentIdNo` on /me if absent).
+2. **Teacher class Board layout** - PROTO teacher board is a read-only card list (Notices with Pinned chip, Exams, Deadlines, Syllabus); app reuses the student board (timetable, Edit). Decide whether to keep (TE-05a reuse) or add a teacher read-only layout - `teacher/class/BoardTab.tsx`. Cosmetic.
+3. **Admin class cards at 390** - title wraps beside the "No timetable / 2 invited" chips; put chips on their own line - `admin/classes/List.tsx` (small, CSS).
+4. **Student attendance-code sheet** not compared (needs a live session); QA pass during a class slot - `student/class/CheckIn.tsx`.
+5. **Student Exams list rows** are ~6px taller than PROTO (`.list` padding) - cosmetic, `styles/student.css`.
+
+## Intentional (D-ref)
+- Teacher Students: extra "Remove" button; Settings: "Start next semester" and teacher search for hand-over (TE-06; PROTO has e-mail hand-over).
+- Admin pages (Classes/Commons/School/Audit): rebuilt for D6/D10, no PROTO twin; "Correct attendance" link, moderation buttons (Edit/Hide/Delete/Ban author).
+- 44px top bar with the bell above page headers on every role (D-notifications); "Admins can see Commons activity" note on Commons.
+- Teacher Upcoming: "Keep mine" / "..." clash actions (D11).

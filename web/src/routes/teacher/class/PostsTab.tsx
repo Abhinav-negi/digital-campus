@@ -1,5 +1,6 @@
 import { Empty } from '../../../ui/Empty';
-import { Chip } from '../../../ui/Badge';
+import { Badge } from '../../../ui/Badge';
+import { fmt } from '../../../lib/dates';
 import { Icon } from '../../../ui/Icon';
 import { toast } from '../../../ui/Toast';
 import { rel } from '../../student/class/PostSheet';
@@ -17,11 +18,10 @@ export function PostsTab({ classId, userId, onNew }: { classId: string; userId?:
       const seen = p.stats?.seen ?? 0, total = p.stats?.total ?? 0, pct = total ? Math.round((100 * seen) / total) : 0;
       return (
         <div className="card" key={p.id}>
-          <div className="small muted">{p.kind === 'assignment' ? 'Assignment' : 'Announcement'} · {rel(p.createdAt)}{!userId ? ` · ${p.author.name}` : ''}</div>
+          <div><Badge kind={p.kind === 'assignment' ? 'questions' : 'focus'}>{p.kind === 'assignment' ? 'Assignment' : 'Announcement'}</Badge> <span className="tiny muted">{rel(p.createdAt)}{p.dueAt ? ` · due ${fmt(p.dueAt.slice(0, 10))}` : ''}{!userId ? ` · ${p.author.name}` : ''}</span></div>
           <h3 style={{ marginTop: 'var(--s1)' }}>{p.title}</h3>
           <p className="small muted">{p.body}</p>
           <div className="tiny muted" style={{ marginTop: 'var(--s1)' }}>To {p.classes.map((c) => c.name).join(' · ')}</div>
-          {p.dueAt && <div style={{ marginTop: 'var(--s1)' }}><Chip tone="due">Due {new Date(p.dueAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</Chip></div>}
           {p.fileUrl && <a className="small" href={p.fileUrl} target="_blank" rel="noreferrer"><Icon name="file" size={14} /> {p.fileName ?? 'Attachment'}</a>}
           <div className="row" style={{ marginTop: 'var(--s2)' }}>
             <div className="grow stack" style={{ gap: 'var(--s1)' }}>
