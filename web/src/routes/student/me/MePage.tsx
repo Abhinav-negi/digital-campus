@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, unwrap } from '../../../api/client';
 import { useMe } from '../../../api/hooks';
 import { Avatar } from '../../../ui/Avatar';
@@ -22,6 +23,13 @@ export function Component() {
   const prof = useQuery({ queryKey: ['commons', 'profile', id], enabled: !!id, queryFn: () => unwrap(api.GET('/commons/profiles/{userId}', { params: { path: { userId: id } } })) });
   const board = useQuery({ queryKey: ['commons', 'board', 'mine'], enabled: !!id, queryFn: () => unwrap(api.GET('/commons/board-posts', { params: { query: { mine: 'true', limit: 50 } } })) });
   const projects = useQuery({ queryKey: ['commons', 'projects', false], enabled: !!id, queryFn: () => unwrap(api.GET('/commons/projects', { params: { query: {} } })) });
+  const qc = useQueryClient();
+  const navigate = useNavigate();
+  const logout = async () => {
+    await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
+    qc.clear();
+    navigate('/login');
+  };
   const [openId, setOpenId] = useState<string>();
   const p = prof.data;
   if (!p) return <p className="muted">{prof.error ? prof.error.message : 'Loading…'}</p>;
@@ -43,6 +51,7 @@ export function Component() {
       <Notifications />
       <div className="section"><Tickets /></div>
       <Sec title="Your data"><YourData /></Sec>
+      <div className="section"><button type="button" className="btn block" onClick={logout}>Log out</button></div>
     </>
   );
 }

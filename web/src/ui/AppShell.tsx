@@ -1,7 +1,9 @@
-import { useEffect, type MouseEvent, type ReactNode } from 'react';
+import { useEffect, useState, type MouseEvent, type ReactNode } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Notifications } from '../routes/student/me/Notifications';
 import { Icon, type IconName } from './Icon';
+import { Sheet } from './Sheet';
 
 export type NavItem = { to: string; label: string; icon: IconName };
 export type Personality = 'student' | 'teacher' | 'admin';
@@ -37,6 +39,7 @@ export function AppShell({ personality, nav, railFooter, fab, isAdmin, onBell, c
 }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const [bellOpen, setBellOpen] = useState(false);
   const { data: unread = 0 } = useQuery(unreadQuery);
 
   useEffect(() => {
@@ -80,11 +83,12 @@ export function AppShell({ personality, nav, railFooter, fab, isAdmin, onBell, c
         </aside>
         <main className="main">
           <div className="topbar">
-            <button type="button" className="icon-btn bell" aria-label={unread ? `Notifications, ${unread} unread` : 'Notifications'} onClick={onBell}>
+            <button type="button" className="icon-btn bell" aria-label={unread ? `Notifications, ${unread} unread` : 'Notifications'} onClick={onBell ?? (personality === 'student' ? undefined : () => setBellOpen(true))}>
               <Icon name="bell" />{unread > 0 && <b>{unread}</b>}
             </button>
           </div>
           {children}
+          {bellOpen && <Sheet title="Notifications" onClose={() => setBellOpen(false)}><Notifications sheet onNavigate={() => setBellOpen(false)} /></Sheet>}
           {personality !== 'student' && <div className="only-m tiny muted">{railFooter}{links}</div>}
         </main>
       </div>

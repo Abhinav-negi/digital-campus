@@ -20,7 +20,7 @@ const allowed: Record<Area, (m: Me) => boolean> = {
 const guard = (area: Area) => async () => {
   const me = await queryClient.fetchQuery(meQuery);
   if (!me) throw redirect('/login');
-  if (!allowed[area](me)) throw redirect(homeOf(me));
+  if (!allowed[area](me)) throw redirect('/403');
   return me;
 };
 
@@ -34,6 +34,7 @@ const routes: RouteObject[] = [
   { path: '/s', loader: guard('s'), lazy: () => import('./routes/student'), children: studentRoutes },
   { path: '/t', loader: guard('t'), lazy: () => import('./routes/teacher'), children: teacherRoutes },
   { path: '/a', loader: guard('a'), lazy: () => import('./routes/admin/AdminLayout'), children: adminRoutes },
+  { path: '/403', lazy: () => import('./routes/Forbidden') },
   { path: '*', loader: () => redirect('/') },
 ];
 // Component test page (FS-02/FS-03), dev only.

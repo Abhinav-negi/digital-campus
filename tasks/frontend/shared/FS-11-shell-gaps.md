@@ -11,3 +11,7 @@
 - [ ] At 390px a student logs out from Me; a teacher's bell lists the clash notification; teacher at `/s/commons` sees the 403 page. Web tests/typecheck/build green.
 
 ## Notes
+- Bell: AppShell opens a Sheet with the student `Notifications` list for teacher/admin (student bell untouched, `onBell` prop still overrides). `Notifications` got additive props `sheet` (hide own h3) and `onNavigate` (close sheet on link), and now also invalidates the `['notifications','unread']` badge query on mark-read.
+- Log out on Me: button at the end of MePage, same fetch+qc.clear+navigate('/login') as AppShell (duplicated, 4 lines).
+- 403: router guard now `redirect('/403')` for a logged-in wrong-area user; `/403` route -> `routes/Forbidden.tsx` ("Go to your home" via `homeOf`). Logged-out still -> /login. Admin badge holders pass the `t` guard (role staff); non-admin teacher at /a gets 403.
+- Verified in headless Chrome at 390px (shots/fs11-*.png): teacher bell lists the existing "Two classes overlap at 13:00..." clash notification; /s/commons and /a as teacher -> /403; student Me log out -> /login; logged-out /t -> /login. typecheck, 14 web tests, build green. AppShell.test.tsx unchanged.
