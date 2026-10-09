@@ -139,3 +139,9 @@ export function useFeaturedMutations() {
     flagship: useMutation({ mutationFn: (projectId: string) => unwrap(api.PUT('/admin/flagship', { body: { projectId } })), onSuccess: done }),
   };
 }
+
+// AF-03: every class incl. archived (GET /classes?all=1). ponytail: one page of 100; add cursor paging past that.
+export const useAdminClasses = () => useQuery({
+  queryKey: ['classes', 'admin'],
+  queryFn: async () => (await unwrap(api.GET('/classes', { params: { query: { all: '1', limit: 100 } } }))).items,
+});

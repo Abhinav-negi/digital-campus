@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, unwrap } from '../../../api/client';
@@ -35,7 +35,8 @@ export function localPreview(text: string): Row[] {
   });
 }
 
-export function Component() {
+/** `base` = where Back/finish go; `teacher` (admin only) = the class teacher to hand the new class to, `slot` renders the picker in step 1. Defaults keep the teacher flow. */
+export function NewClass({ base = '/t/classes', teacher }: { base?: string; teacher?: { id: string; slot: ReactNode } }) {
   const go = useNavigate();
   const qc = useQueryClient();
   const branches = useBranches();
@@ -68,6 +69,10 @@ export function Component() {
   const submit = useMutation({
     mutationFn: async () => {
       const cls = await create.mutateAsync({ branchId: branch!.id, admissionYear: year, section: section.trim(), minAttendancePct: min });
+      if (teacher) {
+        try { await unwrap(api.POST('/classes/{id}/handover', { params: { path: { id: cls.id } }, body: { teacherId: teacher.id } })); }
+        catch (e) { toast((e as { message: string }).message); }
+      }
       try {
         await unwrap(api.POST('/classes/{id}/invites', { params: { path: { id: cls.id } }, body: { rows: ok.map((r) => ({ studentIdNo: r.studentIdNo, email: r.email })), dryRun: false } }));
         const roster = await unwrap(api.GET('/classes/{id}/members', { params: { path: { id: cls.id } } }));
@@ -80,7 +85,7 @@ export function Component() {
       }
       return cls;
     },
-    onSuccess: (cls) => { qc.invalidateQueries({ queryKey: ['classes'] }); toast(`Class created · ${ok.length} invites sent`); go(`/t/classes/${cls.id}/students`); },
+    onSuccess: (cls) => { qc.invalidateQueries({ queryKey: ['classes'] }); toast(`Class created · ${ok.length} invites sent`); go(`${base}/${cls.id}/students`); },
     onError: (e) => toast(e.message),
   });
 
@@ -93,12 +98,13 @@ export function Component() {
 
   return (
     <>
-      <Link className="backlink" to="/t/classes">← Classes</Link>
+      <Link className="backlink" to={base}>← Classes</Link>
       <div className="page-head"><div><div className="eyebrow">Step {step} of 3 · {steps[step - 1]}</div><h1>New class</h1></div></div>
       <div style={{ maxWidth: 640 }}>
         <div className="steps">{[1, 2, 3].map((i) => <i key={i} className={i <= step ? 'on' : ''} />)}</div>
         {step === 1 && (
           <div className="card stack">
+            {teacher?.slot}
             <div className="field"><label htmlFor="ncb">Branch</label>
               <select className="input" id="ncb" value={branch?.id ?? ''} onChange={(e) => setBranchId(e.target.value)}>
                 {branches.data?.map((b) => <option key={b.id} value={b.id}>{b.code} · {b.name}</option>)}</select></div>
@@ -136,10 +142,12 @@ export function Component() {
         <div className="row" style={{ justifyContent: 'flex-end', marginTop: 'var(--s3)' }}>
           {step > 1 && <button type="button" className="btn" onClick={() => setStep(step - 1)} disabled={submit.isPending}>Back</button>}
           {step < 3
-            ? <button type="button" className="btn primary" onClick={next} disabled={!branch}>Next</button>
+            ? <button type="button" className="btn primary" onClick={next} disabled={!branch || (!!teacher && !teacher.id)}>Next</button>
             : <button type="button" className="btn primary" disabled={submit.isPending} onClick={() => (cr ? submit.mutate() : toast('Pick a CR first'))}>Create &amp; send invites</button>}
         </div>
       </div>
     </>
   );
 }
+
+export const Component = () => <NewClass />;
