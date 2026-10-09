@@ -7,10 +7,10 @@
 ## Now
 | | |
 |---|---|
-| **Latest handoff** | [handoff/S10-2026-10-08.md](handoff/S10-2026-10-08.md) |
-| **Progress** | **85%** · 76 / 89 done (project-ready) · 4 deployment tasks parked |
-| **Ready to start** | ST-04 · ST-05 · TE-05a · AF-02 · AF-04a · QA-01 |
-| **Current wave** | Wave 3: Frontend (Waves 1–2 ✅) |
+| **Latest handoff** | [handoff/S12-2026-10-09.md](handoff/S12-2026-10-09.md) |
+| **Progress** | **100%** project-ready · 108 done · 6 deployment tasks parked (D16) |
+| **Ready to start** | Deployment, only on request: OPS-03 · OPS-05 |
+| **Current wave** | Waves 1–4 ✅ · next: Later (deployment) |
 
 ## Waves (dispatch plan)
 | Wave | Goal | Parallel lanes (one subagent each) |
@@ -191,4 +191,4 @@
 | [FND-12](tasks/backend/foundation/FND-12-review-lows.md) | Review lows: N+1 posts, unbounded reads, URL guards, hiddenDetail | QA-04 | ✅ | QA-04 R6–R13 (S12) |
 | [FS-13](tasks/frontend/shared/FS-13-parity-leftovers.md) | Parity leftovers: admin class card chips at 390, exam row spacing | QA-03b | ✅ | QA-03b (S12) |
 | [TE-10](tasks/frontend/teacher/TE-10-remove-cr.md) | Remove/replace a CR from Students | TE-05b | ✅ | QA-02b (S12) |
-| [ST-12](tasks/frontend/student/ST-12-setup-sheet-once.md) | Setup sheet once per session + tips link | FS-10 | 🟨 | QA-02b (S12) |
+| [ST-12](tasks/frontend/student/ST-12-setup-sheet-once.md) | Setup sheet once per session + tips link | FS-10 | ✅ | QA-02b (S12) |

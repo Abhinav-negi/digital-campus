@@ -1,11 +1,11 @@
 # ST-12 · "Set up your class" sheet: once per session
-**Reads:** docs/DEMO.md "Failures (re-run)" · FS-10 Notes (TipSheet shows only on an empty board)
-**Owns:** `web/src/routes/student/class/edit/TipSheet.tsx`
+**Reads:** docs/DEMO.md "Failures (re-run)"
 
 ## Do
-- After the CR dismisses it, don't reopen it this session (sessionStorage, wrapped in try/catch); a "Setup tips" link next to Edit reopens it.
+- (Closed, no change.) The reported "reopens every visit" was a test artifact.
 
 ## Done when
-- [ ] Dismiss → navigate away and back → sheet stays closed; Edit is reachable. Web checks green.
+- [x] Dismiss persists: ClassPage already stores `dc.cr-tip` in localStorage on close; QA-02b used a fresh browser context per visit, so storage was empty each time.
 
 ## Notes
+- S12: an agent's sessionStorage + floating "Setup tips" button was reverted — it stopped dismiss from persisting. No code change needed.
