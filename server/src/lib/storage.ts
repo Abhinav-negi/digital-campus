@@ -17,10 +17,29 @@ const local = !config.S3_ENDPOINT;
 const sign = (method: string, key: string, exp: number) =>
   createHmac('sha256', secret).update(`${method}\n${key}\n${exp}`).digest('base64url');
 
-const localUrl = (method: 'GET' | 'PUT', key: string) => {
+/** PUT signatures also cover the declared size (method `PUT:<size>`), so the limit can't be edited in the URL. */
+const localUrl = (method: 'GET' | 'PUT', key: string, size?: number) => {
   const exp = Math.floor(Date.now() / 1000) + EXPIRES_S;
-  return `${config.APP_URL}/api/v1/files/local/${encodeURI(key)}?exp=${exp}&sig=${sign(method, key, exp)}`;
+  const m = size === undefined ? method : `${method}:${size}`;
+  return `${config.APP_URL}/api/v1/files/local/${encodeURI(key)}?exp=${exp}${size === undefined ? '' : `&size=${size}`}&sig=${sign(m, key, exp)}`;
 };
+
+// Single-use PUT links. ponytail: in-memory, per process (restart forgets; entries are tiny, 15 min links) — a table if multi-node.
+const used = new Set<string>();
+/** Claim a signature for one PUT; false if already claimed. Call `release` if the upload failed so the client can retry. */
+export const claimSig = (sig: string) => (used.has(sig) ? false : (used.add(sig), true));
+export const releaseSig = (sig: string) => void used.delete(sig);
+
+const MAGIC: Record<string, (b: Buffer) => boolean> = {
+  pdf: (b) => b.subarray(0, 5).toString('latin1') === '%PDF-',
+  png: (b) => b.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])),
+  jpg: (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
+  webp: (b) => b.subarray(0, 4).toString('latin1') === 'RIFF' && b.subarray(8, 12).toString('latin1') === 'WEBP',
+  zip: (b) => b.subarray(0, 2).toString('latin1') === 'PK',
+  txt: (b) => !b.subarray(0, 512).includes(0), // plain text: no NUL bytes
+};
+/** True when the body's magic bytes match the key's extension (the presigned kind). Unknown extension → false. */
+export const sniffOk = (key: string, body: Buffer) => MAGIC[key.split('.').pop() ?? '']?.(body) ?? false;
 
 /** Local driver: true when `sig` is ours for (method, key, exp) and not expired. */
 export const verifyLocal = (method: string, key: string, exp: unknown, sig: unknown) => {
@@ -44,7 +63,9 @@ const s3 = (): never => {
 };
 
 /** URL the client PUTs the raw file to (15 min). */
-export const presignPut = async (key: string, _contentType: string) => (local ? localUrl('PUT', key) : s3());
+export const presignPut = async (key: string, _contentType: string, size: number) =>
+  // ponytail: S3 needs createPresignedPost with content-length-range [1,size] + Content-Type condition (a presigned PUT can't bound size); see DEPLOY-CHECKLIST.
+  local ? localUrl('PUT', key, size) : s3();
 
 /** URL the client GETs the file from (15 min). */
 export const presignGet = async (key: string) => (local ? localUrl('GET', key) : s3());

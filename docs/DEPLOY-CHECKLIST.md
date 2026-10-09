@@ -13,7 +13,7 @@ The app is built and verified on localhost first. Going live is mostly **env cha
 
 ## Code still to write (parked tasks in INDEX "Deployment (later)")
 - [ ] **OPS-03** prod build: one Node process serves `/api/v1` + `web/dist`. The S05 attempt failed at `npm start`, so debug it there.
-- [ ] **S3 driver** in `server/src/lib/storage.ts`: install `@aws-sdk/client-s3` + `@aws-sdk/s3-request-presigner` (it's a stub today).
+- [ ] **S3 driver** in `server/src/lib/storage.ts`: install `@aws-sdk/client-s3` + `@aws-sdk/s3-request-presigner` (it's a stub today). Use `createPresignedPost` with a `content-length-range` and `Content-Type` condition, not a presigned PUT, so S3 enforces size/type like the local driver (R4/FND-11).
 - [ ] **OPS-04** `docs/DEPLOY.md`: one host (Render / Railway / Fly) + a VPS variant (Node 24 + systemd + Caddy).
 - [ ] **OPS-05** CI on GitHub Actions (typecheck, tests, build).
 - [ ] **QA-05** smoke test of the prod build with env changes only.

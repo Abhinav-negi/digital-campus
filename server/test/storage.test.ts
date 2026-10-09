@@ -9,6 +9,7 @@ import { errorHandler } from '../src/lib/http.js';
 import { deleteObject, localPath, presignGet, presignPut } from '../src/lib/storage.js';
 import files from '../src/modules/files/routes.js';
 
+const PNG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const path = (url: string) => url.slice(config.APP_URL.length);
 
 // Stand-in for FND-04's authenticate middleware.
@@ -52,8 +53,8 @@ test('presign rejects bad types and sizes; needs a user', async () => {
 
 test('tampered or expired signature → 403', async () => {
   const key = 'uploads/u_test/sig-test.png';
-  const url = path(await presignPut(key, 'image/png'));
-  const put = (u: string) => request(app).put(u).set('content-type', 'image/png').send(Buffer.from('x'));
+  const url = path(await presignPut(key, 'image/png', 1));
+  const put = (u: string) => request(app).put(u).set('content-type', 'image/png').send(PNG);
 
   await put(url.replace(/sig=./, (m) => (m.endsWith('A') ? 'sig=B' : 'sig=A'))).expect(403);
   await put(url.replace(/exp=(\d+)/, (_m, e) => `exp=${Number(e) + 60}`)).expect(403);
@@ -71,4 +72,27 @@ test('tampered or expired signature → 403', async () => {
 
 test('localPath refuses keys outside the upload dir', () => {
   assert.throws(() => localPath('../../etc/passwd'));
+});
+
+test('local PUT enforces size, magic bytes and single use', async () => {
+  const presign = async (name: string, contentType: string, size: number) =>
+    path((await request(authed).post('/api/v1/files/presign').send({ name, contentType, size }).expect(200)).body.uploadUrl);
+  const put = (u: string, body: Buffer) => request(app).put(u).set('content-type', 'application/octet-stream').send(body);
+
+  // R4 repro: presigned a pdf of 10 bytes, send 1 KB of HTML -> rejected; link stays usable for a real pdf.
+  const url = await presign('a.pdf', 'application/pdf', 10);
+  const r = await put(url, Buffer.from('<html>'.padEnd(1024, 'x')));
+  assert.ok(r.status >= 400 && r.status < 500);
+  // Right size, wrong type.
+  assert.equal((await put(url, Buffer.from('<html>abcd'))).status, 415);
+  await put(url, Buffer.from('%PDF-1.4 x')).expect(200);
+  // Same URL again -> 4xx.
+  assert.ok((await put(url, Buffer.from('%PDF-1.4 x'))).status >= 400);
+
+  // Editing size in the URL breaks the signature.
+  const big = await presign('b.png', 'image/png', 8);
+  await put(big.replace('size=8', 'size=9999'), PNG).expect(403);
+  // Chunked/unknown length over the limit is cut off too.
+  assert.equal((await put(big, Buffer.concat([PNG, Buffer.from('more')]))).status, 413);
+  await put(big, PNG).expect(200);
 });
