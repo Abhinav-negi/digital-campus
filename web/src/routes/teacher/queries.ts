@@ -170,3 +170,20 @@ export const useClassAttendance = (classId: string, subjectId: string | undefine
   queryKey: ['classes', classId, 'attendance', subjectId], enabled: !!subjectId,
   queryFn: () => unwrap(api.GET('/classes/{id}/attendance', { params: { path: { id: classId }, query: { subjectId: subjectId! } } })),
 });
+
+// TE-06 Settings tab (CS-01). Every write returns the fresh ClassCard; name/term changes show app-wide, so refetch all of ['classes'].
+export function useClassSettings(classId: string) {
+  const qc = useQueryClient();
+  const params = { params: { path: { id: classId } } };
+  const onSuccess = () => { qc.invalidateQueries({ queryKey: ['classes'] }); qc.invalidateQueries({ queryKey: ['me'] }); };
+  return {
+    setMin: useMutation({ mutationFn: (minAttendancePct: number) => unwrap(api.PATCH('/classes/{id}', { ...params, body: { minAttendancePct } })), onSuccess }),
+    nextTerm: useMutation({ mutationFn: () => unwrap(api.POST('/classes/{id}/terms/next', params)), onSuccess }),
+    graduate: useMutation({ mutationFn: () => unwrap(api.POST('/classes/{id}/graduate', params)), onSuccess }),
+    handover: useMutation({ mutationFn: (teacherId: string) => unwrap(api.POST('/classes/{id}/handover', { ...params, body: { teacherId } })), onSuccess }),
+  };
+}
+export const useStaffSearch = (q: string) => useQuery({
+  queryKey: ['staff', q],
+  queryFn: () => unwrap(api.GET('/staff', { params: { query: { q: q.trim() || undefined, limit: 8 } } })),
+});

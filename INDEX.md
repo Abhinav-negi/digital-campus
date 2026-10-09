@@ -137,7 +137,7 @@
 | [TE-04](tasks/frontend/teacher/TE-04-classes-list.md) | Classes list | FS-06, CS-01, CS-08 | ✅ |
 | [TE-05a](tasks/frontend/teacher/TE-05a-class-view.md) | Class: shell, Board, Posts | TE-04, ST-03 | ✅ |
 | [TE-05b](tasks/frontend/teacher/TE-05b-students-attendance.md) | Class: Students + Attendance tabs | TE-05a, CS-02 | ✅ |
-| [TE-06](tasks/frontend/teacher/TE-06-class-settings.md) | Settings: min %, next semester, graduate, hand over | TE-05 | 🟨 |
+| [TE-06](tasks/frontend/teacher/TE-06-class-settings.md) | Settings: min %, next semester, graduate, hand over | TE-05 | ✅ |
 | [TE-07](tasks/frontend/teacher/TE-07-new-class.md) | New class wizard | TE-04, CS-02 | ✅ |
 | [TE-08](tasks/frontend/teacher/TE-08-composer-upcoming.md) | Composer + Upcoming + reminders | TE-04, CS-08, CS-11 | ✅ |
 
@@ -171,5 +171,5 @@
 | [CM-09](tasks/backend/commons/CM-09-board-mine-filter.md) | Board posts `mine` filter for Me | CM-02, ST-10a | ✅ | ST-10a (S10) |
 | [CS-16](tasks/backend/class-space/CS-16-notification-links.md) | Notification `link`s → real web routes | CS-12, ST-10b | ✅ | ST-10b (S10) |
 | [ST-08c](tasks/frontend/student/ST-08c-pick-winners.md) | Owner picks challenge winners | ST-08b, CM-05 | ✅ | ST-08b (S11) |
-| [AD-09](tasks/backend/admin/AD-09-user-ban-state.md) | Ban state on AdminUser (state-aware Ban/Unban) | AD-06, AF-02 | ⬜ | AF-02 (S12) |
+| [AD-09](tasks/backend/admin/AD-09-user-ban-state.md) | Ban state on AdminUser (state-aware Ban/Unban) | AD-06, AF-02 | 🟨 | AF-02 (S12) |
 | [AD-10](tasks/backend/admin/AD-10-direct-hide.md) | Admin direct hide + `includeHidden` lists | AD-06, AF-04a | ⬜ | AF-04a (S12) |

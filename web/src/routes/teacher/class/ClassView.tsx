@@ -8,6 +8,7 @@ import { Composer } from '../Composer';
 import { BoardTab } from './BoardTab';
 import { AttendanceTab } from './AttendanceTab';
 import { PostsTab } from './PostsTab';
+import { SettingsTab } from './SettingsTab';
 import { StudentsTab } from './StudentsTab';
 
 /** PROTO renderClass (teacher.html:316). `adminMode` (/a/classes/:id): every tab editable, Settings always shown. */
@@ -41,7 +42,7 @@ export function ClassView({ adminMode = false }: { adminMode?: boolean }) {
       {tab === 'posts' && <PostsTab classId={id} userId={adminMode ? undefined : me.user.id} onNew={() => setComposing(true)} />}
       {tab === 'students' && soon('Students', 'TE-05b')}
       {tab === 'attendance' && soon('Attendance', 'TE-05b')}
-      {tab === 'settings' && soon('Settings', 'TE-06')}
+      {tab === 'settings' && <SettingsTab c={c} isAdmin={adminMode} />}
       {composing && <Composer classId={id} onClose={() => setComposing(false)} />}
     </>
   );
