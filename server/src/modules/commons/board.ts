@@ -46,6 +46,8 @@ const boardPostCard = z
     /** YYYY-MM-DD */
     deadline: z.string().nullable(),
     status: z.enum(STATUSES),
+    /** Only in an admin's `includeHidden` list, on hidden items. */
+    hiddenAt: z.iso.datetime().optional(),
     /** YYYY-MM-DD: live while ≥ today in the institution's timezone. */
     expiresAt: z.string(),
     createdAt: z.string(),
@@ -216,6 +218,8 @@ const feedQuery = pageQuery.extend({
   q: z.string().trim().max(100).optional(),
   /** 'true' = only my posts, expired and closed included (hidden ones still drop out). */
   mine: z.enum(['true', 'false']).optional(),
+  /** Admins only: also return hidden posts, each with `hiddenAt`. Ignored for everyone else. */
+  includeHidden: z.enum(['1', 'true']).optional(),
 });
 
 router.get(
@@ -229,7 +233,8 @@ router.get(
     responses: { 200: z.object({ items: z.array(boardPostCard), nextCursor: z.string().nullable() }) },
   }),
   async (req, res) => {
-    const { kind, branchId, q, mine, cursor, limit } = req.query as unknown as z.infer<typeof feedQuery>;
+    const { kind, branchId, q, mine, includeHidden, cursor, limit } = req.query as unknown as z.infer<typeof feedQuery>;
+    const withHidden = !!includeHidden && req.user!.isAdmin; // the wall: students' includeHidden is ignored
     const viewer = await viewerOf(req.user!.id);
     const v = { branchId: viewer.homeClass?.branchId ?? null, on: today() };
     const blocked = await blockedIds(req.user!.id);
@@ -237,7 +242,7 @@ router.get(
     // institution's day in memory, like People. Past a few thousand live posts, persist a day column and page in SQL.
     const rows = await db.boardPost.findMany({
       where: {
-        hiddenAt: null,
+        ...(!withHidden && { hiddenAt: null }),
         authorId: mine === 'true' ? req.user!.id : { notIn: blocked },
         ...(mine !== 'true' && { expiresAt: { gte: v.on } }),
         ...(kind !== 'all' && { kind: kind === 'lf' ? { in: ['lost', 'found'] } : kind }),
@@ -253,7 +258,7 @@ router.get(
       .sort((a, b) => day.get(b.id)! - day.get(a.id)! || +CLOSED.includes(a.status) - +CLOSED.includes(b.status));
     const start = cursor ? list.findIndex((p) => p.id === cursor) + 1 : 0;
     const items = list.slice(start, start + limit + 1);
-    res.json({ items: items.slice(0, limit).map((p) => toPostCard(p, v)), nextCursor: items.length > limit ? items[limit - 1]!.id : null });
+    res.json({ items: items.slice(0, limit).map((p) => ({ ...toPostCard(p, v), ...(withHidden && p.hiddenAt && { hiddenAt: p.hiddenAt.toISOString() }) })), nextCursor: items.length > limit ? items[limit - 1]!.id : null });
   },
 );
 

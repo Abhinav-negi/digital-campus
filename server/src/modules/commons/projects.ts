@@ -30,6 +30,8 @@ const projectCard = z
     repoUrl: z.string().nullable(),
     status: z.enum(STATUS),
     featured: z.boolean(),
+    /** Only in an admin's `includeHidden` list, on hidden items. */
+    hiddenAt: z.iso.datetime().optional(),
     community: z.boolean(),
     flagship: z.boolean(),
     /** Members' branch codes, distinct. */
@@ -148,18 +150,20 @@ router.get(
     path: '/commons/projects',
     summary: "Build: this semester's flagship, the featured and community strip (featured first), then every other project; hidden ones left out",
     guard: 'commons',
+    request: { query: z.object({ includeHidden: z.enum(['1', 'true']).optional() }) },
     responses: { 200: z.object({ flagship: projectCard.nullable(), featured: z.array(projectCard), all: z.array(projectCard) }) },
   }),
   async (req, res) => {
     const me = req.user!;
     const { institutionId, v } = await viewer(me);
+    const withHidden = !!(req.query as { includeHidden?: string }).includeHidden && me.isAdmin; // the wall: students' includeHidden is ignored
     // ponytail: every visible project in one read, no paging; one school's projects are a few hundred at most.
     const rows = await db.project.findMany({
-      where: { hiddenAt: null, owner: { institutionId } },
+      where: { ...(!withHidden && { hiddenAt: null }), owner: { institutionId } },
       include: cardInclude(me.id),
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
     });
-    const cards = rows.map((p) => toProjectCard(p, me.id, v));
+    const cards = rows.map((p) => ({ ...toProjectCard(p, me.id, v), ...(withHidden && p.hiddenAt && { hiddenAt: p.hiddenAt.toISOString() }) }));
     const flagship = cards.find((p) => p.flagship) ?? null;
     const rest = cards.filter((p) => p !== flagship);
     res.json({

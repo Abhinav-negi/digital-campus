@@ -17,7 +17,7 @@ const reportTimes = async (targetType: 'board' | 'project', targetId: string, ow
 
 test('non-admins get 403 on every route', async () => {
   const s = await agent('student');
-  for (const [m, u] of [['post', '/admin/reports/x'], ['patch', '/admin/commons/project/pr1'], ['post', '/admin/commons/project/pr1/unhide'], ['delete', '/admin/commons/project/pr1'], ['post', '/admin/users/s2/ban'], ['delete', '/admin/users/s2/ban'], ['get', '/admin/conversations'], ['get', '/admin/conversations/x/messages']] as const)
+  for (const [m, u] of [['post', '/admin/reports/x'], ['patch', '/admin/commons/project/pr1'], ['post', '/admin/commons/project/pr1/hide'], ['post', '/admin/commons/project/pr1/unhide'], ['delete', '/admin/commons/project/pr1'], ['post', '/admin/users/s2/ban'], ['delete', '/admin/users/s2/ban'], ['get', '/admin/conversations'], ['get', '/admin/conversations/x/messages']] as const)
     await s[m](api + u).send({}).expect(403);
   await (await agent('teacher')).get(`${api}/admin/conversations`).expect(403);
 });
@@ -125,4 +125,37 @@ test('a ban with an end date lifts itself: on the next request, and via the hour
   await db.user.update({ where: { id: 's2' }, data: { bannedAt: new Date(), bannedUntil: new Date(Date.now() - 1000) } });
   assert.equal(await liftExpiredBans(new Date()), 1);
   assert.equal((await db.user.findUniqueOrThrow({ where: { id: 's2' } })).bannedAt, null);
+});
+
+test('direct hide: audited, gone for students (even with includeHidden), listed with hiddenAt for admins', async () => {
+  const a = await agent('admin');
+  const post = await db.boardPost.findFirstOrThrow({ where: { hiddenAt: null, kind: { not: 'gig' }, expiresAt: { gte: new Date() } }, orderBy: { id: 'asc' } });
+  const viewer = await as((await db.user.findFirstOrThrow({ where: { role: 'student', status: 'active', id: { not: post.authorId } }, orderBy: { id: 'asc' } })).id);
+  const list = async (who: typeof a, path: string, q = '') => (await who.get(`${api}/commons/${path}?${q}`).expect(200)).body;
+  const adminPosts = async (q = '') => (await list(a, 'board-posts', `limit=100&${q}`)).items as { id: string; hiddenAt?: string }[];
+
+  await a.post(`${api}/admin/commons/profile/${post.authorId}/hide`).expect(422);
+  await a.post(`${api}/admin/commons/board-post/${post.id}/hide`).expect(200);
+  assert.ok(await db.auditLog.findFirst({ where: { action: 'commons.hide', targetType: 'BoardPost', targetId: post.id } }));
+  assert.ok(!(await feedIds(viewer)).includes(post.id));
+  // the wall: a student's includeHidden changes nothing
+  assert.ok(!(await list(viewer, 'board-posts', 'limit=100&includeHidden=1')).items.some((p: { id: string }) => p.id === post.id));
+  assert.ok(!(await adminPosts()).some((p) => p.id === post.id));
+  assert.ok((await adminPosts('includeHidden=1')).find((p) => p.id === post.id)?.hiddenAt);
+
+  // same for projects and challenges
+  const pr = await db.project.findFirstOrThrow({ where: { hiddenAt: null, flagship: false }, orderBy: { id: 'asc' } });
+  const ch = await db.challenge.findFirstOrThrow({ where: { hiddenAt: null }, orderBy: { id: 'asc' } });
+  await a.post(`${api}/admin/commons/project/${pr.id}/hide`).expect(200);
+  await a.post(`${api}/admin/commons/challenge/${ch.id}/hide`).expect(200);
+  const prIds = (b: { featured: { id: string }[]; all: { id: string }[] }) => [...b.featured, ...b.all].map((p) => p.id);
+  assert.ok(!prIds(await list(viewer, 'projects', 'includeHidden=1')).includes(pr.id));
+  assert.ok(!(await list(viewer, 'challenges', 'includeHidden=1')).items.some((c: { id: string }) => c.id === ch.id));
+  assert.ok(![...(await list(a, 'projects')).all].some((p: { id: string }) => p.id === pr.id));
+  const hp = await list(a, 'projects', 'includeHidden=1');
+  assert.ok([...hp.featured, ...hp.all].find((p: { id: string; hiddenAt?: string }) => p.id === pr.id)?.hiddenAt);
+  assert.ok((await list(a, 'challenges', 'includeHidden=1')).items.find((c: { id: string; hiddenAt?: string }) => c.id === ch.id)?.hiddenAt);
+
+  for (const [t, id] of [['board-post', post.id], ['project', pr.id], ['challenge', ch.id]]) await a.post(`${api}/admin/commons/${t}/${id}/unhide`).expect(200);
+  assert.ok((await feedIds(viewer)).includes(post.id));
 });

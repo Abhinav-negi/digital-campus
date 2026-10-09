@@ -1843,6 +1843,7 @@ export interface paths {
                     branchId?: string;
                     q?: string;
                     mine?: "true" | "false";
+                    includeHidden?: "1" | "true";
                 };
                 header?: never;
                 path?: never;
@@ -2747,6 +2748,70 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/admin/commons/{type}/{id}/hide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Hide a board post, project or challenge directly, no report needed (idempotent; audited) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    type: "board-post" | "project" | "challenge" | "profile";
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            id: string;
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/admin/commons/{type}/{id}/unhide": {
@@ -7229,7 +7294,9 @@ export interface paths {
         /** Build: this semester's flagship, the featured and community strip (featured first), then every other project; hidden ones left out */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    includeHidden?: "1" | "true";
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -7251,6 +7318,15 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -7790,7 +7866,9 @@ export interface paths {
         /** Challenges: live ones (ending soonest first), then ended ones (latest first), with submission counts and winners; hidden left out */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    includeHidden?: "1" | "true";
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -7810,6 +7888,15 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -9591,6 +9678,8 @@ export interface components {
             deadline: string | null;
             /** @enum {string} */
             status: "open" | "assigned" | "solved" | "done" | "sold" | "given" | "returned" | "expired";
+            /** Format: date-time */
+            hiddenAt?: string;
             expiresAt: string;
             createdAt: string;
             author: components["schemas"]["Byline"];
@@ -9621,6 +9710,8 @@ export interface components {
             deadline: string | null;
             /** @enum {string} */
             status: "open" | "assigned" | "solved" | "done" | "sold" | "given" | "returned" | "expired";
+            /** Format: date-time */
+            hiddenAt?: string;
             expiresAt: string;
             createdAt: string;
             author: components["schemas"]["Byline"];
@@ -10076,6 +10167,8 @@ export interface components {
             /** @enum {string} */
             status: "looking" | "building" | "shipped";
             featured: boolean;
+            /** Format: date-time */
+            hiddenAt?: string;
             community: boolean;
             flagship: boolean;
             branches: string[];
@@ -10105,6 +10198,8 @@ export interface components {
             /** @enum {string} */
             status: "looking" | "building" | "shipped";
             featured: boolean;
+            /** Format: date-time */
+            hiddenAt?: string;
             community: boolean;
             flagship: boolean;
             branches: string[];
@@ -10169,6 +10264,8 @@ export interface components {
             /** @enum {string} */
             judging: "owner" | "likes";
             featured: boolean;
+            /** Format: date-time */
+            hiddenAt?: string;
             owner: components["schemas"]["Byline"];
             submissionCount: number;
             winners: components["schemas"]["Byline"][];
@@ -10183,6 +10280,8 @@ export interface components {
             /** @enum {string} */
             judging: "owner" | "likes";
             featured: boolean;
+            /** Format: date-time */
+            hiddenAt?: string;
             owner: components["schemas"]["Byline"];
             submissionCount: number;
             winners: components["schemas"]["Byline"][];

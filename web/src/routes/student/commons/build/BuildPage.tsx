@@ -17,12 +17,12 @@ export function BuildPage({ moderation }: { moderation?: Moderation } = {}) {
   const [creating, setCreating] = useState(false);
   const [chal, setChal] = useState<string>();
   const [newChal, setNewChal] = useState(false);
-  const q = useQuery({ queryKey: ['commons', 'projects'], queryFn: () => unwrap(api.GET('/commons/projects')) });
+  const q = useQuery({ queryKey: ['commons', 'projects', !!moderation], queryFn: () => unwrap(api.GET('/commons/projects', { params: { query: { includeHidden: moderation ? '1' : undefined } } })) });
   const d = q.data;
   if (!d) return <p className="muted">{q.error ? q.error.message : 'Loading…'}</p>;
 
   // Generated array items are typed nullable; they never are.
-  const mod = (p: NonNullable<typeof d>['all'][number] & {}) => moderation?.({ type: 'project', id: p.id, title: p.title, text: p.description, authorId: p.members.find((m) => m.role === 'Owner')?.id ?? '' });
+  const mod = (p: NonNullable<typeof d>['all'][number] & {}) => moderation?.({ type: 'project', id: p.id, title: p.title, text: p.description, authorId: p.members.find((m) => m.role === 'Owner')?.id ?? '', hidden: !!p.hiddenAt });
   const featured = d.featured.filter((p) => p != null), all = d.all.filter((p) => p != null);
   return (
     <>

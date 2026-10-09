@@ -17,10 +17,10 @@ export function Board({ onOpen, moderation }: { onOpen?: (id: string) => void; m
 
   const branches = useQuery({ queryKey: ['branches'], queryFn: () => unwrap(api.GET('/branches')) });
   const feed = useInfiniteQuery({
-    queryKey: ['commons', 'board', kind, branchId, dq],
+    queryKey: ['commons', 'board', kind, branchId, dq, !!moderation],
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam }) => unwrap(api.GET('/commons/board-posts', {
-      params: { query: { kind, branchId: branchId || undefined, q: dq || undefined, cursor: pageParam, limit: 20 } },
+      params: { query: { kind, branchId: branchId || undefined, q: dq || undefined, cursor: pageParam, limit: 20, includeHidden: moderation ? '1' : undefined } },
     })),
     getNextPageParam: (l) => l.nextCursor ?? undefined,
   });
@@ -42,7 +42,7 @@ export function Board({ onOpen, moderation }: { onOpen?: (id: string) => void; m
         {feed.error ? <p className="muted">{feed.error.message}</p>
           : !feed.data ? <p className="muted">Loading…</p>
           : !items.length ? <Empty seed="board" text="Nothing here yet. Be the first to post." />
-          : <div className="grid grid-2">{items.map((p) => <BoardCard key={p.id} p={p} onOpen={onOpen} mod={moderation?.({ type: 'board-post', id: p.id, title: p.title, text: p.body, authorId: p.author.id })} />)}</div>}
+          : <div className="grid grid-2">{items.map((p) => <BoardCard key={p.id} p={p} onOpen={onOpen} mod={moderation?.({ type: 'board-post', id: p.id, title: p.title, text: p.body, authorId: p.author.id, hidden: !!p.hiddenAt })} />)}</div>}
         {feed.hasNextPage && (
           <div className="row" style={{ justifyContent: 'center', marginTop: 'var(--s3)' }}>
             <button className="btn ghost" disabled={feed.isFetchingNextPage} onClick={() => feed.fetchNextPage()}>Show more</button>

@@ -172,4 +172,4 @@
 | [CS-16](tasks/backend/class-space/CS-16-notification-links.md) | Notification `link`s → real web routes | CS-12, ST-10b | ✅ | ST-10b (S10) |
 | [ST-08c](tasks/frontend/student/ST-08c-pick-winners.md) | Owner picks challenge winners | ST-08b, CM-05 | ✅ | ST-08b (S11) |
 | [AD-09](tasks/backend/admin/AD-09-user-ban-state.md) | Ban state on AdminUser (state-aware Ban/Unban) | AD-06, AF-02 | ✅ | AF-02 (S12) |
-| [AD-10](tasks/backend/admin/AD-10-direct-hide.md) | Admin direct hide + `includeHidden` lists | AD-06, AF-04a | 🟨 | AF-04a (S12) |
+| [AD-10](tasks/backend/admin/AD-10-direct-hide.md) | Admin direct hide + `includeHidden` lists | AD-06, AF-04a | ✅ | AF-04a (S12) |

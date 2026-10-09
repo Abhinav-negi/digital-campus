@@ -26,6 +26,8 @@ const challengeCard = z
     live: z.boolean(),
     judging: z.enum(['owner', 'likes']),
     featured: z.boolean(),
+    /** Only in an admin's `includeHidden` list, on hidden items. */
+    hiddenAt: z.iso.datetime().optional(),
     owner: byline,
     submissionCount: z.number().int(),
     /** The owner's picks; for judging=likes once ended, the most-liked (ties all win, none with 0 likes). */
@@ -141,13 +143,16 @@ router.get(
     path: '/commons/challenges',
     summary: 'Challenges: live ones (ending soonest first), then ended ones (latest first), with submission counts and winners; hidden left out',
     guard: 'commons',
+    request: { query: z.object({ includeHidden: z.enum(['1', 'true']).optional() }) },
     responses: { 200: z.object({ items: z.array(challengeCard) }) },
   }),
   async (req, res) => {
     const { institutionId, v } = await viewer(req.user!);
+    const withHidden = !!(req.query as { includeHidden?: string }).includeHidden && req.user!.isAdmin; // the wall: students' includeHidden is ignored
     // ponytail: every visible challenge in one read, no paging; a school runs a handful a month.
-    const rows = await db.challenge.findMany({ where: { hiddenAt: null, owner: { institutionId } }, include: cardInclude });
-    const cards = await toCards(rows, v);
+    const rows = await db.challenge.findMany({ where: { ...(!withHidden && { hiddenAt: null }), owner: { institutionId } }, include: cardInclude });
+    const hidden = new Map(rows.map((c) => [c.id, c.hiddenAt]));
+    const cards = (await toCards(rows, v)).map((c) => ({ ...c, ...(withHidden && hidden.get(c.id) && { hiddenAt: hidden.get(c.id)!.toISOString() }) }));
     cards.sort((a, b) => +b.live - +a.live || (a.live ? a.endsAt.localeCompare(b.endsAt) : b.endsAt.localeCompare(a.endsAt)));
     res.json({ items: cards });
   },

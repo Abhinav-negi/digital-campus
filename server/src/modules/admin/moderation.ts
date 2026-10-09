@@ -70,6 +70,22 @@ router.patch(
 );
 
 router.post(
+  '/commons/:type/:id/hide',
+  route(registry, { method: 'post', path: '/admin/commons/:type/:id/hide', summary: 'Hide a board post, project or challenge directly, no report needed (idempotent; audited)', guard: 'admin', request: { params: typeParams }, responses: { 200: ok, 404: null, 422: null } }),
+  async (req, res) => {
+    const { type, id } = req.params as unknown as z.infer<typeof typeParams>;
+    hideable(type);
+    const x = (await find(type, id)) as { hiddenAt: Date | null };
+    const hiddenAt = x.hiddenAt ?? new Date();
+    await db.$transaction(async (tx) => {
+      await model(type, tx).update({ where: { id }, data: { hiddenAt } });
+      await audit(req.user!, { action: 'commons.hide', targetType: AUDIT_TYPE[type], targetId: id, before: { hiddenAt: x.hiddenAt?.toISOString() ?? null }, after: { hiddenAt: hiddenAt.toISOString() } }, tx);
+    });
+    res.json({ id });
+  },
+);
+
+router.post(
   '/commons/:type/:id/unhide',
   route(registry, { method: 'post', path: '/admin/commons/:type/:id/unhide', summary: 'Show a hidden board post, project or challenge again (audited)', guard: 'admin', request: { params: typeParams }, responses: { 200: ok, 404: null, 422: null } }),
   async (req, res) => {

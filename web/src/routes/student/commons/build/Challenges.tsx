@@ -14,7 +14,7 @@ export const Winners = ({ w }: { w: Chal['winners'] }) => {
 };
 
 export function Challenges({ onOpen, onNew, moderation }: { onOpen: (id: string) => void; onNew: () => void; moderation?: Moderation }) {
-  const q = useQuery({ queryKey: ['commons', 'challenges'], queryFn: () => unwrap(api.GET('/commons/challenges')) });
+  const q = useQuery({ queryKey: ['commons', 'challenges', !!moderation], queryFn: () => unwrap(api.GET('/commons/challenges', { params: { query: { includeHidden: moderation ? '1' : undefined } } })) });
   const list = q.data?.items.filter((c) => c != null);
   return (
     <>
@@ -30,7 +30,7 @@ export function Challenges({ onOpen, onNew, moderation }: { onOpen: (id: string)
             <p className="small muted clamp" style={{ margin: 'var(--s1) 0' }}>{c.description}</p>
             <div className="small muted">{c.submissionCount} submission{c.submissionCount === 1 ? '' : 's'} · by {c.owner.name}</div>
             {c.winners.length > 0 && <div style={{ marginTop: 'var(--s1)' }}><Winners w={c.winners} /></div>}
-            {moderation?.({ type: 'challenge', id: c.id, title: c.title, text: c.description, authorId: c.owner.id })}
+            {moderation?.({ type: 'challenge', id: c.id, title: c.title, text: c.description, authorId: c.owner.id, hidden: !!c.hiddenAt })}
           </div>))}</div>
           : <Empty seed="challenges" text="No challenges yet. Start one." />}
     </>

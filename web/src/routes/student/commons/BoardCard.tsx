@@ -5,7 +5,7 @@ import { Icon, type IconName } from '../../../ui/Icon';
 import { rel } from '../../../lib/dates';
 
 /** AF-04a: admin moderation row. Students never pass `moderation`, so nothing changes for them. */
-export type ModTarget = { type: 'board-post' | 'project' | 'challenge' | 'profile'; id: string; title: string; text: string | null; authorId: string };
+export type ModTarget = { type: 'board-post' | 'project' | 'challenge' | 'profile'; id: string; title: string; text: string | null; authorId: string; hidden?: boolean };
 export type Moderation = (t: ModTarget) => ReactNode;
 
 export type Post = components['schemas']['BoardPostCard'];

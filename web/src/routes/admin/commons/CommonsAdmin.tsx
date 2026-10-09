@@ -5,24 +5,23 @@ import { BuildPage } from '../../student/commons/build/BuildPage';
 import { People } from '../../student/commons/people/People';
 import { Conversations } from './Conversations';
 import { Featured } from './Featured';
-import { HiddenList, ModRow, useOpenReports } from './Moderation';
+import { ModRow } from './Moderation';
 
 const TABS = [['', 'Board'], ['build', 'Build'], ['people', 'People'], ['conversations', 'Conversations'], ['featured', 'Featured']] as const;
 
 // AF-04a: Commons for admins (ARCH D2, PROTO admin.html:101-108). Board/Build/People are the student views plus a moderation row.
 export function Component() {
   const tab = useParams()['*'] ?? '';
-  const reports = useOpenReports();
-  const moderation: Moderation = (t) => <ModRow t={t} reportId={reports.get(t.id)} />;
+  const moderation: Moderation = (t) => <ModRow t={t} />;
   return (
     <>
-      <div className="page-head"><div><h1>Commons</h1><p className="muted">Moderate posts, projects and people. Hiding needs an open report.</p></div></div>
+      <div className="page-head"><div><h1>Commons</h1><p className="muted">Moderate posts, projects and people.</p></div></div>
       <div className="tabs">{TABS.map(([k, label]) => (
         <NavLink key={k} to={k} end className={({ isActive }) => (isActive ? 'tab on' : 'tab')}>{label}</NavLink>))}
       </div>
       <div style={{ marginTop: 'var(--s4)' }}>
-        {tab === '' && <><HiddenList types={['board-post']} /><Board moderation={moderation} /></>}
-        {tab === 'build' && <><HiddenList types={['project', 'challenge']} /><BuildPage moderation={moderation} /></>}
+        {tab === '' && <Board moderation={moderation} />}
+        {tab === 'build' && <BuildPage moderation={moderation} />}
         {tab === 'people' && <People moderation={moderation} />}
         {tab === 'conversations' && <Conversations />}
         {tab === 'featured' && <Featured />}
