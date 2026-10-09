@@ -187,6 +187,6 @@
 | [CM-10](tasks/backend/commons/CM-10-own-student-id.md) | Student ID on my own profile (Me header) | CM-01 | ✅ | FS-10 (S12) |
 | [CM-11](tasks/backend/commons/CM-11-blocks-everywhere.md) | Enforce blocks on Commons actions + by-id reads | CM-07 | ✅ | QA-04 R2 (S12) |
 | [FND-10](tasks/backend/foundation/FND-10-write-throttles.md) | Per-user write throttles + retention purge | FND-09 | ⬜ | QA-04 R3 R8 (S12) |
-| [FND-11](tasks/backend/foundation/FND-11-upload-enforcement.md) | Enforce upload size/type on the bytes; single-use PUT | FND-06 | ⬜ | QA-04 R4 (S12) |
-| [FND-12](tasks/backend/foundation/FND-12-review-lows.md) | Review lows: N+1 posts, unbounded reads, URL guards, hiddenDetail | QA-04 | ⬜ | QA-04 R6–R13 (S12) |
-| [FS-13](tasks/frontend/shared/FS-13-parity-leftovers.md) | Parity leftovers: admin class card chips at 390, exam row spacing | QA-03b | ⬜ | QA-03b (S12) |
+| [FND-11](tasks/backend/foundation/FND-11-upload-enforcement.md) | Enforce upload size/type on the bytes; single-use PUT | FND-06 | 🟨 | QA-04 R4 (S12) |
+| [FND-12](tasks/backend/foundation/FND-12-review-lows.md) | Review lows: N+1 posts, unbounded reads, URL guards, hiddenDetail | QA-04 | 🟨 | QA-04 R6–R13 (S12) |
+| [FS-13](tasks/frontend/shared/FS-13-parity-leftovers.md) | Parity leftovers: admin class card chips at 390, exam row spacing | QA-03b | ✅ | QA-03b (S12) |

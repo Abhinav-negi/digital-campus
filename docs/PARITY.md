@@ -74,4 +74,5 @@ S12 re-check: Filed 1-10 (item 6 "My projects" now cards; 7-10 still open, see Q
 - Teacher Students: extra "Remove" button; Settings: "Start next semester" and teacher search for hand-over (TE-06; PROTO has e-mail hand-over).
 - Admin pages (Classes/Commons/School/Audit): rebuilt for D6/D10, no PROTO twin; "Correct attendance" link, moderation buttons (Edit/Hide/Delete/Ban author).
 - 44px top bar with the bell above page headers on every role (D-notifications); "Admins can see Commons activity" note on Commons.
+- Teacher class Board reuses the student board (timetable, Edit) instead of PROTO's read-only card list (TE-05a reuse design).
 - Teacher Upcoming: "Keep mine" / "..." clash actions (D11).

@@ -39,7 +39,7 @@ export function Component() {
           <p className="eyebrow">{k}</p>
           <div className="grid grid-2">{cs.map((c) => (
             <div key={c.id} className="card click lift" role="link" tabIndex={0} onClick={() => go(`/a/classes/${c.id}`)} onKeyDown={(e) => e.key === 'Enter' && go(`/a/classes/${c.id}`)}>
-              <div className="row between"><h3>{c.name}</h3><span className="row">{flags(c).map((f) => <Badge key={f} kind="warn">{f}</Badge>)}</span></div>
+              <div className="row between wrap"><h3>{c.name}</h3><span className="row wrap">{flags(c).map((f) => <Badge key={f} kind="warn">{f}</Badge>)}</span></div>
               <p className="muted small">{c.termLabel} · {c.counts.students} students · {c.counts.subjects} subjects</p>
               <p className="small muted">Class teacher · {c.classTeacher.name} · CR · {c.crs.map((u) => u.name).join(', ') || 'none yet'}</p>
               <Link className="small" to={`/a/classes/${c.id}/correct`} onClick={(e) => e.stopPropagation()}>Correct attendance</Link>
