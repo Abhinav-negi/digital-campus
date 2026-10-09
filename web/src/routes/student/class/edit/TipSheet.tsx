@@ -1,9 +1,15 @@
+import { useQuery } from '@tanstack/react-query';
+import { api, unwrap } from '../../../../api/client';
+import { useMe } from '../../../../api/hooks';
 import { Sheet } from '../../../../ui/Sheet';
 
 export type TipKind = 'timetable' | 'syllabus' | 'exam' | 'import';
 
-/** First-time CR tip (SPEC §6). ponytail: buttons only report the pick; ST-03b/c and ST-05 decide where timetable/syllabus/import lead. */
+/** First-time CR tip (SPEC §6), shown only while the class board is empty (PARITY 9). ponytail: buttons only report the pick; ST-03b/c and ST-05 decide where timetable/syllabus/import lead. */
 export function TipSheet({ onPick, onClose }: { onPick: (k: TipKind) => void; onClose: () => void }) {
+  const id = useMe().data?.classes.find((c) => c.role === 'cr')?.id ?? '';
+  const board = useQuery({ queryKey: ['classes', id, 'board', 'tip'], enabled: !!id, queryFn: () => unwrap(api.GET('/classes/{id}/board', { params: { path: { id }, query: {} } })) });
+  if (!board.data || Object.values(board.data).some((a) => a.length)) return null;
   return (
     <Sheet title="Set up your class" onClose={onClose}>
       <div className="stack">

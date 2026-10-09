@@ -115,7 +115,7 @@ export function Component() {
         ))}</div> : <Empty text="Nothing due in the next two weeks." />}</div>
       </Sec>
       <Sec title="New from teachers">
-        {t.unreadPosts.length ? <div className="stack">{t.unreadPosts.map((p) => (
+        {t.unreadPosts.length ? <div className="stack">{[...t.unreadPosts].sort((a, b) => a.createdAt.localeCompare(b.createdAt)).map((p) => (
           <Link key={p.id} to="/s/class/posts" className="card click" style={{ display: 'block' }}>
             <div className="row"><Avatar user={p.author} size="sm" /><div className="grow"><b>{p.author.name}</b> <span className="small muted">· {rel(p.createdAt)}</span></div><Chip tone="vio">New</Chip></div>
             <h4 style={{ marginTop: 'var(--s2)' }}>{p.title}</h4>

@@ -9,6 +9,11 @@ const label = (action: string) => {
   return `${LABEL[verb ?? ''] ?? verb} ${kind}`;
 };
 
+const ago = (iso: string) => {
+  const m = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 6e4));
+  return m < 60 ? `${m}m ago` : m < 1440 ? `${Math.round(m / 60)}h ago` : m < 2880 ? 'yesterday' : `${Math.round(m / 1440)} days ago`;
+};
+
 /** CR "Edit history" card: the last 6 board changes (CS-07 history). */
 export function History({ classId }: { classId: string }) {
   const q = useQuery({
@@ -24,8 +29,8 @@ export function History({ classId }: { classId: string }) {
           const snap = (h.after ?? h.before) as { title?: string } | null;
           return (
             <div className="small" key={h.id}>
-              <b>{label(h.action)}</b>{snap?.title ? ` · ${snap.title}` : ''}
-              <div className="tiny muted">{h.actor.name} · {new Date(h.createdAt).toLocaleString(undefined, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>
+              <b>{h.actor.name}</b> · {label(h.action)}{snap?.title ? ` · ${snap.title}` : ''}
+              <div className="tiny muted">{ago(h.createdAt)}</div>
             </div>
           );
         })}

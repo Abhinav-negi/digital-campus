@@ -22,7 +22,7 @@
   .slot .time { min-width: var(--s8); line-height: 1.2; }
   .slot .time b { font-size: 20px; display: block; }
   .slot.done { background: var(--tint); border-color: transparent; }
-  @media (max-width: 720px) { .slot { flex-wrap: wrap; gap: var(--s2); } .slot .act, .slot .act .btn { width: 100%; } }
+  @media (max-width: 720px) { .slot { flex-wrap: wrap; gap: var(--s2); } .slot .act { width: 100%; } .slot .act > .btn:first-child { flex: 1; } }
 
   /* attendance */
   .roster { display: grid; grid-template-columns: repeat(auto-fill, minmax(calc(var(--s10) + var(--s4)), 1fr)); gap: var(--s1); }
@@ -64,7 +64,7 @@
   .dateblk { min-width: var(--s6); text-align: center; line-height: 1.1; }
   .dateblk b { display: block; font-size: 24px; }
   .sheet h3 { margin-bottom: var(--s3); }
-  .sheet .actions { display: flex; gap: var(--s1); justify-content: flex-end; margin-top: var(--s3); flex-wrap: wrap; }
+  .sheet .actions { display: flex; gap: var(--s1); justify-content: flex-end; margin-top: var(--s3); flex-wrap: wrap; position: sticky; bottom: 0; background: var(--surface); padding-top: var(--s2); }
   .field-row { display: flex; gap: var(--s2); }
   .field-row > * { flex: 1; min-width: 0; }
   @media (max-width: 720px) { .field-row { flex-direction: column; } .stats { gap: var(--s1); } .stats .num { font-size: 20px; } }

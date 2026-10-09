@@ -14,3 +14,9 @@
 - [ ] Each item visible in a 1280px/390px screenshot; web tests, typecheck, build green.
 
 ## Notes
+- Done 5,6(projects),7,8,9,10 in Owns files; typecheck/test/build green. 6 student ID NOT done: no student-facing field has studentIdNo (User, PersonProfile lack it; ClassMember is staff-only) -> needs server (add to PersonProfile when self).
+- 6: Me reuses ProjectCard + ProjectSheet, filters /commons/projects (flagship+featured+all) by me==='member'; profile.projects chips dropped.
+- 8: sticky `.sheet .actions` lives in teacher.css so it only applies to teacher/admin sheets; Sheet.tsx unchanged. Footer sticks mid-sheet when a field (file input) follows the actions in FormSheet.
+- 9: ClassPage (not owned) still opens TipSheet; TipSheet now returns null unless all 5 board lists are empty (own query, key [..,'board','tip']). 10: student Today only (teacher Today has no such section).
+- Not visually checked: History (5), TipSheet (9): /s/class crashes in Board.tsx:134 (`f.createdAt.slice` undefined, in-flight item-4 change from another task, server not returning createdAt).
+
