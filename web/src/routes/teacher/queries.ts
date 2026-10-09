@@ -6,6 +6,9 @@ import { upload } from '../../ui/FormSheet';
 
 export type StaffToday = components['schemas']['StaffToday'];
 export type TodaySession = components['schemas']['TodaySession'];
+// What SessionActions/ClashBanner need: a TodaySession (CS-11) or a ScheduleItem (CS-05, clash teacher filled in by useMySchedule) both fit.
+type Item = components['schemas']['ScheduleItem'];
+export type ClashSession = Omit<Item, 'clashWith'> & { clashWith: (Item['clashWith'][number] & { teacher?: { id: string; name: string } | null })[] };
 
 // GET /me/today returns StudentToday | StaffToday; a teacher always gets the staff shape.
 export const useStaffToday = () => useQuery({
@@ -19,7 +22,7 @@ export function useSessionChange(classId: string) {
   return useMutation({
     mutationFn: (body: { date: string; kind: 'cancelled' | 'moved'; slotId: string; start?: string; end?: string; room?: string; movedToDate?: string; note?: string }) =>
       unwrap(api.POST('/classes/{id}/changes', { params: { path: { id: classId } }, body })),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['me', 'today'] }); qc.invalidateQueries({ queryKey: ['classes', classId] }); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['me'] }); qc.invalidateQueries({ queryKey: ['classes', classId] }); },
   });
 }
 
@@ -187,3 +190,20 @@ export const useStaffSearch = (q: string) => useQuery({
   queryKey: ['staff', q],
   queryFn: () => unwrap(api.GET('/staff', { params: { query: { q: q.trim() || undefined, limit: 8 } } })),
 });
+
+// TE-09 Upcoming sessions: no cross-class "my schedule" route, so GET /classes/:id/schedule (CS-05, ≤14 days) for each class I teach in.
+// Staff items span every class the teacher shares, so keep only my own subjects; clash teachers come from the other item in the same payload.
+export const useMySchedule = (userId: string, from: string, to: string) => {
+  const { data: classes } = useTeachingClasses();
+  return useQuery({
+    queryKey: ['me', 'schedule', from, to, classes?.map((c) => c.id)], enabled: !!classes,
+    queryFn: async () => {
+      const per = await Promise.all(classes!.map(async (c) => (await unwrap(api.GET('/classes/{id}/schedule', { params: { path: { id: c.id }, query: { from, to } } }))).days));
+      const by = new Map<string, ClashSession[]>(), all = new Map<string, ClashSession>();
+      per.flat().forEach((d) => d.items.forEach((i) => all.set(i.id, i)));
+      per.flat().forEach((d) => d.items.filter((i) => i.teacher?.id === userId).forEach((i) =>
+        by.set(d.date, [...(by.get(d.date) ?? []), { ...i, clashWith: i.clashWith.map((o) => ({ ...o, teacher: all.get(o.id)?.teacher })) }])));
+      return [...by].sort(([a], [b]) => a.localeCompare(b)).map(([date, items]) => ({ date, items: items.sort((a, b) => a.start.localeCompare(b.start)) }));
+    },
+  });
+};

@@ -59,12 +59,12 @@ export function Component() {
                   <Badge kind="danger">{cancelled ? 'Cancelled' : `Moved to ${start}–${end}`}{by && ` ${by}`}</Badge>
                   <span className="tiny muted">{s.change.note}</span></div>
               )}
-              <ClashBanner s={s} date={t.date} mine={mine} /></div>
+              <ClashBanner s={s} date={s.change?.date ?? t.date} mine={mine} /></div>
             <div className="act row" style={{ gap: 'var(--s1)' }}>
               {s.attendanceDone
                 ? <><Badge kind="open" plain>Done ✓</Badge><button type="button" className="btn sm ghost" onClick={() => take(s)}>Edit</button></>
                 : <button type="button" className={cancelled ? 'btn' : 'btn primary'} onClick={() => take(s)}>{cancelled ? 'Take anyway' : 'Take attendance'}</button>}
-              {mine && !cancelled && <SessionActions s={s} date={t.date} />}
+              {mine && !cancelled && <SessionActions s={s} date={s.change?.date ?? t.date} />}
             </div>
           </div>
         );

@@ -127,6 +127,7 @@ test('linkFor maps every payload type to a real route for students and teachers'
     ['attendance-digest', {}, '/s/class/attendance', '/t'],
     ['exam-reminder', {}, '/s', '/t/upcoming'],
     ['deadline-reminder', {}, '/s', '/t/upcoming'],
+    ['clash', { date: '2026-10-10' }, '/s', '/t/upcoming?date=2026-10-10'],
     ['other', { classId: 'c1' }, '/s/class', '/t/classes/c1'],
     ['thanks', {}, null, null],
   ];

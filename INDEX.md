@@ -178,7 +178,7 @@
 | [CS-17](tasks/backend/class-space/CS-17-parity-fields.md) | Parity fields: post body preview, byline label, upcoming class name, file age | CS-11, CM-08 | ✅ | QA-03a (S12) |
 | [FS-10](tasks/frontend/shared/FS-10-parity-polish.md) | Parity polish: history, Me projects, sheet footer, TipSheet trigger | QA-03a | ✅ | QA-03a (S12) |
 | [FS-11](tasks/frontend/shared/FS-11-shell-gaps.md) | Bell panel, phone log out, 403 page | FS-10 | ⬜ | QA-02a F3a F4 F6 (S12) |
-| [TE-09](tasks/frontend/teacher/TE-09-future-session-actions.md) | Cancel/postpone a future class; clash in Upcoming | CS-17 | 🟨 | QA-02a F3b (S12) |
+| [TE-09](tasks/frontend/teacher/TE-09-future-session-actions.md) | Cancel/postpone a future class; clash in Upcoming | CS-17 | ✅ | QA-02a F3b (S12) |
 | [ST-11](tasks/frontend/student/ST-11-past-term-readonly.md) | Past term read-only in the UI | QA-03a | ✅ | QA-02a F5 (S12) |
 | [FND-09](tasks/backend/foundation/FND-09-login-limiter.md) | Login limiter keyed IP+email (lab NAT) | FND-04 | ✅ | QA-02a F7 (S12) |
 | [FS-12](tasks/frontend/shared/FS-12-demo-copy.md) | Demo copy/label nits | FS-10 | ⬜ | QA-02a minor (S12) |

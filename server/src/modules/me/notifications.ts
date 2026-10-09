@@ -23,6 +23,7 @@ export const linkFor = (type: string, p: Payload, home: 's' | 't'): string | nul
   if (type === 'class-change') return s ? '/s' : '/t';
   if (type === 'attendance-low' || type === 'attendance-digest') return s ? '/s/class/attendance' : '/t';
   if (type === 'exam-reminder' || type === 'deadline-reminder') return s ? '/s' : '/t/upcoming';
+  if (type === 'clash') return s ? '/s' : p.date ? `/t/upcoming?date=${p.date}` : '/t/upcoming'; // TE-09
   return p.classId ? (s ? '/s/class' : `/t/classes/${p.classId}`) : null;
 };
 

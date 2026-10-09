@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { SessionActions } from './SessionActions';
-import type { TodaySession } from './queries';
+import type { ClashSession } from './queries';
 
 const key = (id: string) => `clash-dismissed:${id}`;
 const read = (id: string) => { try { return sessionStorage.getItem(key(id)) === '1'; } catch { return false; } };
 
 // D11: clashes are information, never blocked. "Keep mine" hides the banner for this browser session.
 // ponytail: SessionActions owns the Cancel/Postpone sheets and shows one "⋯" button; split into two buttons if it gains a variant prop.
-export function ClashBanner({ s, date, mine }: { s: TodaySession; date: string; mine: boolean }) {
+export function ClashBanner({ s, date, mine }: { s: ClashSession; date: string; mine: boolean }) {
   const [gone, setGone] = useState(() => read(s.id));
   const o = s.clashWith[0];
   if (!o || gone || s.off || s.change?.kind === 'cancelled') return null;

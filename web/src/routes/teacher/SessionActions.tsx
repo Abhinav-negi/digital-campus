@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { FormSheet } from '../../ui/FormSheet';
 import { Sheet } from '../../ui/Sheet';
 import { toast } from '../../ui/Toast';
-import { useSessionChange, type TodaySession } from './queries';
+import { useSessionChange, type ClashSession } from './queries';
 
 // "⋯" on an own session: Cancel (note) · Postpone (later today, or another date + time + room) → POST /classes/:id/changes.
-export function SessionActions({ s, date }: { s: TodaySession; date: string }) {
+export function SessionActions({ s, date }: { s: ClashSession; date: string }) {
   const [step, setStep] = useState<'closed' | 'menu' | 'cancel' | 'postpone'>('closed');
   const change = useSessionChange(s.classId);
   const close = () => setStep('closed');
