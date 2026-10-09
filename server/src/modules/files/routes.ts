@@ -3,7 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import express, { Router } from 'express';
 import { z } from 'zod';
-import { auth } from '../../lib/auth.js';
+import { auth, perUser } from '../../lib/auth.js';
 import { HttpError } from '../../lib/http.js';
 import { registry, route } from '../../lib/openapi.js';
 import { claimSig, localPath, presignPut, releaseSig, sniffOk, UPLOAD_DIR, verifyLocal } from '../../lib/storage.js';
@@ -23,6 +23,7 @@ const router = Router();
 router.post(
   '/presign',
   auth(),
+  perUser(30, 60_000),
   route(registry, {
     method: 'post',
     path: '/files/presign',

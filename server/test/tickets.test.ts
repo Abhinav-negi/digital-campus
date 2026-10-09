@@ -70,3 +70,11 @@ test('the inbox merges tickets and reports, newest first, with counts per state'
   await a.get('/api/v1/admin/inbox?state=bogus').expect(422);
   await (await agent('teacher')).get('/api/v1/admin/inbox').expect(403);
 });
+
+test('per-user write throttle (FND-10): the 31st ticket in a minute → 429, another user is unaffected', async () => {
+  const t = await agent('subjectTeacher');
+  const body = { category: 'bug', subject: 's', body: 'b' };
+  for (let i = 0; i < 30; i++) await t.post('/api/v1/tickets').send(body).expect(201);
+  assert.equal((await t.post('/api/v1/tickets').send(body).expect(429)).body.error.code, 'RATE_LIMITED');
+  await (await agent('admin')).post('/api/v1/tickets').send(body).expect(201);
+});

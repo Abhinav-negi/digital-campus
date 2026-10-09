@@ -55,6 +55,17 @@ export const boardExpiryNudges = async (now: Date) => {
 export const cleanInvites = async (now: Date) =>
   (await db.invite.deleteMany({ where: { acceptedAt: null, expiresAt: { lt: now }, createdAt: { lt: addDays(now, -30) } } })).count;
 
+/** 03:10 — retention (R3): read notifications > 90 days, expired sessions, reset/invite tokens that are both spent (used or accepted) and expired. */
+export const purgeStale = async (now: Date) => {
+  const [n, s, r, i] = await Promise.all([
+    db.notification.deleteMany({ where: { readAt: { not: null }, createdAt: { lt: addDays(now, -90) } } }),
+    db.loginSession.deleteMany({ where: { expiresAt: { lt: now } } }),
+    db.passwordReset.deleteMany({ where: { usedAt: { not: null }, expiresAt: { lt: now } } }),
+    db.invite.deleteMany({ where: { acceptedAt: { not: null }, expiresAt: { lt: now } } }),
+  ]);
+  return n.count + s.count + r.count + i.count;
+};
+
 /**
  * 07:10 — students below a class's minimum attendance get one digest of their subjects.
  * Only on change (the set of subjects differs from their last digest) and at most once a week.
@@ -89,6 +100,7 @@ export function start() {
   at('0 7 * * *', examReminders);
   at('5 7 * * *', boardExpiryNudges);
   at('0 3 * * *', cleanInvites);
+  at('10 3 * * *', purgeStale);
   at('10 7 * * *', attendanceDigest);
   at('15 * * * *', liftExpiredBans);
 }

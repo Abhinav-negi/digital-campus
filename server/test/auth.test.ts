@@ -141,6 +141,12 @@ test('forgot (always 200) → link in the log → reset → old sessions gone, n
   await request(app).post('/api/v1/auth/login').send({ email: s3.user.email, password: 'a brand new password' }).expect(200);
 });
 
+test('forgot (R8): the 4th request for one address in 15 min → 429', async () => {
+  const email = 'spam@demo.edu';
+  for (let i = 0; i < 3; i++) await request(app).post('/api/v1/auth/forgot').send({ email }).expect(200);
+  await request(app).post('/api/v1/auth/forgot').send({ email }).expect(429);
+});
+
 test('rateLimit: max per window per IP → 429', async () => {
   const mini = express().post('/x', rateLimit(2, 60_000), notImplemented).use(errorHandler);
   await request(mini).post('/x').expect(501);

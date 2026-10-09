@@ -110,3 +110,9 @@ test('a blocked user (either way) can neither request nor message', async () => 
   await db.block.create({ data: { userId: y, blockedId: 's3' } });
   await s3.post(`${url}/conversations/${c.id}/messages`).send({ body: 'still?' }).expect(403);
 });
+
+test('per-user write throttle (FND-10): the 31st message in a minute → 429', async () => {
+  const s = await as('s9');
+  for (let i = 0; i < 30; i++) await s.post(`${url}/conversations/nope/messages`).send({ body: 'x' }).expect(404);
+  assert.equal((await s.post(`${url}/conversations/nope/messages`).send({ body: 'x' }).expect(429)).body.error.code, 'RATE_LIMITED');
+});

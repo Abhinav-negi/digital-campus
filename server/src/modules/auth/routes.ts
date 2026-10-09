@@ -124,6 +124,7 @@ router.post(
   '/forgot',
   rateLimit(30, 60_000),
   rateLimit(10, 60_000, emailOf),
+  rateLimit(3, WINDOW, emailOf), // R8: 3 mails / 15 min per address
   route(registry, {
     method: 'post',
     path: '/auth/forgot',

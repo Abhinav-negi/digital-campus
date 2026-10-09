@@ -2,7 +2,7 @@ import type { Prisma } from '@prisma/client';
 import { Router } from 'express';
 import { z } from 'zod';
 import { audit } from '../../lib/audit.js';
-import { auth } from '../../lib/auth.js';
+import { auth, perUser } from '../../lib/auth.js';
 import { db } from '../../lib/db.js';
 import { HttpError, page, pageQuery, paginate } from '../../lib/http.js';
 import { notify } from '../../lib/notify.js';
@@ -68,6 +68,7 @@ router.use(auth());
 
 router.post(
   '/',
+  perUser(30, 60_000),
   route(registry, {
     method: 'post',
     path: '/tickets',
@@ -122,6 +123,7 @@ router.get(
 
 router.post(
   '/:id/replies',
+  perUser(30, 60_000),
   route(registry, {
     method: 'post',
     path: '/tickets/:id/replies',

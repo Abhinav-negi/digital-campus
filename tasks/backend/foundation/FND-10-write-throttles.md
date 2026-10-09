@@ -8,6 +8,10 @@
 - Forgot: 3 mails/15 min per email (R8).
 
 ## Done when
-- [ ] Tests: the 31st message in a minute → 429; purge removes only old rows. Server tests green.
+- [x] Tests: the 31st message in a minute → 429; purge removes only old rows. Server tests green.
 
 ## Notes
+- `perUser(max, windowMs, extra?)` in lib/auth.ts wraps `rateLimit` keyed `userId|extra`; applied to messages, answers, tickets (create + replies), presign (30/min), invite resend (20/h), remind (5/h, key adds post id). Forgot gained 3/15 min per email.
+- `purgeStale` (jobs.ts, 03:10): read notifications created >90d ago, expired sessions, reset tokens used AND expired, invites accepted AND expired. Pending/unused tokens are never touched.
+- Tests: 31st ticket / 31st message / 4th forgot → 429; purge test checks each survivor. Gotcha: limiters are per-process, so a test file's earlier calls count toward the same user's budget (message test uses s9).
+- wall.test.ts untouched and green; `npm test --workspace server` 184/184, typecheck clean.

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
-import { attendanceDigest, boardExpiryNudges, cleanInvites, examReminders, start } from '../src/jobs.js';
+import { attendanceDigest, boardExpiryNudges, cleanInvites, examReminders, purgeStale, start } from '../src/jobs.js';
 import { addDays, today } from '../src/lib/dates.js';
 import { db } from '../src/lib/db.js';
 import { linkFor } from '../src/modules/me/notifications.js';
@@ -136,4 +136,22 @@ test('linkFor maps every payload type to a real route for students and teachers'
     assert.equal(linkFor(type, p, 't'), tea, `${type} teacher`);
     for (const l of [stu, tea]) assert.ok(!l || !/^\/(s|t)\/today|^\/s\/commons\/messages/.test(l), `${type} stale link`);
   }
+});
+
+test('purge removes only read notifications > 90d, expired sessions, and spent-and-expired tokens', async () => {
+  const old = addDays(now, -100);
+  const n = (id: string, createdAt: Date, readAt: Date | null) => ({ id, userId: 's1', type: 'x', payload: {}, createdAt, readAt });
+  await db.notification.createMany({ data: [n('n-old-read', old, old), n('n-old-unread', old, null), n('n-new-read', now, now)] });
+  const sess = (id: string, expiresAt: Date) => ({ id, userId: 's1', tokenHash: id, userAgent: 't', expiresAt });
+  await db.loginSession.createMany({ data: [sess('ls-dead', addDays(now, -1)), sess('ls-live', addDays(now, 1))] });
+  const rst = (id: string, expiresAt: Date, usedAt: Date | null) => ({ id, userId: 's1', tokenHash: id, expiresAt, usedAt });
+  await db.passwordReset.createMany({ data: [rst('pr-spent', addDays(now, -1), old), rst('pr-expired', addDays(now, -1), null), rst('pr-used-live', addDays(now, 1), now), rst('pr-pending', addDays(now, 1), null)] });
+  const inv = (id: string, expiresAt: Date, acceptedAt: Date | null) => ({ id, email: `${id}@x.edu`, role: 'student' as const, classId: 'c1', invitedById: 't1', tokenHash: id, expiresAt, acceptedAt });
+  await db.invite.createMany({ data: [inv('pi-spent', addDays(now, -1), old), inv('pi-expired', addDays(now, -1), null), inv('pi-pending', addDays(now, 5), null)] });
+  assert.ok(await purgeStale(now) >= 4); // earlier tests in this file may leave other stale rows
+  const ids = async (rows: Promise<{ id: string }[]>) => (await rows).map((r) => r.id).sort();
+  assert.deepEqual(await ids(db.notification.findMany({ where: { id: { startsWith: 'n-' } } })), ['n-new-read', 'n-old-unread']);
+  assert.deepEqual(await ids(db.loginSession.findMany({ where: { id: { startsWith: 'ls-' } } })), ['ls-live']);
+  assert.deepEqual(await ids(db.passwordReset.findMany({ where: { id: { startsWith: 'pr-' } } })), ['pr-expired', 'pr-pending', 'pr-used-live']);
+  assert.deepEqual(await ids(db.invite.findMany({ where: { id: { startsWith: 'pi-' } } })), ['pi-expired', 'pi-pending']);
 });

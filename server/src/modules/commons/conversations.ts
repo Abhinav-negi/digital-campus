@@ -1,7 +1,7 @@
 import type { Prisma } from '@prisma/client';
 import { Router } from 'express';
 import { z } from 'zod';
-import type { AuthUser } from '../../lib/auth.js';
+import { perUser, type AuthUser } from '../../lib/auth.js';
 import { addDays, today } from '../../lib/dates.js';
 import { db } from '../../lib/db.js';
 import { HttpError, page, pageQuery, paginate } from '../../lib/http.js';
@@ -235,6 +235,7 @@ router.get(
 const sendBody = z.object({ body: z.string().trim().min(1).max(2000) });
 router.post(
   '/conversations/:id/messages',
+  perUser(30, 60_000),
   route(registry, {
     method: 'post',
     path: '/commons/conversations/:id/messages',

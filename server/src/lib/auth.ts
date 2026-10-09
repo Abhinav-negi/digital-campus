@@ -183,6 +183,10 @@ export const classAccess =
     next();
   };
 
+/** Per-user write throttle (FND-10): `rateLimit` keyed by user id (+ `extra`, e.g. the post id). Mount after auth. */
+export const perUser = (max: number, windowMs: number, extra: (req: Request) => string = () => ''): RequestHandler =>
+  rateLimit(max, windowMs, (req) => `${req.user?.id ?? req.ip}|${extra(req)}`);
+
 /** Fixed-window limiter (keyed per IP unless `keyOf` says otherwise) → 429 RATE_LIMITED. */
 // ponytail: in-memory, so the limit is per process; move to a Postgres/Redis counter if we ever run >1 instance.
 export const rateLimit = (max: number, windowMs: number, keyOf: (req: Request) => string = (req) => req.ip ?? ''): RequestHandler => {

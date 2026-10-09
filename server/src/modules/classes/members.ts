@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { audit } from '../../lib/audit.js';
-import { classAccess } from '../../lib/auth.js';
+import { classAccess, perUser } from '../../lib/auth.js';
 import { db } from '../../lib/db.js';
 import { HttpError } from '../../lib/http.js';
 import { notify } from '../../lib/notify.js';
@@ -138,6 +138,7 @@ router.post(
 
 router.post(
   '/invites/resend',
+  perUser(20, 3_600_000),
   classAccess('id', 'own'),
   writable,
   route(registry, {

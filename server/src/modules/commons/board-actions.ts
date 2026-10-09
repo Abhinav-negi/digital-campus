@@ -5,6 +5,7 @@ import { HttpError } from '../../lib/http.js';
 import { notify } from '../../lib/notify.js';
 import { registry, route } from '../../lib/openapi.js';
 import { unblocked } from './safety.js';
+import { perUser } from '../../lib/auth.js';
 import { CLOSED, authorOnly, boardPostDetail, findPost, gigDone, helpersOf, isOpen, postDetail, studentOnly } from './board.js';
 
 // CM-03: what people do on a post (SPEC §9.2 actions, §9.6 thanks; PROTO student.html:305-339, :596-599, :630-632).
@@ -20,6 +21,7 @@ const notOpen = (what: string) => new HttpError(422, 'NOT_OPEN', `This ${what} i
 const answerBody = z.object({ body: z.string().trim().min(1).max(2000) });
 router.post(
   '/board-posts/:id/answers',
+  perUser(30, 60_000),
   route(registry, {
     method: 'post',
     path: '/commons/board-posts/:id/answers',

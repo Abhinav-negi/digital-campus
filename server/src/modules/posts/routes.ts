@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { audit } from '../../lib/audit.js';
 import type { AuthUser } from '../../lib/auth.js';
-import { auth, classAccess, staff } from '../../lib/auth.js';
+import { auth, classAccess, perUser, staff } from '../../lib/auth.js';
 import { db } from '../../lib/db.js';
 import { HttpError, notFound, page, pageQuery, paginate } from '../../lib/http.js';
 import { notify } from '../../lib/notify.js';
@@ -194,6 +194,7 @@ posts.post(
 posts.post(
   '/:id/remind',
   auth(),
+  perUser(5, 3_600_000, (req) => String(req.params.id)),
   route(registry, {
     method: 'post',
     path: '/posts/:id/remind',
