@@ -6,7 +6,9 @@ import { useMe } from '../../../api/hooks';
 import { Icon } from '../../../ui/Icon';
 import { Composer } from '../Composer';
 import { BoardTab } from './BoardTab';
+import { AttendanceTab } from './AttendanceTab';
 import { PostsTab } from './PostsTab';
+import { StudentsTab } from './StudentsTab';
 
 /** PROTO renderClass (teacher.html:316). `adminMode` (/a/classes/:id): every tab editable, Settings always shown. */
 export function ClassView({ adminMode = false }: { adminMode?: boolean }) {

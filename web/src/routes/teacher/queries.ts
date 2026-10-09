@@ -141,3 +141,32 @@ export const useClassPosts = (classId: string) => useQuery({
 export const useRemind = () => useMutation({
   mutationFn: (postId: string) => unwrap(api.POST('/posts/{id}/remind', { params: { path: { id: postId } } })),
 });
+
+// TE-05b Students + Attendance tabs. Roster (CS-02) and per-subject standings (CS-09).
+export const useRoster = (classId: string) => useQuery({
+  queryKey: ['classes', classId, 'members'],
+  queryFn: async () => (await unwrap(api.GET('/classes/{id}/members', { params: { path: { id: classId } } }))).items,
+});
+export function useRosterActions(classId: string) {
+  const qc = useQueryClient();
+  const done = () => { qc.invalidateQueries({ queryKey: ['classes', classId] }); qc.invalidateQueries({ queryKey: ['classes'] }); };
+  const path = { id: classId };
+  return {
+    resend: useMutation({ mutationFn: (userId: string) => unwrap(api.POST('/classes/{id}/invites/resend', { params: { path }, body: { userId } })) }),
+    setCr: useMutation({ mutationFn: (userIds: string[]) => unwrap(api.PUT('/classes/{id}/cr', { params: { path }, body: { userIds } })), onSuccess: done }),
+    remove: useMutation({ mutationFn: (userId: string) => unwrap(api.DELETE('/classes/{id}/members/{userId}', { params: { path: { id: classId, userId } } })), onSuccess: done }),
+    invite: useMutation({
+      mutationFn: (rows: { studentIdNo: string; email: string }[]) => unwrap(api.POST('/classes/{id}/invites', { params: { path }, body: { rows, dryRun: false } })),
+      onSuccess: done,
+    }),
+  };
+}
+// Subjects the viewer can see attendance for: all for the class teacher/admin, else the ones they teach.
+export const useAttendanceSubjects = (classId: string, userId: string | undefined, all: boolean) => useQuery({
+  queryKey: ['classes', classId, 'subjects', 'att', userId, all],
+  queryFn: async () => (await unwrap(api.GET('/classes/{id}/subjects', { params: { path: { id: classId } } }))).items.filter((s) => all || s.teacher?.id === userId),
+});
+export const useClassAttendance = (classId: string, subjectId: string | undefined) => useQuery({
+  queryKey: ['classes', classId, 'attendance', subjectId], enabled: !!subjectId,
+  queryFn: () => unwrap(api.GET('/classes/{id}/attendance', { params: { path: { id: classId }, query: { subjectId: subjectId! } } })),
+});
