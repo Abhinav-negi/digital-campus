@@ -183,13 +183,13 @@ export const classAccess =
     next();
   };
 
-/** Fixed-window per-IP limiter → 429 RATE_LIMITED. */
+/** Fixed-window limiter (keyed per IP unless `keyOf` says otherwise) → 429 RATE_LIMITED. */
 // ponytail: in-memory, so the limit is per process; move to a Postgres/Redis counter if we ever run >1 instance.
-export const rateLimit = (max: number, windowMs: number): RequestHandler => {
+export const rateLimit = (max: number, windowMs: number, keyOf: (req: Request) => string = (req) => req.ip ?? ''): RequestHandler => {
   const hits = new Map<string, { count: number; resetAt: number }>();
   return (req, _res, next) => {
     const now = Date.now();
-    const key = req.ip ?? '';
+    const key = keyOf(req);
     let hit = hits.get(key);
     if (!hit || hit.resetAt <= now) {
       if (hits.size > 10_000) for (const [k, v] of hits) if (v.resetAt <= now) hits.delete(k);

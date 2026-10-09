@@ -8,7 +8,7 @@ import { db } from '../src/lib/db.js';
 import { errorHandler, notImplemented } from '../src/lib/http.js';
 import { agent, ORIGIN, PASSWORD, resetDb } from './helpers.js';
 
-// ponytail: login is rate limited to 10/min/IP per process; this file does 6 real logins (agent() skips login).
+// ponytail: login is limited per (IP, email) in-process; this file logs in a few seeded users only (agent() skips login).
 before(resetDb);
 after(() => db.$disconnect());
 
@@ -146,4 +146,19 @@ test('rateLimit: max per window per IP → 429', async () => {
   await request(mini).post('/x').expect(501);
   await request(mini).post('/x').expect(501);
   assert.equal((await request(mini).post('/x').expect(429)).body.error.code, 'RATE_LIMITED');
+});
+
+test('login limiter (D18): 40 students behind one IP all get in; 11 bad tries on one account → 429', async () => {
+  const s1 = await db.user.findUniqueOrThrow({ where: { id: 's1' } });
+  const lab = Array.from({ length: 40 }, (_, i) => `lab${i}@nat.test`);
+  await db.user.createMany({
+    data: lab.map((email, i) => ({ id: `lab${i}`, institutionId: s1.institutionId, role: s1.role, name: `Lab ${i}`, email, passwordHash: s1.passwordHash, status: s1.status })),
+  });
+  for (const email of lab) await request(app).post('/api/v1/auth/login').send({ email, password: PASSWORD }).expect(200);
+
+  const bad = () => request(app).post('/api/v1/auth/login').send({ email: lab[0], password: 'wrong password' });
+  for (let i = 0; i < 9; i++) await bad().expect(401); // 1 good + 9 bad = 10 tries on this pair
+  const res = await bad().expect(429);
+  assert.equal(res.body.error.code, 'RATE_LIMITED');
+  await request(app).post('/api/v1/auth/login').send({ email: lab[1], password: PASSWORD }).expect(200); // other accounts unaffected
 });

@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, type Request } from 'express';
 import { z } from 'zod';
 import {
   auth,
@@ -57,9 +57,14 @@ const badLogin = () => new HttpError(401, 'INVALID_CREDENTIALS', 'Email or passw
 
 const router = Router();
 
+// D18: a lab shares one NAT IP, so count per (IP, email) and keep only a loose per-IP ceiling.
+const emailOf = (req: Request) => String(req.body?.email ?? '').trim().toLowerCase();
+const WINDOW = 15 * 60_000;
+
 router.post(
   '/login',
-  rateLimit(10, 60_000),
+  rateLimit(300, WINDOW),
+  rateLimit(10, WINDOW, (req) => `${req.ip}|${emailOf(req)}`),
   route(registry, {
     method: 'post',
     path: '/auth/login',
@@ -116,7 +121,7 @@ router.get(
 
 router.post(
   '/forgot',
-  rateLimit(10, 60_000),
+  rateLimit(10, 60_000, emailOf),
   route(registry, {
     method: 'post',
     path: '/auth/forgot',
