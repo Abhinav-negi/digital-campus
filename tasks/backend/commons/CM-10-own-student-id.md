@@ -9,3 +9,7 @@
 - [ ] Test: self sees `studentIdNo`, another student doesn't. Me shows it. Checks green.
 
 ## Notes
+- `profileView` (profiles.ts) selects `User.studentIdNo` and spreads `studentIdNo` only when `self && value`; schema field is `.optional()` so it is absent (not null) for others.
+- Test in profiles.test.ts: Riya on s1 sees the DB value; on s12 (another student) the key is not in the body.
+- MePage header: `{label} · {studentIdNo}` on the muted line. `npm run gen:api` regenerated schema.d.ts.
+- Checks: typecheck, `npm test` (178 server + 14 web pass), `npm run build -w web` green. A first `npm test` run showed many file failures, probably shared test DB contention with the concurrent agent; the rerun was clean.

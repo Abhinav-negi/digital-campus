@@ -32,7 +32,7 @@ export function Component() {
   return (
     <>
       <div className="page-head"><div className="row"><Avatar user={p} size="xl" /><div>
-        <h1>{p.name}</h1><p className="muted">{p.label}</p>
+        <h1>{p.name}</h1><p className="muted">{p.label}{p.studentIdNo && ` · ${p.studentIdNo}`}</p>
         <p className="small muted">Helped {p.track.helped} {p.track.helped === 1 ? 'person' : 'people'} · {p.track.gigsDone} gigs done · {p.track.projectsShipped} projects shipped</p>
       </div></div></div>
       <ProfileForm key={p.id + p.availability + p.focusUntil} p={p} />

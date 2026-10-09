@@ -9651,6 +9651,7 @@ export interface components {
                 status: "looking" | "building" | "shipped";
             }[];
             self: boolean;
+            studentIdNo?: string;
             canAsk: boolean;
             conversation: {
                 id: string;

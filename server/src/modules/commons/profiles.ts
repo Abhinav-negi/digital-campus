@@ -50,6 +50,8 @@ const personProfile = personCard
     track: z.object({ helped: z.number().int(), gigsDone: z.number().int(), projectsShipped: z.number().int() }),
     projects: z.array(z.object({ id: z.string(), title: z.string(), status: z.enum(['looking', 'building', 'shipped']) })),
     self: z.boolean(),
+    /** Only on your own profile (privacy); absent for everyone else. */
+    studentIdNo: z.string().optional(),
     canAsk: z.boolean(),
     conversation: z.object({ id: z.string(), state: conversationState, fromMe: z.boolean() }).nullable(),
   })
@@ -100,7 +102,7 @@ const visibleState = (c: { fromId: string; state: z.infer<typeof conversationSta
 const profileView = async (meId: string, userId: string): Promise<z.infer<typeof personProfile>> => {
   const [viewer, u, helped, gigsDone, projects, convo] = await Promise.all([
     viewerOf(meId),
-    db.user.findFirst({ where: { id: userId, role: 'student', status: 'active', bannedAt: null }, select: { ...personSelect, institutionId: true } }),
+    db.user.findFirst({ where: { id: userId, role: 'student', status: 'active', bannedAt: null }, select: { ...personSelect, institutionId: true, studentIdNo: true } }),
     db.thanks.count({ where: { toId: userId } }),
     db.boardPost.count({ where: { kind: 'gig', status: 'done', assigneeId: userId } }),
     db.project.findMany({
@@ -123,6 +125,7 @@ const profileView = async (meId: string, userId: string): Promise<z.infer<typeof
     track: { helped, gigsDone, projectsShipped: projects.filter((p) => p.status === 'shipped').length },
     projects,
     self,
+    ...(self && u.studentIdNo && { studentIdNo: u.studentIdNo }),
     canAsk: !self && card.availability !== 'focus' && !convo,
     conversation: convo && { id: convo.id, state: visibleState(convo, meId), fromMe: convo.fromId === meId },
   };

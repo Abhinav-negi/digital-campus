@@ -83,6 +83,10 @@ test('profile: focus past its date reads as open; track record, projects, canAsk
   const me = (await riya.get('/api/v1/commons/profiles/s1').expect(200)).body;
   noEmail(me);
   assert.deepEqual([me.self, me.canAsk, me.label], [true, false, 'CSE · 2nd year']);
+  const sid = (await db.user.findUniqueOrThrow({ where: { id: 's1' } })).studentIdNo;
+  assert.ok(sid);
+  assert.equal(me.studentIdNo, sid);
+  assert.equal('studentIdNo' in kabir, false, "another student's ID is never exposed");
   assert.equal(me.track.helped, await db.thanks.count({ where: { toId: 's1' } }));
   assert.ok(me.projects.length > 0);
   assert.deepEqual(Object.keys(me.links).sort(), ['github', 'leetcode', 'linkedin', 'other']);
