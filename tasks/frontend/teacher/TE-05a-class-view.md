@@ -14,3 +14,8 @@
 - [ ] The class teacher edits the board; Remind sends a notification.
 
 ## Notes
+- Done: ClassView (adminMode prop; Component export mounts it at /t/classes/:id/*), BoardTab (reuses student Board/EditToggle/History/Subjects/WeekEditor/WeekAhead/Import, edit controls for class teacher/admin), PostsTab (GET /classes/:id/posts filtered to my author id; admin sees all; seen bar from `stats`; POST /posts/:id/remind). Hooks useClassPosts/useRemind appended to teacher/queries.ts.
+- Students, Attendance tabs are placeholders naming TE-05b; Settings (class teacher/admin only) names TE-06. AF-03 should mount `<ClassView adminMode />` at /a/classes/:id/*; tab links use absolute /t|/a/classes/:id/<tab>.
+- Gotcha: student EditToggle text says "as CR" (cosmetic; a `label` prop would fix). Board empty states say "The CR will add..." even for the class teacher.
+- Live (port 3141, c1/Meera Iyer): board POST 201, PATCH 200, history logged; POST /posts then remind -> {reminded:28}, notifications rows for s1,s2 type post. typecheck, web tests (14), build pass.
+

@@ -132,3 +132,12 @@ export function useCode(id: string, on: boolean) {
     queryFn: () => unwrap(api.GET('/attendance-sessions/{id}/code', { params: { path: { id } } })),
   });
 }
+
+// TE-05a class view. GET /classes/:id/posts carries per-class seen stats for staff; Remind notifies the unseen students.
+export const useClassPosts = (classId: string) => useQuery({
+  queryKey: ['classes', classId, 'posts'],
+  queryFn: async () => (await unwrap(api.GET('/classes/{id}/posts', { params: { path: { id: classId } } }))).items,
+});
+export const useRemind = () => useMutation({
+  mutationFn: (postId: string) => unwrap(api.POST('/posts/{id}/remind', { params: { path: { id: postId } } })),
+});

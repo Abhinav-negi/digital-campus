@@ -7,7 +7,7 @@ export const teacherRoutes: RouteObject[] = [
   { path: 'attend/:sessionId', lazy: () => import('./attendance/AttendancePage') }, // TE-02 attendance
   { path: 'classes', lazy: () => import('./classes/ClassesList') }, // TE-04 ClassesList
   { path: 'classes/new', lazy: () => import('./classes/NewClass') }, // TE-07 new class wizard
-  { path: 'classes/:id/*', lazy: soon }, // TE-05a class view
+  { path: 'classes/:id/*', lazy: () => import('./class/ClassView') }, // TE-05a class view
   { path: 'upcoming', lazy: () => import('./Upcoming') }, // TE-08 Upcoming
   { path: '*', lazy: soon },
 ];
