@@ -94,6 +94,8 @@
 | [OPS-04](tasks/devops/OPS-04-deploy-guide.md) | Deploy guide | OPS-03 | ⬜ |
 | [OPS-05](tasks/devops/OPS-05-ci.md) | CI pipeline | FND-08 | ⬜ |
 | [QA-05](tasks/qa/QA-05-prod-smoke.md) | Production build smoke test | OPS-03, OPS-04 | ⬜ |
+| [OPS-06](tasks/devops/OPS-06-trust-proxy.md) | `trust proxy` so per-IP limits work behind Caddy (R1) | OPS-03 | ⬜ |
+| [OPS-07](tasks/devops/OPS-07-prod-hardening.md) | Prod cookie Secure default + security headers + attachment downloads (R5, R10) | OPS-03 | ⬜ |
 
 ## Frontend: Shared
 | ID | Task | Deps | Status |
@@ -159,7 +161,7 @@
 | [QA-02b](tasks/qa/QA-02b-demo-rerun.md) | Lab demo re-run after fixes | QA-02a, FS-11, TE-09, ST-11, FND-09, FS-10, FS-12 | ⬜ |
 | [QA-03a](tasks/qa/QA-03-visual-parity.md) | Visual parity: first pass + fixes (docs/PARITY.md) | all ST, TE, AF, FS-08 | ✅ |
 | [QA-03b](tasks/qa/QA-03b-visual-parity-rest.md) | Visual parity: remaining screens + re-check | QA-03a, CS-17, FS-10 | 🟨 |
-| [QA-04](tasks/qa/QA-04-review.md) | Code + security review | QA-01 | 🟨 |
+| [QA-04](tasks/qa/QA-04-review.md) | Code + security review | QA-01 | ✅ |
 
 ---
 
@@ -183,3 +185,7 @@
 | [FND-09](tasks/backend/foundation/FND-09-login-limiter.md) | Login limiter keyed IP+email (lab NAT) | FND-04 | ✅ | QA-02a F7 (S12) |
 | [FS-12](tasks/frontend/shared/FS-12-demo-copy.md) | Demo copy/label nits | FS-10 | ✅ | QA-02a minor (S12) |
 | [CM-10](tasks/backend/commons/CM-10-own-student-id.md) | Student ID on my own profile (Me header) | CM-01 | ✅ | FS-10 (S12) |
+| [CM-11](tasks/backend/commons/CM-11-blocks-everywhere.md) | Enforce blocks on Commons actions + by-id reads | CM-07 | ⬜ | QA-04 R2 (S12) |
+| [FND-10](tasks/backend/foundation/FND-10-write-throttles.md) | Per-user write throttles + retention purge | FND-09 | ⬜ | QA-04 R3 R8 (S12) |
+| [FND-11](tasks/backend/foundation/FND-11-upload-enforcement.md) | Enforce upload size/type on the bytes; single-use PUT | FND-06 | ⬜ | QA-04 R4 (S12) |
+| [FND-12](tasks/backend/foundation/FND-12-review-lows.md) | Review lows: N+1 posts, unbounded reads, URL guards, hiddenDetail | QA-04 | ⬜ | QA-04 R6–R13 (S12) |
