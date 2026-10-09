@@ -78,3 +78,31 @@ Other checks that passed along the way: an unmatched teacher in the import previ
 
 ## How to rerun
 Log in per role at http://localhost:5173/login. Teacher: `meera.iyer@demo.edu` (CSE A/B teacher), `sana.khan@demo.edu`, `david.mathew@demo.edu`, `arjun.rao@demo.edu`. Admin: `academics@demo.edu`. Students: `25csea001@students.demo.edu` ... (CSE A, 001 is CR), `25cseb001` (CSE B CR). Dev invite links are in the API log. Use a fresh section name for the new class (a branch + year + section must be unique).
+
+## Re-run (QA-02b)
+
+Run date: 2026-10-09, reseeded dev DB, real UI in headless Chrome (1280px teachers/admin, 390px students), no S12 workarounds. The API/DB were used only to read invite links from `api.log` and the audit log (via the admin Audit page). New class "IE · 1st year · Demo" (30 rows). Every step passed; no new blocking failures.
+
+| # | Step | Result | Evidence |
+|---|---|---|---|
+| 1 | Create class, paste 30 rows, accept an invite on a phone, set password | PASS | "30 ready" -> class created with 30 invites (30 mails in `api.log`); 390px: invite link -> Join your class -> password -> Finish -> "You're in. Welcome to IE · 1st year · Demo" for 26IE001 and 26IE002. |
+| 2 | Make CR from the teacher's Students tab -> the CR's phone shows Edit | PASS | F1 fixed: Students tab lists the roster (Active/Invited, Resend, Remove). Meera tapped "Make CR" on 26IE002 -> row shows "CR"; on the phone 26IE002 sees "You are the CR" + Edit. |
+| 3 | CR imports timetable + exam -> student Today, teacher Upcoming, allotted teacher | PASS | CR 26IE002 (made CR in step 2) pasted chatbot JSON: preview, picked a teacher for the unmatched name, Confirm -> 5 classes in the week; datesheet -> "Mid-term Wed 14 Oct". 26IE001 Today shows Physics 10:00 LH-1 and "Coming up: Mid-term"; Sana sees the allotment card with "Not me" and the class in her Classes; David sees the IE class (Workshop). |
+| 4 | One post to two classes -> "12 of 30 seen" -> Remind | PASS | Meera posted to CSE A + B; 12 students opened it on phones; Posts tab "12 of 28 seen" (28 = active students, by design); Remind -> toast "Reminder sent to 34". |
+| 5a | 3 absent, save -> a student's % changes | PASS | CSE A Data Structures 09:00: tapped 002/003/004 -> "25 present · 3 absent" -> "Attendance saved · students updated"; Myra (absent) now 77%, Riya (present) 100%. |
+| 5b | Code mode from the UI: 2 students on one device -> flagged | PASS | F2 fixed: Code tab shows a rotating code (e.g. 7475, 20 s) with no manual POST. 25cseb002 and 25cseb003 checked in from one phone context -> "2 of 18 checked in" + "Pooja and Kunal used the same device. Flagged, not rejected." |
+| 6 | CR moves a class to tomorrow + 13:00 extra over a 13:00 slot -> Clash both; both teachers notified; cancel clears | PASS | CR moved Fri Maths (Arjun) to Sat 10 Oct 13:00 over Data Structures (Meera) -> Clash badge on both items; extra Workshop 13:00 on 16 Oct over Maths -> Clash on both. Arjun's and Meera's bells (F3 fixed) show "Two classes overlap at 13:00 on 2026-10-10 ... who's taking it?"; clicking it opens `/t/upcoming?date=2026-10-10` with the clash banner. Meera: ⋯ -> Cancel this session -> Sat card "Cancelled"; Arjun's Upcoming no longer shows Clash on Sat 10 Oct. |
+| 7 | Commons: Focus hides Ask; post a project, join, accept | PASS | 25csea005 on Open: other students see "Ask" on their card; on Focus: no "Ask". 25cseb004 created "Demo: campus bus tracker"; 25csea006 Ask to join; owner sheet showed Accept; after Accept the joiner sees "Post update". |
+| 8 | Teacher at `/s/commons` -> 403 page; admin reads a conversation -> audit row | PASS | F4 fixed: Meera at `/s/commons` lands on `/403` ("403 · This area is not for your account · Go to your home"); direct API still 403. Admin opened "Ananya Chopra and Riya Patel" -> Audit page shows `conversation.read` for cv1. |
+| 9 | Student ticket -> admin reply -> visible in Me | PASS | 25csea007 Contact admin -> ticket shown in admin Inbox; admin replied; student Me: status "Answered", thread shows "Admin: Fixed, please check your card at the office." |
+| 10 | Start next semester -> name/year update; old term read-only | PASS | Meera Settings -> Start semester 2, 3: header "IE · 2nd year · Demo", SEMESTER 3. CR phone: term switcher "Year 2 · Sem 3 / Year 1 · Sem 2 (past) / Year 1 · Sem 1 (past)"; Sem 1 view shows "Past term · read-only", timetable and exam visible, and no Edit button (F5 fixed). |
+| + | Student logs out from Me at 390px | PASS | 25csea008: Me -> Log out -> `/login`; `/s` then redirects back to `/login` (F6 fixed). |
+| + | 12+ students log in from one machine in a row (D18) | PASS | 25csea002..013 logged in back to back (twice, 24 logins in about 1 minute) from one IP with no "Too many attempts" (F7 fixed). |
+
+### Failures (re-run)
+None blocking. Observations, all minor:
+- Did: Teacher made the second student CR with "Make CR". Happened: both 26IE001 and 26IE002 are now CR (Make CR adds, the first CR is not demoted; the roster shows two "CR" rows). Expected: unclear (ARCHITECTURE allows several CRs?); no way to remove CR from the UI. Suggested task: "Add Remove CR / swap CR in StudentsTab if one CR is intended". File: `web/src/routes/teacher/class/StudentsTab.tsx`.
+- Still open from the first run's minor list: the "Set up your class" sheet re-opens on every visit to the CR page until all steps are done and blocks the Edit button (needed dismiss/import click first); a CR without a profile name shows the student ID ("Good afternoon, 26IE001"). Setup sheet copy is now "Import with any chatbot" (fixed).
+
+### Data left behind (dev DB)
+Class "IE · 2nd year · Demo" (semester 3, 26IE001/002 active, password `campus123`, both CR), post "Demo: lab safety briefing", project "Demo: campus bus tracker", ticket "Demo: wrong section on my ID card", CSE A 09:00 attendance saved, CSE B code opened with two check-ins, schedule changes on 10 and 16 Oct (Sat Data Structures cancelled), Raghav Ali (25csea005) left on Focus.

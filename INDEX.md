@@ -158,7 +158,7 @@
 |---|---|---|---|
 | [QA-01](tasks/qa/QA-01-permission-suite.md) | Permission suite (the wall) | all CS, CM, AD | ✅ |
 | [QA-02a](tasks/qa/QA-02-lab-demo.md) | Lab-demo walk-through: first run (docs/DEMO.md), F1–F7 filed | all ST, TE, AF | ✅ |
-| [QA-02b](tasks/qa/QA-02b-demo-rerun.md) | Lab demo re-run after fixes | QA-02a, FS-11, TE-09, ST-11, FND-09, FS-10, FS-12 | 🟨 |
+| [QA-02b](tasks/qa/QA-02b-demo-rerun.md) | Lab demo re-run after fixes | QA-02a, FS-11, TE-09, ST-11, FND-09, FS-10, FS-12 | ✅ |
 | [QA-03a](tasks/qa/QA-03-visual-parity.md) | Visual parity: first pass + fixes (docs/PARITY.md) | all ST, TE, AF, FS-08 | ✅ |
 | [QA-03b](tasks/qa/QA-03b-visual-parity-rest.md) | Visual parity: remaining screens + re-check | QA-03a, CS-17, FS-10 | ✅ |
 | [QA-04](tasks/qa/QA-04-review.md) | Code + security review | QA-01 | ✅ |
@@ -190,3 +190,5 @@
 | [FND-11](tasks/backend/foundation/FND-11-upload-enforcement.md) | Enforce upload size/type on the bytes; single-use PUT | FND-06 | ✅ | QA-04 R4 (S12) |
 | [FND-12](tasks/backend/foundation/FND-12-review-lows.md) | Review lows: N+1 posts, unbounded reads, URL guards, hiddenDetail | QA-04 | ✅ | QA-04 R6–R13 (S12) |
 | [FS-13](tasks/frontend/shared/FS-13-parity-leftovers.md) | Parity leftovers: admin class card chips at 390, exam row spacing | QA-03b | ✅ | QA-03b (S12) |
+| [TE-10](tasks/frontend/teacher/TE-10-remove-cr.md) | Remove/replace a CR from Students | TE-05b | 🟨 | QA-02b (S12) |
+| [ST-12](tasks/frontend/student/ST-12-setup-sheet-once.md) | Setup sheet once per session + tips link | FS-10 | 🟨 | QA-02b (S12) |
