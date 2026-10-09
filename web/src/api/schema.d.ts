@@ -9468,6 +9468,8 @@ export interface components {
             } | null;
             /** Format: date-time */
             lastLoginAt: string | null;
+            /** Format: date-time */
+            bannedAt: string | null;
         };
         InboxItem: {
             /** @enum {string} */

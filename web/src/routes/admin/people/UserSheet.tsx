@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Avatar } from '../../../ui/Avatar';
 import { FormSheet } from '../../../ui/FormSheet';
@@ -8,6 +9,8 @@ import { useAllClasses, usePeopleMutations, type AdminUser } from '../queries';
 // AF-02: one person. Edit (students), move batch, disable/enable, reset password, admin badge, Commons ban, delete.
 export function UserSheet({ user: u, onClose }: { user: AdminUser; onClose: () => void }) {
   const m = usePeopleMutations();
+  const qc = useQueryClient();
+  const refresh = () => qc.invalidateQueries({ queryKey: ['admin'] }); // ban/unban mutations don't invalidate the list themselves
   const student = u.role === 'student';
   const [form, setForm] = useState<'edit' | 'move' | 'ban'>();
   const classes = useAllClasses(form === 'move');
@@ -20,7 +23,7 @@ export function UserSheet({ user: u, onClose }: { user: AdminUser; onClose: () =
         <div className="stack">
           <div className="row"><Avatar user={u} size="lg" />
             <div className="grow"><p>{u.email}</p>
-              <p className="muted small">{student ? `${u.homeClass?.name ?? 'No class'}${u.studentIdNo ? ` · ${u.studentIdNo}` : ''}` : u.dept} · {u.status}{u.lastLoginAt ? ` · last login ${new Date(u.lastLoginAt).toLocaleDateString()}` : ''}</p></div></div>
+              <p className="muted small">{student ? `${u.homeClass?.name ?? 'No class'}${u.studentIdNo ? ` · ${u.studentIdNo}` : ''}` : u.dept} · {u.status}{u.bannedAt ? ' · Banned from Commons' : ''}{u.lastLoginAt ? ` · last login ${new Date(u.lastLoginAt).toLocaleDateString()}` : ''}</p></div></div>
           <div className="row" style={{ flexWrap: 'wrap' }}>
             {student && <button type="button" className="btn sm" disabled={busy} onClick={() => setForm('edit')}>Edit details</button>}
             {student && <button type="button" className="btn sm" disabled={busy} onClick={() => setForm('move')}>Move to batch</button>}
@@ -33,8 +36,8 @@ export function UserSheet({ user: u, onClose }: { user: AdminUser; onClose: () =
               <button type="button" className="btn sm" disabled={busy || u.isChief} title={chiefTip}
                 onClick={() => run(m.admin.mutateAsync({ id: u.id, isAdmin: !u.isAdmin }), u.isAdmin ? 'Admin removed.' : 'Admin granted.')}>
                 {u.isAdmin ? 'Remove admin' : 'Make admin'}</button>)}
-            {student && <button type="button" className="btn sm" disabled={busy} onClick={() => setForm('ban')}>Ban from Commons</button>}
-            {student && <button type="button" className="btn sm" disabled={busy} onClick={() => run(m.unban.mutateAsync(u.id), 'Unbanned.')}>Unban</button>}
+            {student && !u.bannedAt && <button type="button" className="btn sm" disabled={busy} onClick={() => setForm('ban')}>Ban from Commons</button>}
+            {student && u.bannedAt && <button type="button" className="btn sm" disabled={busy} onClick={() => run(m.unban.mutateAsync(u.id).then(refresh), 'Unbanned.')}>Unban</button>}
             <button type="button" className="btn ghost sm" disabled={busy || u.isChief} title={chiefTip}
               onClick={() => { if (confirm(`Delete ${u.name} for good? Their account is anonymised and their Commons content removed. This cannot be undone.`)) run(m.remove.mutateAsync(u.id), 'Account deleted.', true); }}>Delete</button>
           </div>
@@ -50,7 +53,7 @@ export function UserSheet({ user: u, onClose }: { user: AdminUser; onClose: () =
         : <Sheet title="Move to batch" onClose={() => setForm(undefined)}><p className="muted">{classes.error ? classes.error.message : 'Loading…'}</p></Sheet>)}
       {form === 'ban' && <FormSheet title="Ban from Commons" label="Ban" onClose={() => setForm(undefined)}
         fields={[{ name: 'reason', label: 'Reason (audited)', req: true }]}
-        onSubmit={async (v) => { await m.ban.mutateAsync({ id: u.id, reason: String(v.reason).trim() }); toast('Banned from the Commons.'); }} />}
+        onSubmit={async (v) => { await m.ban.mutateAsync({ id: u.id, reason: String(v.reason).trim() }); await refresh(); toast('Banned from the Commons.'); }} />}
     </>
   );
 }

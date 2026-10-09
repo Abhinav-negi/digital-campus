@@ -24,6 +24,7 @@ const adminUser = z
     studentIdNo: z.string().nullable(),
     homeClass: z.object({ id: z.string(), name: z.string() }).nullable(),
     lastLoginAt: z.iso.datetime().nullable(),
+    bannedAt: z.iso.datetime().nullable(), // AD-06 Commons ban
   })
   .meta({ id: 'AdminUser' });
 
@@ -52,6 +53,7 @@ const toAdminUser = (u: Row): z.infer<typeof adminUser> => ({
   studentIdNo: u.studentIdNo,
   homeClass: u.homeClass,
   lastLoginAt: u.sessions[0]?.createdAt.toISOString() ?? null,
+  bannedAt: u.bannedAt?.toISOString() ?? null,
 });
 
 const router = Router();

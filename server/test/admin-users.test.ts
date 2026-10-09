@@ -129,3 +129,13 @@ test('a deleted account stays gone: no re-enable, reset or badge (404)', async (
   await a.put('/api/v1/admin/users/s10/admin').send({ isAdmin: true }).expect(404);
   await a.delete('/api/v1/admin/users/s10').expect(404);
 });
+
+test('bannedAt shows the Commons ban in the directory and clears on unban', async () => {
+  const a = await agent('admin');
+  const bannedAt = async () => (await a.get('/api/v1/admin/users').query({ classId: 'c1', limit: 50 }).expect(200)).body.items.find((u: { id: string }) => u.id === 's5').bannedAt;
+  assert.equal(await bannedAt(), null);
+  await a.post('/api/v1/admin/users/s5/ban').send({ reason: 'spam' }).expect(200);
+  assert.ok(await bannedAt());
+  await a.delete('/api/v1/admin/users/s5/ban').expect(204);
+  assert.equal(await bannedAt(), null);
+});
