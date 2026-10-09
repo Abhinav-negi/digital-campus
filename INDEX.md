@@ -154,9 +154,9 @@
 ## QA
 | ID | Task | Deps | Status |
 |---|---|---|---|
-| [QA-01](tasks/qa/QA-01-permission-suite.md) | Permission suite (the wall) | all CS, CM, AD | 🟨 |
-| [QA-02](tasks/qa/QA-02-lab-demo.md) | Lab-demo walk-through | all ST, TE, AF | ⬜ |
-| [QA-03](tasks/qa/QA-03-visual-parity.md) | Visual parity with the prototype | all ST, TE, AF, FS-08 | ⬜ |
+| [QA-01](tasks/qa/QA-01-permission-suite.md) | Permission suite (the wall) | all CS, CM, AD | ✅ |
+| [QA-02](tasks/qa/QA-02-lab-demo.md) | Lab-demo walk-through | all ST, TE, AF | 🟨 |
+| [QA-03](tasks/qa/QA-03-visual-parity.md) | Visual parity with the prototype | all ST, TE, AF, FS-08 | 🟨 |
 | [QA-04](tasks/qa/QA-04-review.md) | Code + security review | QA-01 | ⬜ |
 
 ---
