@@ -38,6 +38,7 @@ export function Component() {
   const list = terms.data?.items ?? [];
   const latest = list[0]?.id;
   const termId = picked ?? latest;
+  const past = !!termId && termId !== latest; // D5: an old term is read-only, notices included
 
   return (
     <>
@@ -59,10 +60,12 @@ export function Component() {
           </select>
         )}
       </div>
-      {isCr && tab === '' && <div style={{ marginTop: 'var(--s4)' }}><EditToggle editing={editing} onChange={setEditing} /></div>}
+      {isCr && tab === '' && (past
+        ? <p className="small muted" style={{ marginTop: 'var(--s4)' }}><span className="chip">Past term · read-only</span></p>
+        : <div style={{ marginTop: 'var(--s4)' }}><EditToggle editing={editing} onChange={setEditing} /></div>)}
       <div style={{ marginTop: 'var(--s4)' }}>
-        {tab === '' && (terms.data ? <Board classId={id} termId={termId} current={termId === latest} editing={isCr && editing} /> : null)}
-        {tab === '' && isCr && editing && termId === latest && <><Subjects classId={id} /><WeekEditor classId={id} /><WeekAhead classId={id} /><Import classId={id} /></>}
+        {tab === '' && (terms.data ? <Board classId={id} termId={termId} current={termId === latest} editing={isCr && editing && !past} /> : null)}
+        {tab === '' && isCr && editing && !past && <><Subjects classId={id} /><WeekEditor classId={id} /><WeekAhead classId={id} /><Import classId={id} /></>}
         {tab === '' && isCr && <History classId={id} />}
         {tab === 'posts' && <Posts classId={id} isCr={isCr} />}
         {tab === 'attendance' && <div className="stack"><CheckIn /><MyAttendance classId={id} isCr={isCr} /></div>}

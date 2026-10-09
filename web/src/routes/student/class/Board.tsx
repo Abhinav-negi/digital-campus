@@ -78,8 +78,9 @@ const FileChip = ({ it }: { it: Item }) => {
 export function Board({ classId, termId, current, editing, staff }: { classId: string; termId?: string; current: boolean; editing?: boolean; staff?: boolean }) {
   const [adding, setAdding] = useState<AddKind>();
   const remove = useRemoveItem(classId);
-  const del = editing ? remove : undefined;
-  const add = (kind: AddKind, label: string) => (editing ? <AddButton label={label} onClick={() => setAdding(kind)} /> : undefined);
+  const canEdit = editing && current; // past terms are read-only (D5)
+  const del = canEdit ? remove : undefined;
+  const add = (kind: AddKind, label: string) => (canEdit ? <AddButton label={label} onClick={() => setAdding(kind)} /> : undefined);
   const board = useQuery({
     queryKey: ['classes', classId, 'board', termId],
     queryFn: () => unwrap(api.GET('/classes/{id}/board', { params: { path: { id: classId }, query: { termId } } })),

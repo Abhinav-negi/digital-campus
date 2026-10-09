@@ -10,3 +10,7 @@
 - [ ] CR switches to a past term → no edit controls; a forced API write returns 409. Web checks green.
 
 ## Notes
+- ClassPage: `past = termId !== latest` hides EditToggle (shows "Past term · read-only" chip) and forces `editing={... && !past}`; Board also gates add/delete on `editing && current`, so BoardTab (always `current`) is unchanged.
+- Server: PATCH/DELETE on a past-term exam returned 409 PAST_TERM (curl, ie01 CR, class "IE · 2nd year · Demo"). POST /board has no termId; it always writes to the active term, so no past-term add exists to refuse.
+- Live: Edit visible on Sem 3, absent on "Sem 1 (past)"; screenshots shots/st11-{current,past}.png.
+- Checks: typecheck, web tests, web build green. Not added: a web test (no existing ClassPage test harness).
