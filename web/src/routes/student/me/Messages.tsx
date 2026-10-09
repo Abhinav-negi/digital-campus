@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { rel } from '../../../lib/dates';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router';
 import { api, unwrap } from '../../../api/client';
@@ -31,7 +32,7 @@ export function Messages() {
       {incoming.length > 0 && <div className="card"><div className="eyebrow" style={{ marginBottom: 'var(--s1)' }}>Requests for you</div><div className="list">
         {incoming.map((c) => (
           <div key={c.id} className="stack" style={{ gap: 'var(--s1)' }}>
-            <div className="row"><Avatar user={c.with} size="sm" /><b>{c.with.name}</b><span className="small muted">{new Date(c.lastAt).toLocaleDateString()}</span></div>
+            <div className="row"><Avatar user={c.with} size="sm" /><b>{c.with.name}</b><span className="small muted">{rel(c.lastAt.slice(0, 10))}</span></div>
             <div className="small">{c.note}</div>
             <div className="row">
               <button type="button" className="btn sm primary" disabled={respond.isPending} onClick={() => respond.mutate({ id: c.id, state: 'accepted' })}>Accept</button>

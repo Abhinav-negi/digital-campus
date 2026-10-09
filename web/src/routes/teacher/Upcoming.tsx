@@ -20,7 +20,7 @@ export function Component() {
   const groups = new Map<number, NonNullable<typeof items>>();
   items?.forEach((i) => groups.set(weekIdx(i.date), [...(groups.get(weekIdx(i.date)) ?? []), i]));
   const label = (w: number) => (w <= cur ? 'This week' : w === cur + 1 ? 'Next week' : `In ${w - cur} weeks`);
-  const rel = (d: string) => { const n = dayNum(d) - dayNum(today); return n === 1 ? 'Tomorrow' : `In ${n} days`; };
+  const rel = (d: string) => { const n = dayNum(d) - dayNum(today); return n === 1 ? 'tomorrow' : `in ${n} days`; };
 
   return (
     <>

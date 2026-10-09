@@ -18,9 +18,9 @@ export function BoardTab({ classId, crNames, canEdit }: { classId: string; crNam
   return (
     <div className="stack-lg">
       {canEdit
-        ? <EditToggle editing={editing} onChange={setEditing} />
+        ? <EditToggle editing={editing} onChange={setEditing} staff />
         : <p className="muted small">Read-only. {crNames ? `The CR (${crNames}) maintains the board.` : 'The CR maintains the board.'}</p>}
-      <Board classId={classId} termId={termId} current editing={canEdit && editing} />
+      <Board classId={classId} termId={termId} current editing={canEdit && editing} staff />
       {canEdit && editing && <><Subjects classId={classId} /><WeekEditor classId={classId} /><WeekAhead classId={classId} /><Import classId={classId} /></>}
       <History classId={classId} />
     </div>

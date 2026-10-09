@@ -17,7 +17,7 @@ export function Component() {
     <>
       <div className="page-head"><div><h1>Commons</h1><p className="muted">Moderate posts, projects and people.</p></div></div>
       <div className="tabs">{TABS.map(([k, label]) => (
-        <NavLink key={k} to={k} end className={({ isActive }) => (isActive ? 'tab on' : 'tab')}>{label}</NavLink>))}
+        <NavLink key={k} to={`/a/commons${k ? '/' + k : ''}`} className={k === tab ? 'tab on' : 'tab'}>{label}</NavLink>))}
       </div>
       <div style={{ marginTop: 'var(--s4)' }}>
         {tab === '' && <Board moderation={moderation} />}

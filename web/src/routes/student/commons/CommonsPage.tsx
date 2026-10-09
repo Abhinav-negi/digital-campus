@@ -22,7 +22,7 @@ export function Component() {
         {post('hpost')}
       </div>
       <div className="tabs">{TABS.map(([k, label]) => (
-        <NavLink key={k} to={k} end className={({ isActive }) => (isActive ? 'tab on' : 'tab')}>{label}</NavLink>))}
+        <NavLink key={k} to={`/s/commons${k ? '/' + k : ''}`} className={k === tab ? 'tab on' : 'tab'}>{label}</NavLink>))}
       </div>
       <p className="small muted" style={{ marginTop: 'var(--s2)' }}>Admins can see Commons activity, including messages, for safety.</p>
       <div style={{ marginTop: 'var(--s4)' }}>

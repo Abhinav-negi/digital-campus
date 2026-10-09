@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { rel } from '../../../lib/dates';
 import { useNavigate } from 'react-router';
 import { api, unwrap } from '../../../api/client';
 import { Empty } from '../../../ui/Empty';
@@ -18,8 +19,9 @@ export function Notifications() {
   if (!list.data) return <p className="muted">{list.error ? list.error.message : 'Loading…'}</p>;
   const items = list.data.items;
   return (
-    <>
-      <div style={{ marginBottom: 'var(--s2)' }}>
+    <div className="section">
+      <div className="row between">
+        <h3>Notifications</h3>
         <button type="button" className="btn sm" disabled={!list.data.unreadCount || read.isPending} onClick={() => read.mutate({ all: true })}>Mark all read</button>
       </div>
       <div className="card">{items.length ? <div className="list">{items.map((n) => (
@@ -27,8 +29,8 @@ export function Notifications() {
           onClick={() => { if (!n.read) read.mutate({ ids: [n.id] }); if (n.link) nav(n.link); }}>
           {n.read ? <span style={{ width: 'var(--s1)' }} /> : <span className="unread" />}
           <div className={n.read ? 'grow muted' : 'grow'}>{n.text}</div>
-          <span className="small muted">{new Date(n.createdAt).toLocaleDateString()}</span>
+          <span className="small muted">{rel(n.createdAt.slice(0, 10))}</span>
         </button>))}</div> : <Empty text="No notifications." />}</div>
-    </>
+    </div>
   );
 }

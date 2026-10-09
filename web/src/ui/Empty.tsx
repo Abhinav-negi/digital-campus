@@ -13,8 +13,8 @@ export function Empty({ seed = 'calm', text, action, cr }: { seed?: string; text
 }
 
 /** D9 placeholder. Everyone sees "Your CR will add the {what} soon."; the CR (isCr) sees an "Add {what}" button instead. */
-export function CrWillAdd({ what, isCr, onAdd }: { what: string; isCr?: boolean; onAdd?: () => void }) {
+export function CrWillAdd({ what, isCr, onAdd, staff }: { what: string; isCr?: boolean; onAdd?: () => void; staff?: boolean }) {
   return isCr
     ? <Empty cr seed={what} action={<button type="button" className="btn primary" onClick={onAdd}>Add {what}</button>} />
-    : <Empty cr seed={what} text={`Your CR will add the ${what} soon.`} />;
+    : <Empty cr seed={what} text={staff ? `No ${what} on the board yet.` : `Your CR will add the ${what} soon.`} />;
 }

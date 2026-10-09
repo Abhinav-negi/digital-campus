@@ -12,7 +12,7 @@ import { ProfileForm } from './ProfileForm';
 import { YourData } from './YourData';
 
 const Sec = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <section style={{ marginTop: 'var(--s5)' }}><h2 style={{ marginBottom: 'var(--s2)' }}>{title}</h2>{children}</section>);
+  <div className="section"><h3>{title}</h3>{children}</div>);
 
 export function Component() {
   const me = useMe().data?.user;
@@ -27,14 +27,14 @@ export function Component() {
     <>
       <div className="page-head"><div className="row"><Avatar user={p} size="xl" /><div>
         <h1>{p.name}</h1><p className="muted">{p.label}</p>
-        <p className="small muted">Helped {p.track.helped} · {p.track.gigsDone} gigs done · {p.track.projectsShipped} projects shipped</p>
+        <p className="small muted">Helped {p.track.helped} {p.track.helped === 1 ? 'person' : 'people'} · {p.track.gigsDone} gigs done · {p.track.projectsShipped} projects shipped</p>
       </div></div></div>
       <ProfileForm key={p.id + p.availability + p.focusUntil} p={p} />
       <Sec title="My projects">{p.projects.length ? <div className="fl">{p.projects.map((x) => <Chip key={x.id} tone="vio">{x.title}</Chip>)}</div> : <Empty text="You are not on a project yet." />}</Sec>
       <Sec title="My board posts">{posts.length ? <div className="grid grid-2">{posts.map((x) => <BoardCard key={x.id} p={x} />)}</div> : <Empty text="You have not posted on the Board yet." />}</Sec>
       <Sec title="Messages"><Messages /></Sec>
-      <Sec title="Notifications"><Notifications /></Sec>
-      <Sec title="Need help?"><Tickets /></Sec>
+      <Notifications />
+      <div className="section"><Tickets /></div>
       <Sec title="Your data"><YourData /></Sec>
     </>
   );

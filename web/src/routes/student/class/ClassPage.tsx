@@ -51,7 +51,7 @@ export function Component() {
       </div></div>
       <div className="row between wrap">
         <div className="tabs">{TABS.map(([k, label]) => (
-          <NavLink key={k} to={k} end className={({ isActive }) => (isActive ? 'tab on' : 'tab')}>{label}</NavLink>))}
+          <NavLink key={k} to={`/s/class${k ? '/' + k : ''}`} className={k === tab ? 'tab on' : 'tab'}>{label}</NavLink>))}
         </div>
         {tab === '' && list.length > 1 && (
           <select className="input" style={{ width: 'auto' }} aria-label="Term" value={termId} onChange={(e) => setPicked(e.target.value)}>

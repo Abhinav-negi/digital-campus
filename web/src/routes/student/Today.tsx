@@ -6,6 +6,7 @@ import { Badge, Chip } from '../../ui/Badge';
 import { Bar } from '../../ui/Bar';
 import { CrWillAdd, Empty } from '../../ui/Empty';
 import { Icon } from '../../ui/Icon';
+import { fmt, rel as relDay, today as isoToday } from '../../lib/dates';
 import { CheckIn } from './class/CheckIn';
 import { useCommonsCard, useToday, type StudentToday } from './queries';
 
@@ -15,10 +16,9 @@ const COL = { safe: 'var(--success)', warn: 'var(--warn)', danger: 'var(--danger
 const st = (s: Slot) => s.change?.start ?? s.start;
 const en = (s: Slot) => s.change?.end ?? s.end;
 const name = (s: Slot) => s.subject?.name ?? s.title ?? 'Class';
-const fmt = (d: string) => new Date(d + 'T00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 const rel = (iso: string) => {
   const m = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 6e4));
-  return m < 60 ? `${m}m ago` : m < 1440 ? `${Math.round(m / 60)}h ago` : `${Math.round(m / 1440)}d ago`;
+  return m < 60 ? `${m}m ago` : m < 1440 ? `${Math.round(m / 60)}h ago` : m < 2880 ? 'yesterday' : `${Math.round(m / 1440)} days ago`;
 };
 const Sec = ({ title, action, children }: { title: string; action?: ReactNode; children: ReactNode }) => (
   <div className="section"><div className="row between"><h3>{title}</h3>{action}</div>{children}</div>
@@ -110,7 +110,8 @@ export function Component() {
       <Sec title="Coming up">
         <div className="card">{t.upcoming.length ? <div className="list">{t.upcoming.map((u) => (
           <div key={u.ref} className="row"><span className="ico"><Icon name={KI[u.kind]} /></span>
-            <div className="grow"><div>{u.title}</div><div className="small muted">{u.kind} · {fmt(u.date)}</div></div></div>
+            <div className="grow"><div>{u.title}</div><div className="small muted">{u.kind} · {fmt(u.date)}</div></div>
+            <Chip tone={Date.parse(u.date) - Date.parse(isoToday()) <= 2 * 864e5 ? 'due' : undefined}>{relDay(u.date)}</Chip></div>
         ))}</div> : <Empty text="Nothing due in the next two weeks." />}</div>
       </Sec>
       <Sec title="New from teachers">

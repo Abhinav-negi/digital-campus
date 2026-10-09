@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api, unwrap } from '../../../api/client';
 import type { components } from '../../../api/schema';
+import { fmt } from '../../../lib/dates';
 import { Badge, Chip } from '../../../ui/Badge';
 import { Icon } from '../../../ui/Icon';
 import { CrWillAdd } from '../../../ui/Empty';
@@ -13,7 +14,6 @@ export type Day = { label: string; today: boolean; cells: Cell[] };
 
 const LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-const fmt = (d: string) => new Date(d + 'T00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 const daysTo = (d: string) => Math.round((new Date(d + 'T00:00').getTime() - new Date(iso(new Date()) + 'T00:00').getTime()) / 864e5);
 
 /** Mon..Sat of the week containing `now`, as YYYY-MM-DD. */
@@ -62,7 +62,7 @@ const dated = (items: Item[], del?: (id: string) => ReactNode) => (
       <div className="row" key={b.id}>
         <div className="grow"><div>{b.title}</div>
           <div className="small muted">{b.date ? fmt(b.date) : ''}{b.subject ? ` · ${b.subject.name}` : ''}{b.body ? ` · ${b.body}` : ''}</div></div>
-        {b.date && daysTo(b.date) < 0 ? <Chip>past</Chip> : b.date ? <Chip tone={daysTo(b.date) <= 2 ? 'due' : undefined}>{daysTo(b.date) === 0 ? 'Today' : daysTo(b.date) === 1 ? 'Tomorrow' : `In ${daysTo(b.date)} days`}</Chip> : null}
+        {b.date && daysTo(b.date) < 0 ? <Chip>past</Chip> : b.date ? <Chip tone={daysTo(b.date) <= 2 ? 'due' : undefined}>{daysTo(b.date) === 0 ? 'today' : daysTo(b.date) === 1 ? 'tomorrow' : `in ${daysTo(b.date)} days`}</Chip> : null}
         {del?.(b.id)}
       </div>
     ))}
@@ -75,7 +75,7 @@ const FileChip = ({ it }: { it: Item }) => {
 };
 
 /** Read-only board for one class and term. `current` = the latest term (live week, with changes); older terms show the plain timetable. */
-export function Board({ classId, termId, current, editing }: { classId: string; termId?: string; current: boolean; editing?: boolean }) {
+export function Board({ classId, termId, current, editing, staff }: { classId: string; termId?: string; current: boolean; editing?: boolean; staff?: boolean }) {
   const [adding, setAdding] = useState<AddKind>();
   const remove = useRemoveItem(classId);
   const del = editing ? remove : undefined;
@@ -90,7 +90,7 @@ export function Board({ classId, termId, current, editing }: { classId: string; 
   const b = board.data;
   const notices = [...b.notices].sort((x, y) => Number(y.pinned) - Number(x.pinned));
   const days = week.data ? trimSat(week.data) : [];
-  const empty = (what: string) => <CrWillAdd what={what} />;
+  const empty = (what: string) => <CrWillAdd what={what} staff={staff} />;
 
   return (
     <div className="stack-lg">

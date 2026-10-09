@@ -39,10 +39,9 @@ export function BoardCard({ p, onOpen, mod }: { p: Post; onOpen?: (id: string) =
           {p.kind === 'gig' && p.deadline && <span className="chip">Due {rel(p.deadline)}</span>}
         </div>
         <div className="row" style={{ marginTop: 'var(--s1)' }}>
-          <Avatar user={p.author} size="sm" /><span className="small">{p.author.name}</span>
-          {p.author.label && <span className="pl">{p.author.label}</span>}
-          {p.author.otherBranch && <span className="pl xb">Other branch</span>}
-          {noun && <span className="chip">{p.count} {noun}{p.count !== 1 && noun !== 'interested' ? 's' : ''}</span>}
+          <Avatar user={p.author} size="sm" /><div className="grow"><b>{p.author.name}</b>
+            <div>{p.author.label && <span className={p.author.otherBranch ? 'pl xb' : 'pl'}>{p.author.label}</span>}</div></div>
+          {noun && <span className="chip" style={{ whiteSpace: 'nowrap' }}>{p.count} {noun}{p.count !== 1 && noun !== 'interested' ? 's' : ''}</span>}
         </div>
         {mod}
       </div>

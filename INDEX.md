@@ -156,7 +156,8 @@
 |---|---|---|---|
 | [QA-01](tasks/qa/QA-01-permission-suite.md) | Permission suite (the wall) | all CS, CM, AD | ✅ |
 | [QA-02](tasks/qa/QA-02-lab-demo.md) | Lab-demo walk-through | all ST, TE, AF | 🟨 |
-| [QA-03](tasks/qa/QA-03-visual-parity.md) | Visual parity with the prototype | all ST, TE, AF, FS-08 | 🟨 |
+| [QA-03a](tasks/qa/QA-03-visual-parity.md) | Visual parity: first pass + fixes (docs/PARITY.md) | all ST, TE, AF, FS-08 | ✅ |
+| [QA-03b](tasks/qa/QA-03b-visual-parity-rest.md) | Visual parity: remaining screens + re-check | QA-03a, CS-17, FS-10 | ⬜ |
 | [QA-04](tasks/qa/QA-04-review.md) | Code + security review | QA-01 | ⬜ |
 
 ---
@@ -173,3 +174,5 @@
 | [ST-08c](tasks/frontend/student/ST-08c-pick-winners.md) | Owner picks challenge winners | ST-08b, CM-05 | ✅ | ST-08b (S11) |
 | [AD-09](tasks/backend/admin/AD-09-user-ban-state.md) | Ban state on AdminUser (state-aware Ban/Unban) | AD-06, AF-02 | ✅ | AF-02 (S12) |
 | [AD-10](tasks/backend/admin/AD-10-direct-hide.md) | Admin direct hide + `includeHidden` lists | AD-06, AF-04a | ✅ | AF-04a (S12) |
+| [CS-17](tasks/backend/class-space/CS-17-parity-fields.md) | Parity fields: post body preview, byline label, upcoming class name, file age | CS-11, CM-08 | 🟨 | QA-03a (S12) |
+| [FS-10](tasks/frontend/shared/FS-10-parity-polish.md) | Parity polish: history, Me projects, sheet footer, TipSheet trigger | QA-03a | ⬜ | QA-03a (S12) |

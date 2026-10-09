@@ -111,7 +111,7 @@ export function WeekAhead({ classId }: { classId: string }) {
   return (
     <section className="section" id="week-ahead">
       <h3>This week &amp; next</h3>
-      <div className="week">
+      <div className="week week-14">
         {days.map((d) => (
           <div key={d.date} className="day">
             <div className="eyebrow">{dayLabel(d.date)}</div>

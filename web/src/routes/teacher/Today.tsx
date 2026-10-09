@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router';
 import { useMe } from '../../api/hooks';
 import { Badge } from '../../ui/Badge';
 import { Empty } from '../../ui/Empty';
+import { Icon } from '../../ui/Icon';
+import { fmt, rel } from '../../lib/dates';
 import { toast } from '../../ui/Toast';
 import { AllotmentCards } from './AllotmentCard';
 import { ClashBanner } from './ClashBanner';
@@ -37,10 +39,10 @@ export function Component() {
   return (
     <>
       <div className="page-head"><div>
-        <div className="eyebrow">{new Date(t.date + 'T00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</div>
-        <h1>{h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'}, {me.user.name}</h1>
+        <div className="eyebrow">{fmt(t.date)}</div>
+        <h1>{h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'}, {me.user.name.split(' ')[0]} {me.user.name.split(' ').pop()}</h1>
         <p className="muted">{items.length ? `${items.length} ${items.length === 1 ? 'session' : 'sessions'} today${done ? ` · ${done} done` : ''}.` : 'No sessions today.'}</p></div>
-        <button type="button" className="btn" onClick={() => setPast(true)}>Fill a past session</button></div>
+        <button type="button" className="btn" onClick={() => setPast(true)}><Icon name="clock" size={16} /> Fill a past session</button></div>
       <AllotmentCards />
       <div className="stack">{items.length ? items.map((s) => {
         const cancelled = s.change?.kind === 'cancelled';
@@ -73,7 +75,8 @@ export function Component() {
             const d = new Date(i.date + 'T00:00'), [b, l] = KIND[i.kind];
             return (
               <div key={i.ref} className="item"><div className="dateblk"><b>{d.getDate()}</b><span className="tiny muted">{d.toLocaleDateString('en-GB', { month: 'short' })}</span></div>
-                <div className="grow"><h4>{i.title}</h4><div className="tiny muted">{d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</div></div>
+                <div className="grow"><h4>{i.title}</h4><div className="tiny muted">{fmt(i.date)}</div></div>
+                <span className="tiny muted">{rel(i.date)}</span>
                 <Badge kind={b}>{l}</Badge></div>
             );
           })}</div></div></div>
