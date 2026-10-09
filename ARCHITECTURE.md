@@ -37,6 +37,7 @@ Architecture in one line: **one TypeScript monorepo → one container (REST API 
 | D15 | **One institution per deployment in v1.** `institutionId` stays on top-level rows (ARCH §7), but admin queries are not scoped by it. Turning on multi-institution means scoping every admin and staff lookup by `institutionId` first (QA-04 checks this). |
 | D17 | **An invited student may be CR (S09, user decision).** The new-class wizard picks the CR before anyone has accepted an invite. `PUT /classes/:id/cr` accepts active or invited members (disabled refused); the role sits on `ClassMember`, so it takes effect when they accept. |
 | D18 | **Login limiter keyed on IP + email (S12).** A lab logs in from one NAT address, so the login limiter counts per (IP, normalised email) with a loose per-IP ceiling (300/15 min) and a per-account ceiling across IPs (30/15 min; the accepted cost is that someone can lock one account for 15 min). Forgot: 30/min per IP + 10/min per email. Keys are length-bounded and the in-memory map is hard-capped (single process only). Found by QA-02a (F7); hardened after the S12 security review. |
+| D19 | Accepted (S12 review): the check-in X-Device-Id is a same-device hint, not proof; class teachers can learn whether an email already has an account via the invite dry run. |
 
 ---
 

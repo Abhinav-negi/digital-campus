@@ -3,7 +3,7 @@ import { Avatar } from '../../../../ui/Avatar';
 import { JoinCta, Roles, type Card } from './Projects';
 
 export function Flagship({ p, onOpen }: { p: Card; onOpen: (id: string) => void }) {
-  const repo = p.repoUrl?.replace(/\/$/, '');
+  const repo = p.repoUrl && /^https?:\/\//.test(p.repoUrl) ? p.repoUrl.replace(/\/$/, '') : undefined; // old seed rows may lack a scheme
   const open = (u: string) => window.open(u, '_blank', 'noopener');
   return (
     <div className="card hero flag"><div className="stack">

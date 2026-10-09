@@ -71,6 +71,7 @@ router.get(
       where: { kind: { in: ['ask', 'gig'] }, status: 'open', hiddenAt: null, expiresAt: { gte: v.on }, authorId: { notIn: [me, ...blocked] }, author: here, answers: { none: {} }, interests: { none: {} } },
       orderBy: { createdAt: 'desc' },
       include: { author: { select: personSelect } },
+      take: 200, // ponytail: hard cap; the card only needs the first skill match
     });
     const ask = asks.find((p) => match(p.tags));
     if (ask) items.push({ type: 'ask', title: ask.title, body: ask.body ?? '', refId: ask.id, byline: by(ask.author, v) });
@@ -78,6 +79,7 @@ router.get(
     const projects = await db.project.findMany({
       where: { hiddenAt: null, status: { not: 'shipped' }, ownerId: { notIn: blocked }, owner: here, members: { none: { userId: me } } },
       orderBy: { createdAt: 'desc' },
+      take: 200, // ponytail: hard cap, as above
     });
     const proj = projects.find((p) => p.roles.some((r) => skills.includes(r.toLowerCase()))) ?? projects.find((p) => p.status === 'looking');
     if (proj) items.push({ type: 'project', title: proj.title, body: proj.description, refId: proj.id });

@@ -13,3 +13,8 @@
 - [ ] Each item fixed or recorded as accepted; server + web checks green.
 
 ## Notes
+- R6: posts/routes.ts `statsFor` = one count + one groupBy per distinct class set (was 2 counts per post); response shape unchanged.
+- R7: hard caps with `ponytail:` comments (no cursor added): People 5000, routeToHelpers 5000, card asks/projects 200, GET /projects 500, GET /challenges 200 (newest first), class board 300. `attendanceDigest` is in server/src/jobs.ts (outside my allowed files), left alone.
+- R12: People.tsx already guarded http(s); Flagship.tsx now guards repoUrl.
+- R13: admins keep hiddenDetail; route summary fixed. R9/R11: ARCHITECTURE.md D19 row.
+- Checks: typecheck clean; server tests (campus_test_b) 180 pass; web tests 14 pass; web build ok.

@@ -152,7 +152,7 @@ router.get(
     const { institutionId, v } = await viewer(req.user!);
     const withHidden = !!(req.query as { includeHidden?: string }).includeHidden && req.user!.isAdmin; // the wall: students' includeHidden is ignored
     // ponytail: every visible challenge in one read, no paging; a school runs a handful a month.
-    const rows = await db.challenge.findMany({ where: { ...(!withHidden && { hiddenAt: null }), owner: { institutionId } }, include: cardInclude });
+    const rows = await db.challenge.findMany({ where: { ...(!withHidden && { hiddenAt: null }), owner: { institutionId } }, include: cardInclude, orderBy: { createdAt: 'desc' }, take: 200 }); // ponytail: hard cap, no cursor today
     const hidden = new Map(rows.map((c) => [c.id, c.hiddenAt]));
     const cards = (await toCards(rows, v)).map((c) => ({ ...c, ...(withHidden && hidden.get(c.id) && { hiddenAt: hidden.get(c.id)!.toISOString() }) }));
     cards.sort((a, b) => +b.live - +a.live || (a.live ? a.endsAt.localeCompare(b.endsAt) : b.endsAt.localeCompare(a.endsAt)));

@@ -164,6 +164,7 @@ router.get(
       where: { ...(!withHidden && { hiddenAt: null }), owner: { institutionId } },
       include: cardInclude(me.id),
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: 500, // ponytail: hard cap, no cursor today; add one if a school passes this
     });
     const cards = rows.map((p) => ({ ...toProjectCard(p, me.id, v), ...(withHidden && p.hiddenAt && { hiddenAt: p.hiddenAt.toISOString() }) }));
     const flagship = cards.find((p) => p.flagship) ?? null;

@@ -58,10 +58,23 @@ const present = async (p: Row, extra: { seen?: boolean; stats?: z.infer<typeof s
 const studentsOf = (classIds: string[]) =>
   ({ role: 'student', status: 'active', memberships: { some: { classId: { in: classIds }, role: { in: ['student', 'cr'] } } } }) satisfies Prisma.UserWhereInput;
 
-// ponytail: two counts per post on a page (≤100 posts); one grouped SQL query if lists get slow.
-const stats = async (postId: string, classIds: string[]) => {
-  const [seen, total] = await Promise.all([db.postSeen.count({ where: { postId, user: studentsOf(classIds) } }), db.user.count({ where: studentsOf(classIds) })]);
-  return { seen, total };
+/** seen/total for a page of posts: one groupBy + one count per distinct class set (not per post). */
+const statsFor = async (items: { id: string; classIds: string[] }[]) => {
+  const sets = new Map<string, { classIds: string[]; postIds: string[] }>();
+  for (const { id, classIds } of items) {
+    const key = [...classIds].sort().join(',');
+    (sets.get(key) ?? sets.set(key, { classIds, postIds: [] }).get(key)!).postIds.push(id);
+  }
+  const out = new Map<string, { seen: number; total: number }>();
+  await Promise.all([...sets.values()].map(async ({ classIds, postIds }) => {
+    const [total, seen] = await Promise.all([
+      db.user.count({ where: studentsOf(classIds) }),
+      db.postSeen.groupBy({ by: ['postId'], where: { postId: { in: postIds }, user: studentsOf(classIds) }, _count: { _all: true } }),
+    ]);
+    const seenBy = new Map(seen.map((g) => [g.postId, g._count._all]));
+    for (const id of postIds) out.set(id, { seen: seenBy.get(id) ?? 0, total });
+  }));
+  return out;
 };
 
 /** One audit row per target class, so the post shows in each class's history. */
@@ -149,7 +162,8 @@ posts.get(
   async (req, res) => {
     const { cursor, limit } = req.query as unknown as { cursor?: string; limit: number };
     const rows = await db.post.findMany({ where: { authorId: req.user!.id }, include, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], ...paginate(cursor, limit) });
-    const items = await Promise.all(rows.map(async (p) => present(p, { stats: await stats(p.id, p.targets.map((t) => t.class.id)) })));
+    const st = await statsFor(rows.map((p) => ({ id: p.id, classIds: p.targets.map((t) => t.class.id) })));
+    const items = await Promise.all(rows.map((p) => present(p, { stats: st.get(p.id) })));
     res.json(page(items, limit));
   },
 );
@@ -230,7 +244,8 @@ classPosts.get(
       ...paginate(cursor, limit),
     });
     const student = me.role === 'student';
-    const items = await Promise.all(rows.map(async (p) => present(p, student ? { seen: p.seen.length > 0 } : { stats: await stats(p.id, [classId]) })));
+    const st = student ? null : await statsFor(rows.map((p) => ({ id: p.id, classIds: [classId] })));
+    const items = await Promise.all(rows.map((p) => present(p, st ? { stats: st.get(p.id) } : { seen: p.seen.length > 0 })));
     res.json(page(items, limit));
   },
 );

@@ -354,6 +354,7 @@ const routeToHelpers = async (p: { id: string; kind: string; title: string; tags
   const rows = await db.user.findMany({
     where: { institutionId: author.institutionId, role: 'student', status: 'active', bannedAt: null, id: { not: authorId }, profile: { isNot: null } },
     select: personSelect,
+    take: 5000, // ponytail: hard cap on the helper scan; push a skills hasSome filter into SQL past this
   });
   const wanted = new Set(p.tags.map((t) => t.toLowerCase()));
   const ids = rows
@@ -372,7 +373,7 @@ router.get(
   route(registry, {
     method: 'get',
     path: '/commons/board-posts/:id',
-    summary: "A post with its answers/interests/claims and the actions I may take; Found's hidden detail only for the author",
+    summary: "A post with its answers/interests/claims and the actions I may take; Found's hidden detail only for the author and admins",
     guard: 'commons',
     request: { params: idParams },
     responses: { 200: boardPostDetail, 404: null },

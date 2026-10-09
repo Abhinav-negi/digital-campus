@@ -157,6 +157,7 @@ router.get(
       include,
       // Pinned notices first, dated items soonest first, then newest.
       orderBy: [{ pinned: 'desc' }, { date: { sort: 'asc', nulls: 'last' } }, { createdAt: 'desc' }, { id: 'asc' }],
+      take: 300, // ponytail: hard cap (notices and files never expire); add a cursor if a class passes this
     });
     const items = await Promise.all(rows.map(present));
     const of = (k: Kind) => items.filter((b) => b.kind === k);

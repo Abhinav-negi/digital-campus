@@ -173,6 +173,7 @@ router.get(
       },
       select: personSelect,
       orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+      take: 5000, // ponytail: hard cap on the in-memory set; SQL ILIKE + keyset cursor past this
     });
     const on = today();
     const needle = q?.toLowerCase();
