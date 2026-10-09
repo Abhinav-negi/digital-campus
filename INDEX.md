@@ -159,7 +159,7 @@
 | [QA-02b](tasks/qa/QA-02b-demo-rerun.md) | Lab demo re-run after fixes | QA-02a, FS-11, TE-09, ST-11, FND-09, FS-10, FS-12 | ⬜ |
 | [QA-03a](tasks/qa/QA-03-visual-parity.md) | Visual parity: first pass + fixes (docs/PARITY.md) | all ST, TE, AF, FS-08 | ✅ |
 | [QA-03b](tasks/qa/QA-03b-visual-parity-rest.md) | Visual parity: remaining screens + re-check | QA-03a, CS-17, FS-10 | ⬜ |
-| [QA-04](tasks/qa/QA-04-review.md) | Code + security review | QA-01 | ⬜ |
+| [QA-04](tasks/qa/QA-04-review.md) | Code + security review | QA-01 | 🟨 |
 
 ---
 
@@ -181,5 +181,5 @@
 | [TE-09](tasks/frontend/teacher/TE-09-future-session-actions.md) | Cancel/postpone a future class; clash in Upcoming | CS-17 | ✅ | QA-02a F3b (S12) |
 | [ST-11](tasks/frontend/student/ST-11-past-term-readonly.md) | Past term read-only in the UI | QA-03a | ✅ | QA-02a F5 (S12) |
 | [FND-09](tasks/backend/foundation/FND-09-login-limiter.md) | Login limiter keyed IP+email (lab NAT) | FND-04 | ✅ | QA-02a F7 (S12) |
-| [FS-12](tasks/frontend/shared/FS-12-demo-copy.md) | Demo copy/label nits | FS-10 | ⬜ | QA-02a minor (S12) |
+| [FS-12](tasks/frontend/shared/FS-12-demo-copy.md) | Demo copy/label nits | FS-10 | ✅ | QA-02a minor (S12) |
 | [CM-10](tasks/backend/commons/CM-10-own-student-id.md) | Student ID on my own profile (Me header) | CM-01 | ✅ | FS-10 (S12) |

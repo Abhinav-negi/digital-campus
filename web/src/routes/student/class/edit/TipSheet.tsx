@@ -17,7 +17,7 @@ export function TipSheet({ onPick, onClose }: { onPick: (k: TipKind) => void; on
         <button type="button" className="btn block" onClick={() => onPick('timetable')}>1. Timetable</button>
         <button type="button" className="btn block" onClick={() => onPick('syllabus')}>2. Syllabus</button>
         <button type="button" className="btn block" onClick={() => onPick('exam')}>3. Exam dates</button>
-        <button type="button" className="btn primary block" onClick={() => onPick('import')}>Import from a PDF or photo</button>
+        <button type="button" className="btn primary block" onClick={() => onPick('import')}>Import with any chatbot (copy a prompt, paste its reply)</button>
       </div>
     </Sheet>
   );

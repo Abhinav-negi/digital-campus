@@ -74,7 +74,7 @@ export function Component() {
                 <>
                   <div className="eyebrow">{t.current ? 'Happening now' : 'Up next'}</div>
                   <h1>{name(pick)}</h1>
-                  <p className="muted">{st(pick)}–{en(pick)} · {pick.room} · {pick.teacher?.name}{pick.change && ' · moved'}</p>
+                  <p className="muted">{st(pick)}–{en(pick)} · {pick.room} · {pick.teacher?.name}{pick.change && (pick.change.kind === 'extra' ? ' · extra' : ' · moved')}</p>
                 </>
               ) : (
                 <><div className="eyebrow">Today</div><h1>No more classes today</h1><p className="muted">Enjoy the rest of your day.</p></>

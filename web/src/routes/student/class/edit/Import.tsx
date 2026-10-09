@@ -34,11 +34,11 @@ const swap = <T,>(a: T[], i: number, patch: Partial<T>) => a.map((x, j) => (j ==
 /** Inline staff picker for a timetable subject whose teacher name did not match. */
 function TeacherPick({ onPick }: { onPick: (id: string) => void }) {
   const [q, setQ] = useState('');
-  const staff = useQuery({ queryKey: ['staff', q], queryFn: () => unwrap(api.GET('/staff', { params: { query: { q: q.trim() || undefined, limit: 5 } } })) });
+  const staff = useQuery({ queryKey: ['staff', q], queryFn: () => unwrap(api.GET('/staff', { params: { query: { q: q.trim() || undefined, limit: 8 } } })) });
   return (
     <div className="stack">
       <input className="input" type="search" placeholder="Search staff" aria-label="Search staff" value={q} onChange={(e) => setQ(e.target.value)} />
-      <div className="row wrap">{(staff.data?.items ?? []).map((t) => <button key={t.id} type="button" className="chip" onClick={() => onPick(t.id)}>{t.name}</button>)}</div>
+      <div className="row wrap">{(staff.data?.items ?? []).filter((t) => t.dept).slice(0, 5).map((t) => <button key={t.id} type="button" className="chip" onClick={() => onPick(t.id)}>{t.name}</button>)}</div>
     </div>
   );
 }
