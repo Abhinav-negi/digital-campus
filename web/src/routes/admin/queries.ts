@@ -117,3 +117,25 @@ export function useCommonsMod() {
     remove: useMutation({ mutationFn: ({ type, id }: { type: ModType; id: string }) => unwrap(api.DELETE('/admin/commons/{type}/{id}', path(type, id))), onSuccess: done }),
   };
 }
+
+// AF-04b conversations (AD-06; opening a thread is audited server-side) + featured/flagship (AD-07).
+export const useConversations = (q: string) => useInfiniteQuery({
+  queryKey: ['admin', 'conversations', q],
+  initialPageParam: undefined as string | undefined,
+  queryFn: ({ pageParam }) => unwrap(api.GET('/admin/conversations', { params: { query: { q: q || undefined, cursor: pageParam, limit: 50 } } })),
+  getNextPageParam: (p) => p.nextCursor ?? undefined,
+});
+// ponytail: first 100 messages only; follow nextCursor if threads outgrow that. gcTime 0 so each open re-reads (and re-audits).
+export const useConversationMessages = (id: string) => useQuery({
+  queryKey: ['admin', 'conversation', id], gcTime: 0,
+  queryFn: () => unwrap(api.GET('/admin/conversations/{id}/messages', { params: { path: { id }, query: { limit: 100 } } })),
+});
+export const useFeatured = () => useQuery({ queryKey: ['admin', 'featured'], queryFn: () => unwrap(api.GET('/admin/featured')) });
+export function useFeaturedMutations() {
+  const qc = useQueryClient();
+  const done = () => { qc.invalidateQueries({ queryKey: ['admin'] }); qc.invalidateQueries({ queryKey: ['commons'] }); };
+  return {
+    star: useMutation({ mutationFn: ({ type, id, featured }: { type: 'project' | 'challenge'; id: string; featured: boolean }) => unwrap(api.PUT('/admin/featured/{type}/{id}', { params: { path: { type, id } }, body: { featured } })), onSuccess: done }),
+    flagship: useMutation({ mutationFn: (projectId: string) => unwrap(api.PUT('/admin/flagship', { body: { projectId } })), onSuccess: done }),
+  };
+}

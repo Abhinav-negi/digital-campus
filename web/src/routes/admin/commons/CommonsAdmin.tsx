@@ -3,6 +3,8 @@ import { Board } from '../../student/commons/Board';
 import type { Moderation } from '../../student/commons/BoardCard';
 import { BuildPage } from '../../student/commons/build/BuildPage';
 import { People } from '../../student/commons/people/People';
+import { Conversations } from './Conversations';
+import { Featured } from './Featured';
 import { HiddenList, ModRow, useOpenReports } from './Moderation';
 
 const TABS = [['', 'Board'], ['build', 'Build'], ['people', 'People'], ['conversations', 'Conversations'], ['featured', 'Featured']] as const;
@@ -22,7 +24,8 @@ export function Component() {
         {tab === '' && <><HiddenList types={['board-post']} /><Board moderation={moderation} /></>}
         {tab === 'build' && <><HiddenList types={['project', 'challenge']} /><BuildPage moderation={moderation} /></>}
         {tab === 'people' && <People moderation={moderation} />}
-        {(tab === 'conversations' || tab === 'featured') && <p className="muted">Coming in AF-04b.</p>}
+        {tab === 'conversations' && <Conversations />}
+        {tab === 'featured' && <Featured />}
       </div>
     </>
   );
