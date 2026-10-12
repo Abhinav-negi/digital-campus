@@ -1,0 +1,613 @@
+<title>Digital Campus Playbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a field-guide playbook. Sticky chapter index on the left, one reading column; "concept" callouts explain every term inline. */
+:root{
+  --bg:#f6f7fa; --surface:#ffffff; --ink:#151a2d; --muted:#5b6178; --line:#dde0ea;
+  --accent:#4f46e5; --accent-soft:#eceafd; --code-bg:#eef0f6;
+  --concept:#0f6e78; --concept-bg:#e2f3f4;
+  --ok:#1f7a4d; --ok-bg:#e3f4ea; --warn:#9a5b00; --warn-bg:#fdf1dc; --bad:#b4232c; --bad-bg:#fde6e7;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1220; --surface:#171b2e; --ink:#e6e8f2; --muted:#9aa0b8; --line:#2a2f47;
+  --accent:#8b85ff; --accent-soft:#25234a; --code-bg:#1d2238;
+  --concept:#5fd0db; --concept-bg:#14303a;
+  --ok:#5fd39a; --ok-bg:#173326; --warn:#f2b64f; --warn-bg:#3a2c12; --bad:#ff7b84; --bad-bg:#3d1a1f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1220; --surface:#171b2e; --ink:#e6e8f2; --muted:#9aa0b8; --line:#2a2f47;
+  --accent:#8b85ff; --accent-soft:#25234a; --code-bg:#1d2238;
+  --concept:#5fd0db; --concept-bg:#14303a;
+  --ok:#5fd39a; --ok-bg:#173326; --warn:#f2b64f; --warn-bg:#3a2c12; --bad:#ff7b84; --bad-bg:#3d1a1f; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:15.5px/1.65 var(--body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:230px minmax(0,1fr);gap:48px}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;padding-block:32px;max-height:100vh;overflow:auto}
+nav.toc p{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+nav.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:2px;counter-reset:s}
+nav.toc a{display:flex;gap:10px;padding:5px 8px;border-radius:6px;color:var(--ink);text-decoration:none;font-size:13.5px}
+nav.toc a::before{counter-increment:s;content:counter(s,decimal-leading-zero);font:12px var(--mono);color:var(--muted);padding-top:2px}
+nav.toc a:hover,nav.toc a:focus-visible{background:var(--accent-soft);outline:none}
+main{min-width:0;padding-block:32px}
+header.hero{padding-block:8px 28px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+h1{font:700 clamp(30px,5vw,46px)/1.05 var(--display);letter-spacing:-.02em;margin:0 0 14px;text-wrap:balance}
+.lede{font-size:17px;color:var(--muted);max-width:68ch;margin:0}
+section{padding-block:36px 8px;border-bottom:1px solid var(--line);scroll-margin-top:12px}
+section:last-of-type{border-bottom:0}
+h2{font:700 27px/1.15 var(--display);letter-spacing:-.01em;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 20px;max-width:70ch}
+h3{font:600 17px/1.3 var(--body);margin:30px 0 10px}
+p,li{max-width:72ch}
+code{font:13px var(--mono);background:var(--code-bg);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+a{color:var(--accent)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);margin-block:12px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 11.5px/1.3 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--code-bg)}
+tr:last-child td{border-bottom:0}
+td code{white-space:nowrap}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
+.cols>div{min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.card h3{margin-top:0}
+.card ul,.card ol{margin:0;padding-left:18px}
+pre.tree,pre.cmd,pre.code{font:12.5px/1.6 var(--mono);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;margin-block:12px}
+pre.mermaid{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;overflow-x:auto;margin-block:12px}
+.pill{display:inline-block;font:500 11px/1 var(--mono);padding:4px 7px;border-radius:999px;letter-spacing:.03em;white-space:nowrap}
+.p-bad{background:var(--bad-bg);color:var(--bad)} .p-warn{background:var(--warn-bg);color:var(--warn)} .p-ok{background:var(--ok-bg);color:var(--ok)} .p-acc{background:var(--accent-soft);color:var(--accent)}
+/* concept callout: the playbook's core device */
+.concept{background:var(--concept-bg);border-radius:10px;padding:14px 16px;margin-block:14px;min-width:0}
+.concept .tag{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--concept);margin:0 0 6px}
+.concept h4{margin:0 0 6px;font:600 15.5px/1.35 var(--body)}
+.concept p{margin:0 0 6px;font-size:14.5px}
+.concept p:last-child{margin-bottom:0}
+.concept .nx{color:var(--muted)}
+.concept .nx b{color:var(--concept)}
+.try{border:1px dashed var(--accent);border-radius:10px;padding:14px 16px;margin-block:14px}
+.try .tag{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+.try p,.try li{font-size:14.5px}
+.try ol{margin:0;padding-left:18px}
+.mistake{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-block:14px}
+.mistake header{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px}
+.mistake h4{margin:0;font:600 16px/1.35 var(--body)}
+.mistake dl{display:grid;grid-template-columns:110px minmax(0,1fr);gap:6px 14px;margin:0;font-size:14.5px}
+.mistake dt{font:500 11.5px/1.7 var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.mistake dd{margin:0}
+ol.flow{padding-left:20px} ol.flow li{margin-bottom:6px}
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 8px 8px 0;font-size:14.5px;margin-block:14px}
+.timeline div{display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14.5px}
+.timeline b{font:500 13px var(--mono)}
+dl.gloss{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr);gap:0;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+dl.gloss dt,dl.gloss dd{padding:9px 14px;border-bottom:1px solid var(--line);margin:0;font-size:14px}
+dl.gloss dt{font:500 13px var(--mono);background:var(--code-bg)}
+@media (max-width:860px){
+  .wrap{grid-template-columns:1fr;gap:0}
+  nav.toc{position:static;max-height:none;padding-block:20px 0}
+  nav.toc ol{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .mistake dl,dl.gloss{grid-template-columns:1fr}
+  .mistake dt{margin-top:6px}
+  dl.gloss dd{border-bottom:1px solid var(--line)} dl.gloss dt{border-bottom:0}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="Chapters">
+  <p>Playbook</p>
+  <ol>
+    <li><a href="#start">Start here</a></li>
+    <li><a href="#product">What the app does</a></li>
+    <li><a href="#nextjs">Coming from Next.js</a></li>
+    <li><a href="#stack">The stack, explained</a></li>
+    <li><a href="#request">Life of a request</a></li>
+    <li><a href="#repo">Repo tour</a></li>
+    <li><a href="#backend">Backend concepts</a></li>
+    <li><a href="#data">The database</a></li>
+    <li><a href="#api">The API</a></li>
+    <li><a href="#frontend">Frontend concepts</a></li>
+    <li><a href="#flows">Feature walkthroughs</a></li>
+    <li><a href="#run">Run &amp; experiment</a></li>
+    <li><a href="#process">How it was built</a></li>
+    <li><a href="#mistakes">Senior's mistakes</a></li>
+    <li><a href="#glossary">Glossary</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="hero">
+  <p class="eyebrow">Learning playbook · lab/digital-campus</p>
+  <h1>Learn full-stack from Digital Campus</h1>
+  <p class="lede">This is a real, working college app. A senior developer built it with a classic setup: a separate backend server, a database and a frontend app. You've built Next.js clones, so you already know React and pages. This playbook explains everything else as it comes up: what each term means, why it's needed, and where it lives in the code. It ends with the places where the senior got it wrong, because learning from mistakes is half the value.</p>
+</header>
+
+<!-- 1 -->
+<section id="start">
+  <h2>Start here</h2>
+  <p class="sub">How to use this page.</p>
+  <ul>
+    <li><b>Teal boxes</b> explain one concept. Each says what it is, why it exists, and how it compares to Next.js.</li>
+    <li><b>Dashed boxes</b> are hands-on experiments. Run the app and break things on purpose; that's how this sticks.</li>
+    <li>Read the chapters in order the first time. Use the <a href="#glossary">glossary</a> later when a word comes back.</li>
+  </ul>
+  <div class="concept"><p class="tag">Concept</p><h4>Frontend, backend, database: three separate programs</h4>
+    <p>In Next.js, your pages and your <code>app/api</code> routes live in one project, and it feels like a single program. This project splits them:</p>
+    <p>• <b>Frontend</b> (<code>web/</code>): React code that runs in the browser and draws the screens.<br>• <b>Backend</b> (<code>server/</code>): a Node.js program that receives requests, checks permissions and talks to the database.<br>• <b>Database</b>: PostgreSQL, a separate program that stores the data on disk.</p>
+    <p class="nx"><b>Why split?</b> The same backend can later serve a mobile app (they plan a Flutter app). Each part can also be tested on its own. The cost is more wiring, which you'll see below.</p></div>
+</section>
+
+<!-- 2 -->
+<section id="product">
+  <h2>What the app does</h2>
+  <p class="sub">Know the product before reading the code; the code makes sense only once you know what it's for. The full spec is <code>lab/Digital_Campus.md</code>.</p>
+  <div class="cols">
+    <div class="card"><h3>Class space <span class="pill p-acc">official</span></h3>
+      <ul><li>A teacher creates a <b>class</b> (a batch of students) and invites students by email.</li><li>A <b>CR</b> (class representative, a student) keeps the class board up to date: timetable, syllabus, exam dates, notices, files.</li><li>Teachers post announcements and take <b>attendance</b>.</li><li>Students see a "Today" screen: next class, attendance %, upcoming deadlines.</li></ul></div>
+    <div class="card"><h3>Commons <span class="pill p-acc">students only</span></h3>
+      <ul><li>A board where students post Ask, Gig, Market, Lost or Found.</li><li>Projects and challenges to build things together.</li><li>A people directory and message <i>requests</i>, which the receiver can ignore.</li><li>Teachers are blocked from all of it, enforced by the server.</li></ul></div>
+  </div>
+  <h3>Who can do what</h3>
+  <div class="tbl"><table>
+    <tr><th>Role</th><th>How it's stored</th><th>Can</th></tr>
+    <tr><td>Student</td><td><code>User.role = 'student'</code></td><td>Read their class, see their own attendance, use the Commons</td></tr>
+    <tr><td>CR</td><td><code>ClassMember.role = 'cr'</code> (a student with a role in one class)</td><td>Everything a student can, plus edit the class board. Never attendance.</td></tr>
+    <tr><td>Teacher</td><td><code>User.role = 'staff'</code></td><td>Post, take attendance for their subjects. The class teacher manages the roster.</td></tr>
+    <tr><td>Admin</td><td><code>User.isAdmin = true</code> (a badge on a staff account)</td><td>Everything, and every action is written to an audit log</td></tr>
+  </table></div>
+  <div class="concept"><p class="tag">Concept</p><h4>Authentication vs authorization</h4>
+    <p><b>Authentication</b> asks "who are you?" (logging in). <b>Authorization</b> asks "are you allowed to do this?" (a teacher opening the Commons gets a 403 Forbidden).</p>
+    <p class="nx"><b>Lesson:</b> hiding a button in the UI is not authorization. Anyone can send the request with curl. This project checks permissions on the <i>server</i> for every request, which is the correct way.</p></div>
+</section>
+
+<!-- 3 -->
+<section id="nextjs">
+  <h2>Coming from Next.js</h2>
+  <p class="sub">Your existing knowledge, mapped to this project. Keep this table open while reading the code.</p>
+  <div class="tbl"><table>
+    <tr><th>You know (Next.js)</th><th>This project uses</th><th>The difference</th></tr>
+    <tr><td><code>app/</code> folder routing</td><td>React Router route table in <code>web/src/router.tsx</code></td><td>Routes are listed in code instead of inferred from folders</td></tr>
+    <tr><td><code>app/api/route.ts</code></td><td>An Express server in <code>server/src</code></td><td>A separate long-running Node program with its own port (3000)</td></tr>
+    <tr><td>Server Components, SSR</td><td>A plain SPA: all rendering happens in the browser</td><td>The server sends an empty HTML page plus JS; React fetches data afterwards</td></tr>
+    <tr><td><code>fetch</code> in server components</td><td>TanStack Query hooks (<code>useQuery</code>)</td><td>Client-side fetching with caching, refetching and loading states built in</td></tr>
+    <tr><td><code>middleware.ts</code></td><td>Express middleware + "guards"</td><td>Functions that run before the route handler on every request</td></tr>
+    <tr><td>NextAuth / Clerk</td><td>Hand-built auth in <code>server/src/lib/auth.ts</code></td><td>You can see every step of login and sessions in one file</td></tr>
+    <tr><td><code>next dev</code></td><td><code>npm run dev</code> runs two servers</td><td>Vite on 5173 for the UI and Express on 3000 for the API</td></tr>
+    <tr><td>Vercel deploy</td><td>Not deployed yet</td><td>The plan is one Node process on a VPS or Render</td></tr>
+  </table></div>
+  <div class="concept"><p class="tag">Concept</p><h4>SPA (single-page application)</h4>
+    <p>The browser downloads one HTML file and a bundle of JavaScript once. After that, clicking links doesn't load new pages from the server: React swaps components and fetches JSON from the API.</p>
+    <p class="nx"><b>Why here?</b> This is a logged-in app with no need for SEO, so server-side rendering adds little. An SPA is simpler to host. It can be served by the same Express server as the API.</p></div>
+</section>
+
+<!-- 4 -->
+<section id="stack">
+  <h2>The stack, explained</h2>
+  <p class="sub">Every tool, what it is, and why the senior picked it.</p>
+  <div class="tbl"><table>
+    <tr><th>Tool</th><th>What it is</th><th>Why it's here</th></tr>
+    <tr><td>TypeScript (strict)</td><td>JavaScript with types</td><td>Catches mistakes before running. "Strict" turns on the strongest checks.</td></tr>
+    <tr><td>Node 24</td><td>Runs JavaScript outside the browser</td><td>Runs the backend server</td></tr>
+    <tr><td>npm workspaces</td><td>Several packages in one repo (a "monorepo")</td><td><code>server</code> and <code>web</code> share one <code>npm install</code> and one root script set</td></tr>
+    <tr><td>Express 5</td><td>A minimal web-server framework</td><td>Maps URLs like <code>POST /auth/login</code> to functions</td></tr>
+    <tr><td>zod</td><td>Schema validation library</td><td>Checks every incoming request body; rejects bad input with 422</td></tr>
+    <tr><td>OpenAPI</td><td>A standard JSON description of an API</td><td>Generated from the zod schemas, then turned into TypeScript types for the frontend</td></tr>
+    <tr><td>PostgreSQL 17</td><td>A relational SQL database</td><td>Stores everything: users, classes, attendance…</td></tr>
+    <tr><td>Prisma</td><td>An ORM</td><td>Lets you write <code>db.user.findMany()</code> instead of raw SQL, with types</td></tr>
+    <tr><td>embedded-postgres</td><td>Downloads a Postgres binary through npm</td><td>Runs a dev database without installing Postgres or Docker</td></tr>
+    <tr><td>node-cron</td><td>Runs functions on a schedule</td><td>Sends exam reminders at 7am, cleans old data at 3am</td></tr>
+    <tr><td>nodemailer</td><td>Sends email via SMTP</td><td>Invite and password-reset emails</td></tr>
+    <tr><td>React 19 + Vite 8</td><td>UI library + a fast dev server and bundler</td><td>Vite plays the role <code>next dev</code>/<code>next build</code> play for you</td></tr>
+    <tr><td>React Router 8</td><td>Client-side routing</td><td>Maps <code>/s/class</code> to a component, with "loaders" that run before a page shows</td></tr>
+    <tr><td>TanStack Query</td><td>Server-state cache for React</td><td>Fetching, caching, refetching and loading/error states</td></tr>
+    <tr><td>vite-plugin-pwa</td><td>Makes the site installable</td><td>Students can "Add to home screen" and get an app-like icon</td></tr>
+    <tr><td><code>node:test</code></td><td>Node's built-in test runner</td><td>No Jest or Vitest needed</td></tr>
+  </table></div>
+  <div class="concept"><p class="tag">Concept</p><h4>ORM (Object-Relational Mapper)</h4>
+    <p>Databases speak SQL (<code>SELECT * FROM "User" WHERE email = $1</code>). An ORM lets you write <code>db.user.findUnique({ where: { email } })</code> in TypeScript and translates it to SQL. Prisma also generates types from your schema, so <code>user.emial</code> becomes a compile error.</p>
+    <p class="nx"><b>Where:</b> the schema is <code>server/prisma/schema.prisma</code> and the client is <code>server/src/lib/db.ts</code>.</p></div>
+  <div class="concept"><p class="tag">Concept</p><h4>Validation, and why one schema for two jobs is clever</h4>
+    <p>Never trust data from the browser; anyone can send anything. A zod schema like <code>z.object({ email: z.email(), password: z.string().min(8) })</code> checks it before your code runs.</p>
+    <p class="nx"><b>The trick here:</b> <code>server/src/lib/openapi.ts</code> has a <code>route()</code> function that takes the zod schema and both validates requests <i>and</i> writes the API documentation from it. The frontend types are then generated from that documentation (<code>npm run gen:api</code>). One source of truth means the docs, the validation and the frontend types can't disagree.</p></div>
+</section>
+
+<!-- 5 -->
+<section id="request">
+  <h2>Life of a request</h2>
+  <p class="sub">Follow one click from the browser to the database and back. This one chapter teaches most of the architecture.</p>
+<pre class="mermaid">
+flowchart LR
+  subgraph Browser
+    R["React SPA<br/>TanStack Query"]
+  end
+  subgraph Dev["Dev only"]
+    V["Vite :5173<br/>proxy /api → :3000"]
+  end
+  subgraph Node["Express server :3000"]
+    E["Middleware<br/>json · cookies · deviceId"]
+    G["Guard<br/>who are you? allowed?"]
+    Z["zod validate"]
+    H["Handler<br/>transaction"]
+  end
+  DB[("PostgreSQL")]
+  R --> V --> E --> G --> Z --> H --> DB
+  H -- "JSON response" --> R
+</pre>
+  <p>Example: a CR adds an exam to the class board.</p>
+  <ol class="flow">
+    <li><b>Browser.</b> The React form calls <code>api.POST('/classes/{id}/board', { body })</code> from <code>web/src/api/client.ts</code>. The request carries the login cookie automatically.</li>
+    <li><b>Vite proxy (dev only).</b> The page is served from port 5173 but the API is on 3000. Vite forwards any <code>/api/...</code> request to port 3000.</li>
+    <li><b>Middleware.</b> Express parses the JSON body (max 1MB), reads cookies and the device ID header.</li>
+    <li><b>Guard.</b> <code>classAccess('id','board')</code> looks up the session from the cookie, loads the user, and checks that they're the CR or class teacher of <i>this</i> class. Otherwise it returns 401 or 403.</li>
+    <li><b>Validation.</b> zod checks the body shape. Bad input gets 422.</li>
+    <li><b>Handler.</b> In one database <b>transaction</b> it inserts the board item, writes an audit log row and creates notifications for students.</li>
+    <li><b>Response.</b> JSON comes back. TanStack Query invalidates the board cache, so the list refetches and shows the new exam.</li>
+  </ol>
+  <div class="concept"><p class="tag">Concept</p><h4>What is a proxy?</h4>
+    <p>A <b>proxy</b> is a middleman server: you send your request to it, it forwards the request to the real server, and passes the answer back.</p>
+    <p>This project meets proxies in two places:</p>
+    <p>• <b>Dev proxy (Vite):</b> browsers block a page on <code>localhost:5173</code> from freely calling <code>localhost:3000</code> (that's CORS, see the glossary). Vite forwards <code>/api</code> calls, so the browser thinks everything is on one origin and no CORS setup is needed.</p>
+    <p>• <b>Reverse proxy (production):</b> hosting platforms like Render or Fly, and web servers like Caddy or Nginx, sit in front of your Node app. They handle HTTPS certificates, then forward traffic to it. It's called <i>reverse</i> because it acts on behalf of the server, not the user.</p>
+    <p class="nx"><b>Next.js note:</b> Vercel does this for you invisibly, which is why you've never had to think about it. <a href="#mistakes">Mistake #1</a> shows what happens when you forget a proxy is there.</p></div>
+  <div class="concept"><p class="tag">Concept</p><h4>Middleware</h4>
+    <p>A function that runs on a request <i>before</i> your route handler, and can modify the request or stop it. Express runs them in the order you call <code>app.use()</code>. Look at <code>server/src/app.ts</code> lines 55–70: JSON parser, cookie parser, device ID, then routes, then the 404 handler, then the error handler.</p></div>
+  <div class="concept"><p class="tag">Concept</p><h4>Database transaction</h4>
+    <p>A group of database writes that succeed or fail <i>together</i>. If the audit log insert fails, the board item insert is rolled back too, so you never end up with half-saved data. In Prisma: <code>db.$transaction(async (tx) =&gt; { … })</code>.</p></div>
+</section>
+
+<!-- 6 -->
+<section id="repo">
+  <h2>Repo tour</h2>
+  <p class="sub">The folder layout, with a suggested reading order. Read in that order and each file builds on the previous one.</p>
+<pre class="tree">digital-campus/
+├─ package.json          root scripts: dev, test, db:start  ← read 1st
+├─ .env.example          every setting the app reads         ← read 2nd
+├─ scripts/db.mjs        starts the dev Postgres
+├─ server/
+│  ├─ prisma/schema.prisma   the data model                  ← read 3rd
+│  ├─ prisma/seed.ts         fake demo data
+│  └─ src/
+│     ├─ index.ts        starts the server                   ← read 4th
+│     ├─ app.ts          middleware + all routers            ← read 5th
+│     ├─ config.ts       validates .env with zod
+│     ├─ lib/auth.ts     login, sessions, guards, limits     ← read 6th (the most important file)
+│     ├─ lib/http.ts     errors + validation helpers
+│     ├─ lib/openapi.ts  the route() trick
+│     ├─ jobs.ts         scheduled tasks
+│     └─ modules/        one folder per feature
+│        └─ auth/routes.ts   a complete small feature    ← read 7th
+├─ server/test/wall.test.ts  the permission test             ← read 8th
+└─ web/src/
+   ├─ main.tsx           React entry point
+   ├─ router.tsx         every route + login guards          ← read 9th
+   ├─ api/client.ts      the typed fetch wrapper             ← read 10th
+   ├─ ui/                shared components (Sheet, FormSheet…)
+   └─ routes/student|teacher|admin/   screens per role</pre>
+  <div class="concept"><p class="tag">Concept</p><h4>Environment variables (<code>.env</code>)</h4>
+    <p>Settings that change between your laptop and production, such as the database address, mail server and secret keys, live outside the code in a <code>.env</code> file. <code>.env.example</code> is committed with safe defaults; the real <code>.env</code> is git-ignored so secrets never reach GitHub. <code>server/src/config.ts</code> validates them with zod at startup, so a typo crashes immediately instead of failing later.</p>
+    <p class="nx"><b>Next.js note:</b> it's the same idea as your <code>.env.local</code>.</p></div>
+</section>
+
+<!-- 7 -->
+<section id="backend">
+  <h2>Backend concepts</h2>
+  <p class="sub">Most of what makes this a "real" backend lives in <code>server/src/lib/auth.ts</code>. Each concept below points at where it's implemented.</p>
+
+  <div class="concept"><p class="tag">Concept</p><h4>Password hashing (scrypt)</h4>
+    <p>Never store passwords. Store a <b>hash</b>: a one-way scramble that can be checked but not reversed. <b>scrypt</b> is deliberately slow, so an attacker who steals the database can't try billions of guesses per second. A random <b>salt</b> per user means two users with the same password get different hashes.</p>
+    <p class="nx"><b>Nice detail:</b> if someone logs in with an email that doesn't exist, the code still runs scrypt against a dummy hash. That way the response takes the same time either way, and an attacker can't tell which emails are registered by timing it. (<code>auth/routes.ts:55</code>)</p></div>
+
+  <div class="concept"><p class="tag">Concept</p><h4>Sessions vs JWT</h4>
+    <p>After login, the server must remember you. Two common ways:</p>
+    <p>• <b>JWT</b>: the server hands you a signed token containing your user ID. It can't easily be revoked before it expires.<br>• <b>Session token</b> (used here): the server hands you a random string and stores its hash in a <code>LoginSession</code> table. Each request looks it up. Logging out or disabling a user just deletes the row, which takes effect instantly.</p>
+    <p class="nx"><b>Where:</b> <code>startSession</code> and <code>authenticate</code> in <code>lib/auth.ts</code>. The browser gets the token in an <b>httpOnly cookie</b>, which JavaScript can't read, so an XSS bug can't steal it. A mobile app would send it as a <code>Bearer</code> header instead.</p></div>
+
+  <div class="concept"><p class="tag">Concept</p><h4>CSRF (cross-site request forgery)</h4>
+    <p>Cookies are sent automatically. So if you're logged in and visit <code>evil.com</code>, that site could submit a hidden form to this app, and your browser would attach your cookie. The defence here: for any write, the server checks that the <code>Origin</code> header matches the app's own URL (<code>lib/auth.ts:108</code>). <code>sameSite: 'lax'</code> on the cookie adds a second layer.</p></div>
+
+  <div class="concept"><p class="tag">Concept</p><h4>Guards (authorization middleware)</h4>
+    <p>Small functions put in front of routes: <code>auth()</code> (logged in), <code>staff()</code> (a teacher), <code>admin()</code>, <code>commons()</code> (students and admins only), and <code>classAccess(param, need)</code>, which checks your role in <i>that specific class</i>.</p>
+    <pre class="code">router.post('/:id/board', classAccess('id', 'board'), validate(body), handler)</pre>
+    <p class="nx"><b>Why it matters:</b> the permission rule sits next to the route and can't be forgotten. <code>test/wall.test.ts</code> then calls <i>every</i> route as 9 different users and checks who gets in. A new route without a rule fails the test. Copy this idea into your own projects.</p></div>
+
+  <div class="concept"><p class="tag">Concept</p><h4>Rate limiting</h4>
+    <p>Limits how often someone can hit an endpoint, e.g. at most 10 login attempts per 15 minutes for one IP + email. Without it, a bot can guess passwords forever. This project hand-wrote a simple limiter that counts requests in a JavaScript <code>Map</code> in memory (<code>lib/auth.ts:186</code>).</p>
+    <p class="nx"><b>Catch:</b> it counts by IP address. Behind a proxy, every user has the proxy's IP. See <a href="#mistakes">Mistake #1</a>.</p></div>
+
+  <div class="concept"><p class="tag">Concept</p><h4>Signed URLs (HMAC) for file uploads</h4>
+    <p>Instead of streaming files through API logic, the app gives the browser a short-lived upload URL like <code>/files/local/key?exp=…&amp;sig=…</code>. The <code>sig</code> is an <b>HMAC</b>: a fingerprint of the URL made with a secret key only the server knows. Change one character and the signature no longer matches. It's the same pattern Amazon S3 uses ("presigned URLs").</p>
+    <p class="nx"><b>Extra checks here:</b> each upload URL works once, the size must match, and the file's first bytes ("magic bytes") must match its extension, so a <code>.exe</code> renamed to <code>.pdf</code> is rejected.</p></div>
+
+  <div class="concept"><p class="tag">Concept</p><h4>Cron jobs</h4>
+    <p>Code that runs on a clock, not in response to a request. <code>server/src/jobs.ts</code> uses node-cron:</p>
+    <div class="tbl"><table>
+      <tr><th>When</th><th>Job</th></tr>
+      <tr><td><code>07:00</code></td><td>Remind students of exams and deadlines 3 and 1 days away</td></tr>
+      <tr><td><code>07:05</code></td><td>Warn about Commons posts expiring soon</td></tr>
+      <tr><td><code>07:10</code></td><td>Warn students whose attendance is below the minimum</td></tr>
+      <tr><td><code>03:00 / 03:10</code></td><td>Delete stale invites, old notifications, expired sessions</td></tr>
+      <tr><td><code>:15 hourly</code></td><td>Lift Commons bans that have ended</td></tr>
+    </table></div>
+    <p class="nx"><b>Testable trick:</b> each job takes <code>now</code> as a parameter, so tests can pretend it's any date.</p></div>
+
+  <div class="concept"><p class="tag">Concept</p><h4>Race conditions and how they're handled</h4>
+    <p>A <b>race condition</b> is when two requests arrive at the same moment and both pass a check. For example, two clicks both use the same one-time invite link. Fixes used here:</p>
+    <p>• <b>Conditional update:</b> "mark used <i>where</i> not yet used". Only one request can win.<br>• <b>Unique index:</b> the database itself refuses duplicates (Prisma error <code>P2002</code>, mapped to HTTP 409).<br>• <b>Advisory lock:</b> a named lock in Postgres, so only one request at a time can open an attendance session for a lecture.</p></div>
+</section>
+
+<!-- 8 -->
+<section id="data">
+  <h2>The database</h2>
+  <p class="sub">40 tables (Prisma calls them "models"), defined in <code>server/prisma/schema.prisma</code>.</p>
+<pre class="mermaid">
+erDiagram
+  Institution ||--o{ Branch : has
+  Institution ||--o{ User : has
+  Branch ||--o{ Class : groups
+  Class ||--o{ Term : "semesters"
+  Class ||--o{ ClassMember : roster
+  User ||--o{ ClassMember : "student|cr|teacher"
+  Term ||--o{ Subject : has
+  Subject ||--o{ TimetableSlot : weekly
+  Subject ||--o{ AttendanceSession : "one lecture"
+  AttendanceSession ||--o{ Attendance : "per student"
+  Class ||--o{ BoardItem : board
+  User ||--o| Profile : commons
+  User ||--o{ BoardPost : posts
+  User ||--o{ AuditLog : actions
+</pre>
+  <p>How to read it: <code>||--o{</code> means "one to many". One Class has many Terms.</p>
+  <div class="cols">
+    <div class="card"><h3>Identity</h3><p>Institution, Branch, User, LoginSession, Invite, PasswordReset</p></div>
+    <div class="card"><h3>Class space</h3><p>Class, Term, ClassMember, Subject, TimetableSlot, ScheduleChange, BoardItem, Post, PostTarget, PostSeen, Reminder</p></div>
+    <div class="card"><h3>Attendance</h3><p>AttendanceSession (one lecture), Attendance (one student's present or absent)</p></div>
+    <div class="card"><h3>Commons</h3><p>Profile, BoardPost, Answer, Interest, Claim, Thanks, Project, JoinRequest, Challenge, Submission, Conversation, Message, Block, Report…</p></div>
+  </div>
+  <div class="concept"><p class="tag">Concept</p><h4>Migrations</h4>
+    <p>When you change <code>schema.prisma</code>, the real database must change to match. A <b>migration</b> is a saved SQL file that does exactly that change (add a column, create a table). They run in order, so every database ends up identical. This repo has 6 in <code>server/prisma/migrations/</code>.</p>
+    <p class="nx"><b>Commands:</b> <code>prisma migrate dev</code> creates one while developing; <code>prisma migrate deploy</code> applies pending ones in production.</p></div>
+  <div class="concept"><p class="tag">Concept</p><h4>Seeding</h4>
+    <p>Filling the database with starting data. <code>prisma/seed.ts</code> wipes everything and inserts a fake college: teachers, classes of 30 students, a timetable, Commons posts. Every account's password is <code>campus123</code>. It refuses to run against production unless told to, which is good protection.</p></div>
+  <div class="concept"><p class="tag">Concept</p><h4>Soft rules that make data trustworthy</h4>
+    <p>• <b>Never hard-delete users.</b> Deleting an account <i>anonymises</i> it, so attendance history still adds up.<br>• <b>Audit log.</b> Every admin or board change stores who did it, plus the before and after values.<br>• <b>Partial unique index.</b> A raw SQL rule says "only one active term per class", enforced by the database itself.</p></div>
+</section>
+
+<!-- 9 -->
+<section id="api">
+  <h2>The API</h2>
+  <p class="sub">145 endpoints under <code>/api/v1</code>, grouped by feature. Open <code>http://localhost:3000/api/v1/openapi.json</code> while it runs to see them all.</p>
+  <div class="concept"><p class="tag">Concept</p><h4>REST in 30 seconds</h4>
+    <p>URLs name <i>things</i>, HTTP methods say what to do with them: <code>GET</code> reads, <code>POST</code> creates, <code>PATCH</code> edits part, <code>PUT</code> replaces, <code>DELETE</code> removes. Status codes report the result: 200 ok, 401 not logged in, 403 not allowed, 404 not found, 409 conflict, 422 invalid input, 429 too many requests, 500 server bug. The <code>/v1</code> lets them change the API later without breaking old clients.</p></div>
+  <div class="tbl"><table>
+    <tr><th>Group</th><th>Prefix</th><th>Examples</th></tr>
+    <tr><td>Auth</td><td><code>/auth</code></td><td>login, logout, me, forgot password, reset, accept invite</td></tr>
+    <tr><td>Classes</td><td><code>/classes</code></td><td>create class, invite students, set CR, subjects, timetable, schedule changes, board, chatbot import, next semester</td></tr>
+    <tr><td>Attendance</td><td><code>/attendance-sessions</code>, <code>/checkin</code></td><td>open session, save absentees, open check-in code, student enters code</td></tr>
+    <tr><td>Posts</td><td><code>/posts</code></td><td>teacher posts to several classes, seen receipts, remind</td></tr>
+    <tr><td>Me</td><td><code>/me</code></td><td>today screen, upcoming, notifications, profile, export my data, delete account</td></tr>
+    <tr><td>Commons</td><td><code>/commons</code></td><td>board posts, answers, projects, challenges, conversations, blocks, reports</td></tr>
+    <tr><td>Admin</td><td><code>/admin</code></td><td>users, bans, branches, moderation, featured, audit log</td></tr>
+  </table></div>
+  <div class="concept"><p class="tag">Concept</p><h4>Pagination with cursors</h4>
+    <p>Lists don't return everything at once. You ask for 20, and the response includes a <code>cursor</code> (a bookmark). Send it back to get the next 20. Unlike <code>?page=3</code>, results don't shift when new items are added in between.</p></div>
+</section>
+
+<!-- 10 -->
+<section id="frontend">
+  <h2>Frontend concepts</h2>
+  <p class="sub">The part closest to what you already know, with a few new tools.</p>
+  <div class="tbl"><table>
+    <tr><th>URL</th><th>Who</th><th>What's there</th></tr>
+    <tr><td><code>/</code>, <code>/login</code>, <code>/invite/:token</code></td><td>everyone</td><td>Landing, login, invite onboarding</td></tr>
+    <tr><td><code>/s/*</code></td><td>students</td><td>Today · Class · Commons · Me</td></tr>
+    <tr><td><code>/t/*</code></td><td>staff</td><td>Today · Take attendance · Classes · Upcoming</td></tr>
+    <tr><td><code>/a/*</code></td><td>admins</td><td>Inbox · People · Classes · Commons moderation · School · Audit</td></tr>
+  </table></div>
+  <div class="concept"><p class="tag">Concept</p><h4>Route loaders as login guards</h4>
+    <p>In <code>web/src/router.tsx</code>, each area (<code>/s</code>, <code>/t</code>, <code>/a</code>) has a <b>loader</b>: a function React Router runs <i>before</i> showing the page. It fetches the current user. No user means a redirect to <code>/login</code>; wrong role means a redirect to <code>/403</code>.</p>
+    <p class="nx"><b>Next.js note:</b> it's like a redirect in <code>middleware.ts</code>, but it runs in the browser. The real protection is still the server guards; this one is only for user experience.</p></div>
+  <div class="concept"><p class="tag">Concept</p><h4>TanStack Query: server state</h4>
+    <p>"Server state" is data that lives on the server and that you hold a copy of. TanStack Query fetches it, caches it under a <b>key</b> like <code>['classes', id, 'board']</code>, and refetches it when it's stale (30s here) or the window regains focus. After a write you call <code>invalidateQueries(['classes', id])</code>, and everything under that key refreshes.</p>
+    <pre class="code">const board = useQuery({ queryKey: ['classes', id, 'board'],
+  queryFn: () =&gt; unwrap(api.GET('/classes/{id}/board', { params: { path: { id } } })) });</pre></div>
+  <div class="concept"><p class="tag">Concept</p><h4>A typed API client from generated types</h4>
+    <p><code>web/src/api/schema.d.ts</code> (10,000+ lines) is <i>generated</i> from the server's OpenAPI spec; nobody writes it by hand. <code>api/client.ts</code> uses it so that <code>api.POST('/classes/{id}/board', …)</code> autocompletes the URL and type-checks the body and response. Rename a field on the server, regenerate, and the frontend shows compile errors where it breaks.</p></div>
+  <div class="concept"><p class="tag">Concept</p><h4>Polling instead of WebSockets</h4>
+    <p>For "live" updates the app simply re-asks the server every few seconds: the attendance check-in list every 2s, chat every 5s, notifications every 30s. WebSockets keep a connection open and push instantly, but they're harder to run and scale. For a college app, polling is a sensible, boring choice.</p></div>
+  <div class="concept"><p class="tag">Concept</p><h4>PWA (progressive web app)</h4>
+    <p>A website that can be installed like an app, with a home-screen icon and full-screen display. A <b>service worker</b> (a background script) caches the app's files so it opens fast. This one caches only the UI, not data, so it doesn't truly work offline.</p></div>
+  <div class="concept"><p class="tag">Concept</p><h4>Styling with CSS tokens</h4>
+    <p>No Tailwind. Plain CSS files with <b>design tokens</b>, CSS variables like <code>--primary</code> and <code>--s4</code> (spacing), in <code>styles/style.css</code>. The student area is indigo and the teacher area navy, switched by setting a class on <code>&lt;body&gt;</code>.</p></div>
+</section>
+
+<!-- 11 -->
+<section id="flows">
+  <h2>Feature walkthroughs</h2>
+  <p class="sub">Four features traced end to end. Pick one and follow it through the files.</p>
+  <div class="cols">
+    <div class="card"><h3>Invite and onboarding</h3><ol class="flow">
+      <li>A teacher pastes a list of student IDs and emails. The server does a <b>dry run</b> first, a preview that flags duplicates without saving anything.</li>
+      <li>The server creates users with status <code>invited</code> and emails a link with a random token, valid for 14 days.</li>
+      <li>The student opens <code>/invite/:token</code>, sets a password and answers 3 optional questions.</li>
+      <li>Accepting marks the token used (only once, even on a double-click) and logs them in.</li>
+    </ol><p><code>modules/classes/members.ts</code>, <code>routes/onboarding/</code></p></div>
+    <div class="card"><h3>Taking attendance</h3><ol class="flow">
+      <li><b>Roll mode:</b> everyone starts present and the teacher taps who's absent. Save sends <code>{absentIds}</code>.</li>
+      <li><b>Code mode:</b> the screen shows a 4-digit code that changes every 20s. Students type it in.</li>
+      <li>If one phone checks in two accounts, both are <b>flagged</b> for the teacher to review, not auto-rejected.</li>
+    </ol><p><code>modules/attendance/</code>, <code>routes/teacher/attendance/</code></p></div>
+    <div class="card"><h3>Chatbot import (no API key)</h3><ol class="flow">
+      <li>The CR copies a ready-made prompt into ChatGPT or Gemini together with a photo of the timetable.</li>
+      <li>The CR pastes the chatbot's JSON reply back. The server validates it into an editable preview.</li>
+      <li>"Apply" writes everything in one transaction.</li>
+    </ol><p>Clever: AI features at zero cost, with no API key to protect. <code>modules/classes/imports/</code></p></div>
+    <div class="card"><h3>Next semester</h3><ol class="flow">
+      <li>The class teacher clicks "Start next semester".</li>
+      <li>The current term closes and becomes read-only, and semester+1 opens. Students stay in the class.</li>
+      <li>After semester 8, "Graduate" archives the class.</li>
+    </ol><p><code>modules/classes/routes.ts</code></p></div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section id="run">
+  <h2>Run &amp; experiment</h2>
+  <p class="sub">Get it running, then break it on purpose.</p>
+<pre class="cmd">cd digital-campus
+cp .env.example .env && npm install
+npm run db:start                             # terminal 1: database (keep it open)
+npm run prisma -w server -- migrate deploy   # terminal 2: create tables (first time only)
+npm run db:reset                             # fill with demo data
+npm run dev                                  # UI → http://localhost:5173 , API → :3000
+npm test                                     # runs all tests</pre>
+  <p>Log in with password <code>campus123</code>:</p>
+  <ul>
+    <li><code>academics@demo.edu</code>: admin</li>
+    <li><code>meera.iyer@demo.edu</code>: teacher</li>
+    <li>Riya Patel: CR student (find her email on the admin People page)</li>
+  </ul>
+  <p>Invite and reset emails aren't really sent; they're printed in the server terminal.</p>
+
+  <div class="try"><p class="tag">Experiment 1 · see the wall</p><ol>
+    <li>Log in as the teacher and open DevTools → Network.</li>
+    <li>Visit <code>http://localhost:5173/api/v1/commons/board-posts</code>.</li>
+    <li>You get <b>403</b>. Now find the line that blocks it: <code>commons()</code> in <code>lib/auth.ts</code>.</li></ol></div>
+  <div class="try"><p class="tag">Experiment 2 · trigger the rate limiter</p><ol>
+    <li>Log out and enter a wrong password 11 times for the same email.</li>
+    <li>Watch for HTTP <b>429</b>. Read <code>rateLimit</code> in <code>lib/auth.ts</code> to see why it's exactly 11.</li></ol></div>
+  <div class="try"><p class="tag">Experiment 3 · add a field end to end</p><ol>
+    <li>Add <code>nickname String?</code> to <code>Profile</code> in <code>schema.prisma</code>.</li>
+    <li>Run <code>npm run db:migrate -w server</code> and open the new SQL file it created.</li>
+    <li>Add it to the zod schema of <code>PATCH /me/profile</code>, then run <code>npm run gen:api -w server</code>.</li>
+    <li>Use it in <code>ProfileForm.tsx</code>; TypeScript now knows it exists. That's the full-stack loop.</li></ol></div>
+  <div class="try"><p class="tag">Experiment 4 · see the bug in Mistake #3</p><ol>
+    <li>As a student, go to Me → Your data → Delete account and type a wrong password.</li>
+    <li>The toast says "Something went wrong" instead of the server's real message. Read <a href="#mistakes">Mistake #3</a> and fix it.</li></ol></div>
+</section>
+
+<!-- 13 -->
+<section id="process">
+  <h2>How it was built</h2>
+  <p class="sub">An unusual workflow worth knowing about: the senior used AI agents as a team.</p>
+  <p>The senior wrote a plan, split it into 114 small task files (<code>tasks/</code>), and ran Claude sessions as an "orchestrator". Each session read <code>INDEX.md</code> (the status board) and the last <b>handoff</b> note (<code>handoff/S01…S12</code>), gave one task to each AI subagent, checked the result, committed it as <code>TASK-ID: summary</code>, and wrote a new handoff for the next session.</p>
+  <div class="timeline">
+    <div><b>S01</b><span>Plan only: 13 architecture decisions, docs, 78 tasks</span></div>
+    <div><b>S02–04</b><span>Monorepo, Express and React skeletons, database schema. Docker didn't work, so embedded Postgres was used instead.</span></div>
+    <div><b>S05–08</b><span>Auth, invites, attendance, Commons, admin. Backend complete.</span></div>
+    <div><b>S09–11</b><span>All the screens. Checked only with types and curl, never in a browser.</span></div>
+    <div><b>S12</b><span>Permission test, browser QA, security self-review, 16 follow-up fixes</span></div>
+  </div>
+  <div class="note"><b>Takeaways for you:</b> small tasks, one commit per task, and written handoffs make big projects manageable, with or without AI. But "it compiles and the tests pass" isn't "it works": nobody opened the UI in a browser until the last session, and bugs piled up unseen.</div>
+</section>
+
+<!-- 14 -->
+<section id="mistakes">
+  <h2>What the senior got wrong</h2>
+  <p class="sub">Seniors make mistakes too. Items marked <span class="pill p-bad">verified</span> were checked directly in the source code. For each one: what happened, the concept behind it, and the fix. These are great practice tasks.</p>
+
+  <div class="mistake"><header><span class="pill p-bad">verified · #1</span><h4>Forgot the proxy: rate limiting would lock out the whole campus</h4></header><dl>
+    <dt>What</dt><dd>The login limiter counts attempts per IP address (<code>req.ip</code>), but the code never tells Express it runs behind a proxy. Nowhere does it set <code>app.set('trust proxy', …)</code>.</dd>
+    <dt>Concept</dt><dd>In production, a reverse proxy forwards every request, so to Express <i>every</i> request seems to come from the proxy's IP. The real user's IP is in an <code>X-Forwarded-For</code> header, which Express ignores unless told to "trust" the proxy. Result: all 2,000 students share one limit of 300 logins per 15 minutes. One attacker making 300 bad attempts locks everyone out.</dd>
+    <dt>Fix</dt><dd><code>app.set('trust proxy', 1)</code> (the number of proxies in front), ideally from an env var. Don't use <code>true</code>: then anyone could fake their IP by sending the header themselves.</dd>
+    <dt>Lesson</dt><dd>Your code behaves differently behind infrastructure. Always ask: what sits between the user and my server?</dd></dl></div>
+
+  <div class="mistake"><header><span class="pill p-bad">verified · #2</span><h4>Production start never sets NODE_ENV</h4></header><dl>
+    <dt>What</dt><dd><code>npm start</code> runs <code>node dist/index.js</code>. <code>app.ts:63</code> serves the frontend <i>only</i> when <code>NODE_ENV === 'production'</code>, but nothing sets it, and it's not listed in <code>.env.example</code>.</dd>
+    <dt>Concept</dt><dd><code>NODE_ENV</code> is the convention telling Node code "this is dev" or "this is prod". Here it switches serving the UI, a safety guard on the seed script, and whether emails (with login links) get printed to logs. Missing it in production means a 404 on every page, secrets in logs, and a seed script that could wipe the real database.</dd>
+    <dt>Fix</dt><dd>Set <code>NODE_ENV=production</code> in the start script, run <code>prisma migrate deploy</code> before starting, and refuse to start in production if <code>COOKIE_SECURE</code> is false. The docs say <code>start</code> runs migrations; it doesn't.</dd>
+    <dt>Lesson</dt><dd>Test the production build before calling a project done. It was tried once, failed, and was never retried.</dd></dl></div>
+
+  <div class="mistake"><header><span class="pill p-bad">verified · #3</span><h4>Every server error turns into "Something went wrong"</h4></header><dl>
+    <dt>What</dt><dd><code>unwrap()</code> in <code>api/client.ts</code> throws a plain object <code>{code, message}</code>. The catch blocks in <code>FormSheet.tsx:48</code> and about 6 other places check <code>err instanceof Error</code>, which is always false for a plain object, so they show the generic text.</dd>
+    <dt>Concept</dt><dd>In JavaScript you can <code>throw</code> anything, but only objects created by <code>new Error()</code> (or a subclass) pass <code>instanceof Error</code> and carry a stack trace. Convention: always throw <code>Error</code>s.</dd>
+    <dt>Fix</dt><dd><pre class="code">class ApiError extends Error { constructor(public code: string, message: string) { super(message); } }
+// in unwrap: if (r.error) throw new ApiError(r.error.code, r.error.message);</pre>One fix in one shared function repairs every form. There's a local workaround in <code>Compose.tsx</code>, which shows the bug was noticed once but patched in one place instead of at the root.</dd>
+    <dt>Lesson</dt><dd>When you find a bug, fix it where all callers pass through, not just where you saw it.</dd></dl></div>
+
+  <div class="mistake"><header><span class="pill p-bad">verified · #4</span><h4>Removing a student leaves a dangling reference</h4></header><dl>
+    <dt>What</dt><dd><code>DELETE /classes/:id/members/:userId</code> deletes the membership row but leaves <code>User.homeClassId</code> pointing at the old class. The student still shows the old class, and can't be re-invited elsewhere because the email is flagged as a duplicate.</dd>
+    <dt>Concept</dt><dd><b>Denormalised data:</b> the same fact ("which class is this student in") is stored in two places. Every write must update both, or they drift apart.</dd>
+    <dt>Fix</dt><dd>In the same transaction, <code>tx.user.update({ where: { id: userId }, data: { homeClassId: null } })</code>, plus a test for it.</dd></dl></div>
+
+  <div class="mistake"><header><span class="pill p-warn">#5</span><h4>No security headers</h4></header><dl>
+    <dt>What</dt><dd>The server sends none of the standard protective HTTP headers.</dd>
+    <dt>Concept</dt><dd>Headers like <code>Strict-Transport-Security</code> (always use HTTPS), <code>Content-Security-Policy</code> (which scripts may run), and <code>frame-ancestors</code> (stop other sites putting your app in an invisible iframe, called <b>clickjacking</b>) tell the browser to add protections. Vercel and Next.js set some of these for you; plain Express does not.</dd>
+    <dt>Fix</dt><dd>Add the <code>helmet</code> package (one line: <code>app.use(helmet())</code>) or a small middleware that sets them.</dd></dl></div>
+
+  <div class="mistake"><header><span class="pill p-warn">#6</span><h4>File storage only works on one machine</h4></header><dl>
+    <dt>What</dt><dd>Uploads are saved to the server's local disk. The S3 (cloud storage) driver is a stub that throws "not installed". The URL-signing key is random on every restart, so old file links break.</dd>
+    <dt>Concept</dt><dd>Most hosting platforms have <b>ephemeral disks</b>: files vanish on every redeploy. Real apps put files in object storage (S3, Cloudflare R2). Secrets used for signing must be fixed values from env vars.</dd>
+    <dt>Fix</dt><dd>Add a <code>FILE_SIGNING_SECRET</code> env var and write the S3 driver.</dd></dl></div>
+
+  <div class="mistake"><header><span class="pill p-warn">#7</span><h4>Memory that doesn't survive scaling</h4></header><dl>
+    <dt>What</dt><dd>Rate-limit counters, used-upload signatures and cron jobs all live inside the single Node process.</dd>
+    <dt>Concept</dt><dd>If you run 2 copies of the server for more capacity (<b>horizontal scaling</b>), each copy has its own memory. Limits double, and every 7am reminder is sent twice. Shared state belongs in the database or Redis.</dd>
+    <dt>Fix</dt><dd>Fine for one college. Write it down as a known limit and move the state to Postgres or Redis before scaling.</dd></dl></div>
+
+  <div class="mistake"><header><span class="pill p-warn">#8</span><h4>Slow emails inside a request</h4></header><dl>
+    <dt>What</dt><dd>Inviting 500 students sends 500 emails one by one <i>before</i> the request answers. That can take minutes. If email fails halfway, the user sees an error even though the students were created.</dd>
+    <dt>Concept</dt><dd>Slow side-effects belong in a <b>background job queue</b>: save the work, respond fast, and send emails separately with retries.</dd></dl></div>
+
+  <div class="mistake"><header><span class="pill p-warn">#9</span><h4>Frontend gaps</h4></header><dl>
+    <dt>What</dt><dd>• No error boundary, so if a page crashes, the user sees React Router's raw error screen.<br>• Being logged out reloads the page and forgets where you were (no <code>returnTo</code>).<br>• Offline users get sent to login.<br>• Avatars send each student's full name to an external service (<code>api.dicebear.com</code>), which is personal data leaving the app.</dd>
+    <dt>Fix</dt><dd>Add a root <code>errorElement</code>, redirect with <code>?returnTo=</code>, and generate avatars from the user ID locally.</dd></dl></div>
+
+  <div class="mistake"><header><span class="pill p-ok">#10</span><h4>Code-hygiene slips</h4></header><dl>
+    <dt>What</dt><dd>• A shared <code>lib/dates.ts</code> exists, yet about 10 files write their own date helpers. One uses UTC, so "today" is wrong in India before 5:30am.<br>• Some rules are checked in code but not enforced by database constraints (e.g. one report per user per post), which allows race conditions.<br>• No ESLint, no CI, and <b>no git remote</b>: all 141 commits live on one laptop.<br>• <code>ARCHITECTURE.md</code> describes libraries that were never installed.</dd>
+    <dt>Lesson</dt><dd>Before writing a helper, search the codebase for one. Let the database enforce rules. Push your code somewhere today.</dd></dl></div>
+
+  <h3>…and what the senior got right (copy these)</h3>
+  <ul>
+    <li>One zod schema drives validation, docs and frontend types.</li>
+    <li>Server-side guards on every route, plus a test that tries every route as every role.</li>
+    <li>Transactions, audit logs, and race-safe "update where not used" for one-time tokens.</li>
+    <li>Pure logic (attendance %, clash detection) lives in separate files, so it can be tested without a database.</li>
+    <li>Deliberate shortcuts are marked with <code>ponytail:</code> comments that say what limit they have.</li>
+  </ul>
+</section>
+
+<!-- 15 -->
+<section id="glossary">
+  <h2>Glossary</h2>
+  <p class="sub">Every term in one place.</p>
+  <dl class="gloss">
+    <dt>Advisory lock</dt><dd>A named lock in Postgres that your code takes, so only one request at a time does a certain thing.</dd>
+    <dt>Audit log</dt><dd>A table recording who changed what, with before and after values.</dd>
+    <dt>Bearer token</dt><dd>A login token sent in the <code>Authorization: Bearer …</code> header; used by mobile apps instead of cookies.</dd>
+    <dt>CI</dt><dd>Continuous integration: a server (e.g. GitHub Actions) that runs your tests on every push.</dd>
+    <dt>Cookie (httpOnly)</dt><dd>Small data the browser sends with every request. httpOnly means JavaScript can't read it, which protects it from XSS.</dd>
+    <dt>CORS</dt><dd>A browser rule that blocks a page on one origin (domain + port) from reading responses from another, unless the server allows it.</dd>
+    <dt>Cron</dt><dd>Running code on a schedule, e.g. every day at 07:00.</dd>
+    <dt>CSRF</dt><dd>A trick where another site makes your browser send a request with your cookie. Blocked here by checking the <code>Origin</code> header.</dd>
+    <dt>Dry run</dt><dd>Doing all the checks but saving nothing, to preview the result.</dd>
+    <dt>Env var</dt><dd>A setting passed to the program from outside the code (<code>.env</code>).</dd>
+    <dt>Hash / salt</dt><dd>A one-way scramble of a password; the salt is random data mixed in so equal passwords hash differently.</dd>
+    <dt>HMAC</dt><dd>A signature made with a secret key that proves a URL or message wasn't changed.</dd>
+    <dt>Idempotent</dt><dd>Doing it twice has the same effect as once. Opening the same attendance session twice returns the same session.</dd>
+    <dt>Magic bytes</dt><dd>The first bytes of a file that identify its real type (PDFs start with <code>%PDF</code>).</dd>
+    <dt>Middleware</dt><dd>A function that runs before route handlers and can modify or stop the request.</dd>
+    <dt>Migration</dt><dd>A saved, ordered database change script.</dd>
+    <dt>Monorepo</dt><dd>One repository containing several packages (here <code>server</code> and <code>web</code>).</dd>
+    <dt>OpenAPI</dt><dd>A standard JSON format describing every endpoint of an API; tools generate docs and types from it.</dd>
+    <dt>ORM</dt><dd>A library that maps database tables to code objects (Prisma).</dd>
+    <dt>Proxy / reverse proxy</dt><dd>A middleman server that forwards requests. Reverse proxies sit in front of your app in production and handle HTTPS.</dd>
+    <dt>PWA</dt><dd>A website installable like an app, using a service worker for caching.</dd>
+    <dt>Race condition</dt><dd>A bug where two simultaneous requests both pass a check that should only let one through.</dd>
+    <dt>Rate limiting</dt><dd>Capping how many requests someone can make in a time window.</dd>
+    <dt>Seed</dt><dd>A script that fills the database with starting or demo data.</dd>
+    <dt>Session</dt><dd>The server's record that a token belongs to a logged-in user.</dd>
+    <dt>SPA</dt><dd>A single-page application: one HTML page; React handles navigation in the browser.</dd>
+    <dt>SMTP</dt><dd>The protocol for sending email.</dd>
+    <dt>Transaction</dt><dd>A group of database writes that all succeed or all fail.</dd>
+    <dt>trust proxy</dt><dd>An Express setting that makes it read the real client IP from <code>X-Forwarded-For</code>.</dd>
+    <dt>XSS</dt><dd>Cross-site scripting: an attacker getting their JavaScript to run on your page.</dd>
+    <dt>zod</dt><dd>A TypeScript library for describing and validating data shapes.</dd>
+  </dl>
+</section>
+</main>
+</div>
